@@ -107,22 +107,22 @@
         }
 
         // create main lib file
-        var content = '%%[\n'+wrapper+']%%';
+        var content = "%%[\n\tOutput(ContentBlockByKey('email360-lib-settings'))\n"+wrapper+"]%%";
         createScriptContentBlock('Email360 SSJS-Lib','email360-ssjs-lib',content,settings.folderId['Asset SSJS Lib Core']);
 
         // create demo login page code
         var res = httpRequest('GET','https://raw.githubusercontent.com/email360/ssjs-lib/master/sample/cloudpages/login/login.js');
-        createHtmlContentBlock('Email360 Login Code','email360-login-code',res.content,settings.folderId['Asset SSJS Lib CloudPages Login']);
+        createScriptContentBlock('Email360 Login Code','email360-login-code',res.content,settings.folderId['Asset SSJS Lib CloudPages Login']);
         // create demo login page html
         var res = httpRequest('GET','https://raw.githubusercontent.com/email360/ssjs-lib/master/sample/cloudpages/login/login.html');
-        createHtmlContentBlock('Email360 Login HTML','email360-login-html',res.content,settings.folderId['Asset SSJS Lib CloudPages Login']);
+        createScriptContentBlock('Email360 Login HTML','email360-login-html',res.content,settings.folderId['Asset SSJS Lib CloudPages Login']);
 
         // create demo error page code
         var res = httpRequest('GET','https://raw.githubusercontent.com/email360/ssjs-lib/master/sample/cloudpages/error/error.js');
-        createHtmlContentBlock('Email360 Error Code','email360-error-code',res.content,settings.folderId['Asset SSJS Lib CloudPages Error']);
+        createScriptContentBlock('Email360 Error Code','email360-error-code',res.content,settings.folderId['Asset SSJS Lib CloudPages Error']);
         // create demo error page html
         var res = httpRequest('GET','https://raw.githubusercontent.com/email360/ssjs-lib/master/sample/cloudpages/error/error.html');
-        createHtmlContentBlock('Email360 Error HTML','email360-error-html',res.content,settings.folderId['Asset SSJS Lib CloudPages Error']);
+        createScriptContentBlock('Email360 Error HTML','email360-error-html',res.content,settings.folderId['Asset SSJS Lib CloudPages Error']);
 
 
         // Settings: add SFMC api settings
@@ -148,7 +148,7 @@
 
         // create settings file
         var content = '<script runat=server>\n\t\t\t\tfunction settings() {\n\n'+ConvertObjectIndented(settings,'\t\t\t\t\t\t\t\t')+'\n\t\t\t\t}\n</'+'script>';
-        createScriptContentBlock('SSJS-Lib: Settings','email360-lib-settings',content,settings.folderId['Asset SSJS Lib Core']);
+        createScriptContentBlock('Email360 SSJS-Lib: settings','email360-lib-settings',content,settings.folderId['Asset SSJS Lib Core']);
     } catch(e) {
         Write(Stringify(e));
     }
@@ -180,22 +180,6 @@
             }
         });
         Write('\nCreate script content block '+ name + ': '+res.Status);
-    }
-
-    function createHtmlContentBlock(name,key,content,parentFolder) {
-        var res = api.createItem("Asset", {
-            Name: name,
-            AssetType: {
-                Id: 197
-            },
-            Content: content,
-            ContentType: "text/html",
-            CustomerKey: key,
-            Category: {
-                Id: parentFolder
-            }
-        });
-        Write('\nCreate html content block '+ name + ': '+res.Status);
     }
 
     function createFolder(name,type,parentFolder) {
