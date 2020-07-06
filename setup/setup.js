@@ -18,6 +18,8 @@
     // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
     // DEALINGS IN THE SOFTWARE.
     Platform.Load("Core", "1.1.5");
+    var prefix = 'Email360';
+
     Write('<pre>');
 
     try {
@@ -32,8 +34,8 @@
         settings.folderId['Content Builder'] = getFolderId({name: 'Content Builder', type: 'asset' });
 
         // create folder to hold all lib data
-        settings.folderId['DataExtension SSJS Lib'] = createFolder('Email360 SSJS Lib', 'dataextension', settings.folderId['Data Extensions']);
-        settings.folderId['Asset SSJS Lib'] = createFolder('Email360 SSJS Lib','asset', settings.folderId['Content Builder']);
+        settings.folderId['DataExtension SSJS Lib'] = createFolder(prefix+' SSJS Lib', 'dataextension', settings.folderId['Data Extensions']);
+        settings.folderId['Asset SSJS Lib'] = createFolder(prefix+' SSJS Lib','asset', settings.folderId['Content Builder']);
         settings.folderId['Asset SSJS Lib Core'] = createFolder('Core','asset', settings.folderId['Asset SSJS Lib']);
         settings.folderId['Asset SSJS Lib CloudPages'] = createFolder('CloudPages','asset', settings.folderId['Asset SSJS Lib']);
         settings.folderId['Asset SSJS Lib CloudPages Login'] = createFolder('Login','asset', settings.folderId['Asset SSJS Lib CloudPages']);
@@ -101,28 +103,29 @@
                 cloudpage: 'https://raw.githubusercontent.com/email360/ssjs-lib/master/core/lib_cloudpage.js'
             };
         for( var name in libFiles ) {
-            var res = httpRequest('GET',libFiles[name]);
-            createScriptContentBlock('Email360 SSJS-Lib: '+name,'email360-lib-'+name,res.content,settings.folderId['Asset SSJS Lib Core']);
-            wrapper += "\tOutput(ContentBlockByKey('email360-lib-"+name+"'));\n";
+            var res = httpRequest('GET',libFiles[name]),
+                key = prefix.toLowerCase()+'-ssjs-lib-'+name;
+            createScriptContentBlock(prefix+' SSJS-Lib: '+name,key,res.content,settings.folderId['Asset SSJS Lib Core']);
+            wrapper += "\tOutput(ContentBlockByKey('"+key+"'));\n";
         }
 
         // create main lib file
-        var content = "%%[\n\tOutput(ContentBlockByKey('email360-lib-settings'))\n"+wrapper+"]%%";
-        createScriptContentBlock('Email360 SSJS-Lib','email360-ssjs-lib',content,settings.folderId['Asset SSJS Lib Core']);
+        var content = "%%[\n\tOutput(ContentBlockByKey('"+prefix.toLowerCase()+"-ssjs-lib-settings'))\n"+wrapper+"]%%";
+        createScriptContentBlock(prefix+' SSJS-Lib',prefix.toLowerCase()+'-ssjs-lib',content,settings.folderId['Asset SSJS Lib']);
 
         // create demo login page code
         var res = httpRequest('GET','https://raw.githubusercontent.com/email360/ssjs-lib/master/sample/cloudpages/login/login.js');
-        createScriptContentBlock('Email360 Login Code','email360-login-code',res.content,settings.folderId['Asset SSJS Lib CloudPages Login']);
+        createScriptContentBlock(prefix+' Login Code',prefix.toLowerCase()+'-login-code',res.content,settings.folderId['Asset SSJS Lib CloudPages Login']);
         // create demo login page html
         var res = httpRequest('GET','https://raw.githubusercontent.com/email360/ssjs-lib/master/sample/cloudpages/login/login.html');
-        createScriptContentBlock('Email360 Login HTML','email360-login-html',res.content,settings.folderId['Asset SSJS Lib CloudPages Login']);
+        createScriptContentBlock(prefix+' Login HTML',prefix.toLowerCase()+'-login-html',res.content,settings.folderId['Asset SSJS Lib CloudPages Login']);
 
         // create demo error page code
         var res = httpRequest('GET','https://raw.githubusercontent.com/email360/ssjs-lib/master/sample/cloudpages/error/error.js');
-        createScriptContentBlock('Email360 Error Code','email360-error-code',res.content,settings.folderId['Asset SSJS Lib CloudPages Error']);
+        createScriptContentBlock(prefix+' Error Code',prefix.toLowerCase()+'-error-code',res.content,settings.folderId['Asset SSJS Lib CloudPages Error']);
         // create demo error page html
         var res = httpRequest('GET','https://raw.githubusercontent.com/email360/ssjs-lib/master/sample/cloudpages/error/error.html');
-        createScriptContentBlock('Email360 Error HTML','email360-error-html',res.content,settings.folderId['Asset SSJS Lib CloudPages Error']);
+        createScriptContentBlock(prefix+' Error HTML',prefix.toLowerCase()+'-error-html',res.content,settings.folderId['Asset SSJS Lib CloudPages Error']);
 
 
         // Settings: add SFMC api settings
@@ -142,13 +145,13 @@
 
         // Settings: add authentication
         settings.auth = {
-            cookieName: 'email360_access_token',
-            login: 'login'
+            cookieName: prefix.toLowerCase()+'_access_token',
+            tokenKey: 'login'
         };
 
         // create settings file
-        var content = '<script runat=server>\n\t\t\t\tfunction settings() {\n\n'+ConvertObjectIndented(settings,'\t\t\t\t\t\t\t\t')+'\n\t\t\t\t}\n</'+'script>';
-        createScriptContentBlock('Email360 SSJS-Lib: settings','email360-lib-settings',content,settings.folderId['Asset SSJS Lib Core']);
+        var content = '<script runat=server>\n    function settings() {\n\n'+ConvertObjectIndented(settings,'        ')+'\n    }\n</'+'script>';
+        createScriptContentBlock(prefix+' SSJS-Lib: settings',prefix.toLowerCase()+'-lib-settings',content,settings.folderId['Asset SSJS Lib Core']);
     } catch(e) {
         Write(Stringify(e));
     }
@@ -167,47 +170,94 @@
     }
 
     function createScriptContentBlock(name,key,content,parentFolder) {
-        var res = api.createItem("Asset", {
-            Name: name,
-            AssetType: {
-                Id: 220
-            },
-            Content: content,
-            ContentType: "text/html",
-            CustomerKey: key,
-            Category: {
-                Id: parentFolder
-            }
-        });
+        // check if script exists otherwise create
+
+
+
+        // var res = api.createItem("Asset", {
+        //     Name: name,
+        //     AssetType: {
+        //         Id: 220
+        //     },
+        //     Content: content,
+        //     ContentType: "text/html",
+        //     CustomerKey: key,
+        //     Category: {
+        //         Id: parentFolder
+        //     }
+        // });
+
         Write('\nCreate script content block '+ name + ': '+res.Status);
     }
 
     function createFolder(name,type,parentFolder) {
-        var res = api.createItem("DataFolder", {
-            Name: name,
-            Description: 'Folder for all Email360 SSJS Lib relevant data',
-            ParentFolder: {
-                ID : parentFolder,
-                IDSpecified: true
+        var id = '';
+
+        // check if folder exists otherwise create
+        var res = Folder.Retrieve({
+            LeftOperand: {
+                Property: "Name",
+                SimpleOperator: "equals",
+                Value: name
             },
-            ContentType: type,
-            IsActive: true,
-            IsEditable: true,
-            AllowChildren: true
+            LogicalOperator: "AND",
+            RightOperand: {
+                LeftOperand: {
+                    Property: "ParentFolder.ID",
+                    SimpleOperator: "equals",
+                    Value: parentFolder
+                },
+                LogicalOperator: "AND",
+                RightOperand: {
+                    Property: "ContentType",
+                    SimpleOperator: "equals",
+                    Value: type
+                }
+            }
         });
+
+        if( res.length <= 0 ) {
+            res = api.createItem("DataFolder", {
+                Name: name,
+                Description: 'Folder for all '+prefix+' SSJS Lib relevant data',
+                ParentFolder: {
+                    ID : parentFolder,
+                    IDSpecified: true
+                },
+                ContentType: type,
+                IsActive: true,
+                IsEditable: true,
+                AllowChildren: true
+            });
+            id = res.Results[0].NewID;
+        } else {
+            id = res.Results[0].ID;
+        }
         Write('\nCreate folder '+ name + ': '+res.Status);
-        return res.Results[0].NewID;
+        return id;
     }
 
     function createDataExtension(name,fields) {
-        var res = api.createItem("DataExtension", {
-            CustomerKey: Platform.Function.GUID().toUpperCase(),
-            Name: 'SSJS Lib - '+name,
-            CategoryID: settings.folderId['DataExtension SSJS Lib'],
-            Fields: fields
-        });
-        Write('\nCreate dataextension '+ name + ': '+res.Status);
-        return { Name: res.Results[0].Object.Name, Key: res.Results[0].Object.CustomerKey };
+        var n = prefix+' SSJS Lib - '+name,
+            customerKey = '';
+
+        // check if dataextension exists otherwise create
+        var res = DataExtension.Retrieve({Property:"Name",SimpleOperator:"equals",Value:n});
+
+        if( res.length <= 0 ) {
+            res = api.createItem("DataExtension", {
+                CustomerKey: Platform.Function.GUID().toUpperCase(),
+                Name: n,
+                CategoryID: settings.folderId['DataExtension SSJS Lib'],
+                Fields: fields
+            });
+            customerKey = res.Results[0].Object.CustomerKey;
+        } else {
+            customerKey = res.Results[0].CustomerKey;
+        }
+
+        // Write('\nCreate dataextension '+ name + ': '+res.Status);
+        return { Name: n, Key: customerKey };
     }
 
     function ConvertObjectIndented(obj, indent) {
@@ -228,12 +278,13 @@
                     value = "[ " + value + " ]";
                 }
                 else {
-                    var od = ConvertObjectIndented(value, indent + "\t\t\t\t");
+                    var od = ConvertObjectIndented(value, indent + "    ");
                     value = "{\n" + od + "\n" + indent + "}";
                 }
             }
 
-            result += indent + '"' + property + '": ' + value + ",\n";
+            var prop = (indent == "        ") ? 'this.'+property+' = ' + value + ";\n" : '"' + property + '": ' + value + ",\n";
+            result += indent + prop;
         }
         
         return result.replace(/,\n$/, "");
