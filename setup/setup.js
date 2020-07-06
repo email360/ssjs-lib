@@ -18,7 +18,7 @@
     // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
     // DEALINGS IN THE SOFTWARE.
     Platform.Load("Core", "1.1.5");
-    var prefix = 'Email360';
+    var prefix = 'LE';
 
     Write('<pre>');
 
@@ -89,8 +89,8 @@
             ]);
 
         // add data to DE
-        Write('\nAdded rows to authentication:'+Platform.Function.UpsertData(settings.de.authentication.Name,["key"],["login"],["value"],[SHA256(Platform.Function.GUID())]));
-        Write('\nAdded rows to authUsers:'+Platform.Function.UpsertData(settings.de.authUsers.Name,["Username"],["admin"],["Password"],[SHA256('email360')]));
+        upsertDataExtensionRecords(settings.de.authentication,[{key:'login',value:SHA256(Platform.Function.GUID())}]);
+        upsertDataExtensionRecords(settings.de.authUsers,[{Username:'admin',Password:SHA256('email360')}]);
 
         // load library files from github
         var wrapper = '',
@@ -115,17 +115,11 @@
 
         // create demo login page code
         var res = httpRequest('GET','https://raw.githubusercontent.com/email360/ssjs-lib/master/sample/cloudpages/login/login.js');
-        createScriptContentBlock(prefix+' Login Code',prefix.toLowerCase()+'-login-code',res.content,settings.folderId['Asset SSJS Lib CloudPages Login']);
-        // create demo login page html
-        var res = httpRequest('GET','https://raw.githubusercontent.com/email360/ssjs-lib/master/sample/cloudpages/login/login.html');
-        createScriptContentBlock(prefix+' Login HTML',prefix.toLowerCase()+'-login-html',res.content,settings.folderId['Asset SSJS Lib CloudPages Login']);
+        createScriptContentBlock(prefix+' Login Page',prefix.toLowerCase()+'-login-page',res.content,settings.folderId['Asset SSJS Lib CloudPages Login']);
 
         // create demo error page code
         var res = httpRequest('GET','https://raw.githubusercontent.com/email360/ssjs-lib/master/sample/cloudpages/error/error.js');
-        createScriptContentBlock(prefix+' Error Code',prefix.toLowerCase()+'-error-code',res.content,settings.folderId['Asset SSJS Lib CloudPages Error']);
-        // create demo error page html
-        var res = httpRequest('GET','https://raw.githubusercontent.com/email360/ssjs-lib/master/sample/cloudpages/error/error.html');
-        createScriptContentBlock(prefix+' Error HTML',prefix.toLowerCase()+'-error-html',res.content,settings.folderId['Asset SSJS Lib CloudPages Error']);
+        createScriptContentBlock(prefix+' Error Page',prefix.toLowerCase()+'-error-page',res.content,settings.folderId['Asset SSJS Lib CloudPages Error']);
 
 
         // Settings: add SFMC api settings
@@ -164,34 +158,74 @@
     function getFolderId(data) {
         var f1 = { Property: 'Name', SimpleOperator: "equals", Value: data.name },
             f2 = { Property: 'ContentType', SimpleOperator: "equals", Value: data.type },
-            res = api.retrieve("DataFolder", ['ID','ContentType'], { LeftOperand:f1, LogicalOperator: "AND", RightOperand: f2 });
-        Write('\nRetrieve folder ID for '+ data.name + ': '+res.Status);
-        return res.Results[0].ID;
+            res = api.retrieve("DataFolder", ['ID','ContentType'], { LeftOperand:f1, LogicalOperator: "AND", RightOperand: f2 }),
+            id = res.Results[0].ID;
+        Write('\n'+res.Status+':\tRetrieve folder ID for '+ data.name+': '+id);
+        return id;
+    }
+
+    function upsertDataExtensionRecords(deObject,data) {
+        var options = {SaveOptions: [{PropertyName:'*',SaveAction: 'UpdateAdd'}]},
+            customerKey = deObject.Key,
+            name = deObject.Name;
+
+
+        // convert object into Name-Value pair
+        var payload = [];
+        for (var i = 0; i < data.length; i++) {
+            var props = [];
+            for(var k in data[i]) {
+                props.push({Name:k, Value: data[i][k]});
+            }
+            payload.push({ CustomerKey: customerKey, Properties: props });
+        }
+
+        try {
+            var res = api.updateBatch('DataExtensionObject', payload, options);
+
+            if( res.Status == 'OK' ) {
+                Write('\nOK:\t'+data.length+' record has been upsert to DE: '+name);
+            } else {
+                Write('\nError:\t'+Stringify(res));
+            }
+
+        } catch(e) {
+            Write('\nError:\t'+Stringify(e)); 
+        }
     }
 
     function createScriptContentBlock(name,key,content,parentFolder) {
-        // check if script exists otherwise create
+        var status = null;
 
+        var req = api.retrieve("Asset", ['*'], {
+            Property: "Name",
+            SimpleOperator: "equals",
+            Value: name
+        });
 
-
-        // var res = api.createItem("Asset", {
-        //     Name: name,
-        //     AssetType: {
-        //         Id: 220
-        //     },
-        //     Content: content,
-        //     ContentType: "text/html",
-        //     CustomerKey: key,
-        //     Category: {
-        //         Id: parentFolder
-        //     }
-        // });
-
-        Write('\nCreate script content block '+ name + ': '+res.Status);
+        if( req.Status == 'OK' && req.Results.length > 0 ) {
+            status = 'Skip';
+        } else {
+            var res = api.createItem("Asset", {
+                Name: name,
+                AssetType: {
+                    Id: 220
+                },
+                Content: content,
+                ContentType: "text/html",
+                CustomerKey: key,
+                Category: {
+                    Id: parentFolder
+                }
+            });
+            status = res.Status;
+        }
+        Write('\n'+status+':\tCreate script content block '+ name);
     }
 
     function createFolder(name,type,parentFolder) {
-        var id = '';
+        var id = null,
+            status = null;
 
         // check if folder exists otherwise create
         var res = Folder.Retrieve({
@@ -230,16 +264,19 @@
                 AllowChildren: true
             });
             id = res.Results[0].NewID;
+            status = res.Status;
         } else {
-            id = res.Results[0].ID;
+            id = res[0].ID;
+            status = (id) ? 'Skip' : 'Error';
         }
-        Write('\nCreate folder '+ name + ': '+res.Status);
+        Write('\n'+status+':\tCreate '+type+' folder: '+ name);
         return id;
     }
 
     function createDataExtension(name,fields) {
         var n = prefix+' SSJS Lib - '+name,
-            customerKey = '';
+            customerKey = null,
+            status = null;
 
         // check if dataextension exists otherwise create
         var res = DataExtension.Retrieve({Property:"Name",SimpleOperator:"equals",Value:n});
@@ -252,11 +289,13 @@
                 Fields: fields
             });
             customerKey = res.Results[0].Object.CustomerKey;
+            status = res.Status;
         } else {
-            customerKey = res.Results[0].CustomerKey;
+            customerKey = res[0].CustomerKey;
+            status = (customerKey) ? 'Skip' : 'Error';
         }
 
-        // Write('\nCreate dataextension '+ name + ': '+res.Status);
+        Write('\n'+status+':\tCreate dataextension: '+ name);
         return { Name: n, Key: customerKey };
     }
 
