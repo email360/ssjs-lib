@@ -2974,7 +2974,7 @@
                 property = ['Name','CustomerKey'],
                 req = {};
 
-            for (var i = 0; i < 2; i++) {
+            for (var i = 0; i < property.length; i++) {
                 req = this.api.retrieve("Asset", ['*'], { 
                     Property: property[i], 
                     SimpleOperator: "equals", 
