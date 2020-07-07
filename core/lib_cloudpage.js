@@ -92,7 +92,7 @@
          */
         this.authLogin = function() {
             var cookieName = this.settings.auth.cookieName,
-                payload = { previousPage: getPageUrl() },
+                payload = { origin: Base64Encode(getPageUrl()).replace(/=/gi, '@') },
                 url = this.settings.cp.login;
 
             debug('(authLogin)\n\tRetrieve cookie: '+cookieName);
@@ -127,7 +127,7 @@
          */
         this.logout = function() {
             this.expireCookie();
-            var payload = { previousPage: getPageUrl(false) },
+            var payload = { origin: Base64Encode(getPageUrl()).replace(/=/gi, '@') },
                 url = (Number.isInteger(this.settings.cp.login)) ? CloudPagesURL(this.settings.cp.login,payload) : this.settings.cp.login +'?payload='+Base64Encode(Stringify(payload));
 
             Redirect(url,false);
@@ -222,6 +222,10 @@
          * @returns {object} JWT Header, payload and signature.
          */
         this.readToken = function(token) {
+            if( !token || typeof token !== 'string' ) {
+                debug( '(readToken) No token given');
+                return null;
+            }
             var parts = token.split('.');
             if( parts.length != 3 ) {
                 debug( '(readToken) Wrong token format');
