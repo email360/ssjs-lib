@@ -145,7 +145,7 @@
 
         // create settings file
         var content = '<script runat=server>\n    function settings() {\n\n'+ConvertObjectIndented(settings,'        ')+'\n    }\n</'+'script>';
-        createScriptContentBlock(prefix+' SSJS-Lib: settings',prefix.toLowerCase()+'-lib-settings',content,settings.folderId['Asset SSJS Lib Lib']);
+        createScriptContentBlock(prefix+' SSJS-Lib: settings',prefix.toLowerCase()+'-ssjs-lib-settings',content,settings.folderId['Asset SSJS Lib Lib']);
     } catch(e) {
         Write(Stringify(e));
     }
