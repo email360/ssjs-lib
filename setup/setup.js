@@ -36,7 +36,7 @@
         // create folder to hold all lib data
         settings.folderId['DataExtension SSJS Lib'] = createFolder(prefix+' SSJS Lib', 'dataextension', settings.folderId['Data Extensions']);
         settings.folderId['Asset SSJS Lib'] = createFolder(prefix+' SSJS Lib','asset', settings.folderId['Content Builder']);
-        settings.folderId['Asset SSJS Lib Core'] = createFolder('Core','asset', settings.folderId['Asset SSJS Lib']);
+        settings.folderId['Asset SSJS Lib Lib'] = createFolder('Lib','asset', settings.folderId['Asset SSJS Lib']);
         settings.folderId['Asset SSJS Lib CloudPages'] = createFolder('CloudPages','asset', settings.folderId['Asset SSJS Lib']);
         settings.folderId['Asset SSJS Lib CloudPages Login'] = createFolder('Login','asset', settings.folderId['Asset SSJS Lib CloudPages']);
         settings.folderId['Asset SSJS Lib CloudPages Error'] = createFolder('Error','asset', settings.folderId['Asset SSJS Lib CloudPages']);
@@ -105,7 +105,7 @@
         for( var name in libFiles ) {
             var res = httpRequest('GET',libFiles[name]),
                 key = prefix.toLowerCase()+'-ssjs-lib-'+name;
-            createScriptContentBlock(prefix+' SSJS-Lib: '+name,key,res.content,settings.folderId['Asset SSJS Lib Core']);
+            createScriptContentBlock(prefix+' SSJS-Lib: '+name,key,res.content,settings.folderId['Asset SSJS Lib Lib']);
             wrapper += "\tOutput(ContentBlockByKey('"+key+"'));\n";
         }
 
@@ -145,7 +145,7 @@
 
         // create settings file
         var content = '<script runat=server>\n    function settings() {\n\n'+ConvertObjectIndented(settings,'        ')+'\n    }\n</'+'script>';
-        createScriptContentBlock(prefix+' SSJS-Lib: settings',prefix.toLowerCase()+'-lib-settings',content,settings.folderId['Asset SSJS Lib Core']);
+        createScriptContentBlock(prefix+' SSJS-Lib: settings',prefix.toLowerCase()+'-lib-settings',content,settings.folderId['Asset SSJS Lib Lib']);
     } catch(e) {
         Write(Stringify(e));
     }
