@@ -38,7 +38,6 @@
      * @param   {number}    [o.listid]                      The ListId if the error is caused from an email sent.
      * @param   {number}    [o.batchid]                     The BatchId if the error is caused from an email sent.
      * @param   {string}    [o.sourceType]                  The SourceType. e.g. Email, Web, CRM.
-     * @param   {string}    [o.impersonator]                A user identifier like subscriberkey if the error was caused by impersonating.
      * @param   {boolean}   [o.skipRecipient=true]          Indicates whether the function skips the send for current 
      *                                                      Subscriber and continues or stops. A value of true skips the 
      *                                                      send for current Subscriber and moves to next Subscriber
@@ -60,7 +59,6 @@
                 ListId: (!o.listId) ? null : o.listId,
                 BatchId: (!o.batchId) ? null : o.batchId,
                 Source: o.source,
-                Impersonator: (!o.impersonator) ? null : o.impersonator,
                 SourceType: (!o.sourceType) ? null : o.sourceType,
                 SubscriberKey: (!o.subscriberKey) ? null : o.subscriberKey
             },

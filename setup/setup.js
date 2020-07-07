@@ -66,7 +66,6 @@
                 { "Name": "JobId", "FieldType": "Number" },
                 { "Name": "ListId", "FieldType": "Number" },
                 { "Name": "BatchId", "FieldType": "Number" },
-                { "Name": "Impersonator", "FieldType": "Text", "MaxLength": 255 },
             ]);
         settings.de.authentication = createDataExtension('Authentication', [
                 { "Name": "key", "FieldType": "Text", "MaxLength": 255, "IsPrimaryKey": true, "IsRequired": true },
