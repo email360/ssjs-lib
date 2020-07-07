@@ -32,7 +32,7 @@
 
 Looking to quickly add the email360 SSJS lib to your project? Simple create a cloudpage and copy-paste the following code:
 
-```
+```javascript
 %%=TreatAsContent(HTTPGet('https://raw.githubusercontent.com/email360/ssjs-lib/master/setup/setup.js'))=%%
 ```
 
@@ -94,7 +94,7 @@ Email360's SSJS Lib documentation, included in this repo in the root directory a
 This library would not have been possible without the [Salesforce Marketing Cloud ©](https://www.salesforce.com/products/marketing-cloud/) community. Ohana!
 
 
-Special thanks to the following people for their active contribution for the community: 
+Special thanks to the following people for their active contribution to the community: 
 
 **[Gregory (Gortonington) Gifford](https://www.linkedin.com/in/gregory-gortonington-gifford-238a0625/)**, 
 **[Ivan Razine](https://www.linkedin.com/in/ivanrazine/)**, 
@@ -104,4 +104,4 @@ Special thanks to the following people for their active contribution for the com
 
 ## Copyright and license
 
-Code and documentation copyright 2020 the email360 SSJS Lib code released under the [MIT License](https://github.com/email360/ssjs-lib/blob/master/LICENSE).
+Code and documentation copyright 2020 the email360 SSJS Lib under the [MIT License](https://github.com/email360/ssjs-lib/blob/master/LICENSE).
