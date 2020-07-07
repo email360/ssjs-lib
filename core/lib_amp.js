@@ -173,6 +173,8 @@
      *                                 or the business unit (MID) where the function is used. 
      * @param  {object}    parameters  Name-Value pair for additional parameters included
      *                                 in encrypted query string
+     *
+     * @returns {string} A full URL 
      */
     function CloudPagesURL(pid,parameters) {
         var varName = '@amp__CloudPagesURL';
