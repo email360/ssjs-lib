@@ -18,7 +18,7 @@
     // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
     // DEALINGS IN THE SOFTWARE.
     Platform.Load("Core", "1.1.5");
-    var prefix = 'Email360';
+    var prefix = 'email360';
 
     Write('<pre>');
 
@@ -104,13 +104,13 @@
         for( var name in libFiles ) {
             var res = httpRequest('GET',libFiles[name]),
                 key = prefix.toLowerCase()+'-ssjs-lib-'+name;
-            createScriptContentBlock(prefix+' SSJS-Lib: '+name,key,res.content,settings.folderId['Asset SSJS Lib Lib']);
+            createScriptContentBlock(prefix+' SSJS Lib - '+name,key,res.content,settings.folderId['Asset SSJS Lib Lib']);
             wrapper += "\tOutput(ContentBlockByKey('"+key+"'));\n";
         }
 
         // create main lib file
         var content = "%%[\n\tOutput(ContentBlockByKey('"+prefix.toLowerCase()+"-ssjs-lib-settings'))\n"+wrapper+"]%%";
-        createScriptContentBlock(prefix+' SSJS-Lib',prefix.toLowerCase()+'-ssjs-lib',content,settings.folderId['Asset SSJS Lib']);
+        createScriptContentBlock(prefix+' SSJS Lib',prefix.toLowerCase()+'-ssjs-lib',content,settings.folderId['Asset SSJS Lib']);
 
         // create demo login page code
         var res = httpRequest('GET','https://raw.githubusercontent.com/email360/ssjs-lib/master/sample/cloudpages/login/login.js');
