@@ -2,22 +2,29 @@
     Platform.Load("Core", "1.1.5");
     Platform.Function.ContentBlockByKey('email360-ssjs-lib');
 
-    // initiate cloudpage with general access
+    // initiate cloudpage with public access
     var cp = new cloudpage();
 
     try{
         var qs = cp.payload.qs,
             settings = cp.settings,
-            v = {};
+            cookieName = settings.auth.cookieName;
 
-        // load payload (all optional)
-        cp.isPayload(['username','previousPage','tokenExpired','login']);
+        // load payload into the variable qs if given
+        cp.isPayload(['username','origin','tokenExpired','login']);
 
+        // decode origin URL due to CloudPageURL issue with equal (=) sign 
+        qs.origin = (qs.origin) ? Base64Decode(qs.origin.replace(/@/gi,'=')) : getPageUrl(false);
+      
         // for security reason we fetch password outside the runtime storage of payload
         var password = Request.GetQueryStringParameter('password');
 
-        // hit login button?
-        if( qs.username && password ) {
+        // already signed in?
+        if( cp.isTokenValid(Platform.Request.GetCookieValue(cookieName)) ) {
+            qs.login = true;
+
+        // if not did the user hit the login button?
+        } else if( qs.username && password ) {
 
             // verify login against the Data Extension
             if( SHA256(password) == Platform.Function.Lookup(settings.de.authUsers.Name,'password','username',qs.username) ) {
@@ -25,25 +32,24 @@
                     payload = {
                         iss: getPageUrl(false), // issuer of the token
                         usr: qs.username
-                    },
-                    // generate token valid for 24h
-                    token = cp.newToken(settings.auth.tokenKey,60*60*24,payload);
+                    };
 
-                // set cookie
-                cp.setCookie(settings.auth.cookieName,token);
+                // set cookie with a new token which is valid for 24h
+                cp.setCookie(cookieName,cp.newToken(settings.auth.tokenKey,60*60*24,payload));
 
-                // redirect to previous page
-                Redirect((qs.previousPage) ? qs.previousPage : CloudPagesURL(settings.cp.login,{login:true}),false);
+                // redirect to origin page 
+                try { 
+                    Redirect(qs.origin, false);
+                } catch(e) {} // workaround as Redirect always throws an error.
 
             // login failed
             } else {
-                v.loginUser = qs.username;
-                v.loginFailed = 1;
+                qs.login = false;
             }
         }
-
-        v.tokenExpired = qs.tokenExpired;
-        createAmpVariables(v);
+        
+        // create AMP script variables based on runtime storage qs
+        createAmpVariables(qs);
 
     } catch(e){
         // redirect error page
@@ -58,7 +64,7 @@
 <html>
 
 <head>
-    <title>Login Page</title>
+    <title>Login</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     <style type="text/css">
@@ -93,7 +99,7 @@
 
     .input-group-prepend span {
         width: 50px;
-        background-color: rgb(0, 163, 173);
+        background-color: #ffc451;
         color: black;
         border: 0 !important;
     }
@@ -106,7 +112,7 @@
 
     .login_btn {
         color: black;
-        background-color: rgb(0, 163, 173);
+        background-color: #ffc451;
         width: 100px;
     }
 
@@ -132,20 +138,20 @@
                         </div>
                     %%[ELSE]%%
                         <form action="#" method="POST">
-                            %%[IF @loginFailed == 1 THEN]%%
-                            <div class="alert alert-danger" role="alert">
-                                Incorrect username or password!
-                            </div>
+                            %%[IF @login == 0 THEN]%%
+                                <div class="alert alert-danger" role="alert">
+                                    Incorrect username or password!
+                                </div>
                             %%[ELSEIF @tokenExpired == 1 THEN]%%
-                            <div class="alert alert-danger" role="alert">
-                                Session timeout - Please login again!
-                            </div>
+                                <div class="alert alert-danger" role="alert">
+                                    Session timeout - Please login again!
+                                </div>
                             %%[ENDIF]%%
                             <div class="input-group form-group">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text"><i class="fas fa-user"></i></span>
                                 </div>
-                                <input type="text" class="form-control" placeholder="email" name="username" value="%%=v(@loginUser)=%%" required>
+                                <input type="text" class="form-control" placeholder="username" name="username" value="%%=v(@username)=%%" required>
                             </div>
                             <div class="input-group form-group">
                                 <div class="input-group-prepend">
