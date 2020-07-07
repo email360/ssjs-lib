@@ -81,11 +81,12 @@ Email360's SSJS Lib documentation, included in this repo in the root directory a
 
 **Sascha Huwald**
 
-- <https://www.linkedin.com/in/sascha-huwald/>
+- [LinkedIn](https://www.linkedin.com/in/sascha-huwald/)
 
 **Colin Pringle-Wood**
 
-- <https://github.com/colins44>
+- [GitHub](https://github.com/colins44)
+- [LinkedIn](https://www.linkedin.com/in/colin-pringle-wood-49194053/)
 
 
 ## Thanks
