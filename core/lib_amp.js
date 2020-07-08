@@ -132,6 +132,8 @@
      *                                        <br/> >= greater than or equal to
      *                                     <br/>3: Value to match record using comparison operator in 2
      *
+     * @returns {object} The result of the request
+     *
      * @see {@link https://ampscript.guide/retrievesalesforceobjects/|RetrieveSalesforceObjects}
      */
     function RetrieveSalesforceObjects(sfObject,fieldNames,parameters) {
@@ -140,7 +142,7 @@
         // AMP decleration
         var amp = "\%\%[ ";
         // function open        
-        amp += "set "+varName+" = RetrieveSalesforceObjects(";
+        amp += "SET "+varName+" = RetrieveSalesforceObjects(";
         // parameters
         amp += "'" + sfObject + "'";
         amp += ",'" + fieldNames.join(",") + "'";
@@ -150,12 +152,38 @@
         }
         // function close
         amp += ") ";
+
+        // build json from rowset
+        amp += "SET "+varName+"_output = '{ \"Status\": \"OK\", \"Results\": [' ";
+
+        // iterate over RowCount
+        amp += "FOR "+varName+"_i = 1 TO RowCount("+varName+") DO ";
+        amp += "SET "+varName+"_output = Concat("+varName+"_output,'{') ";
+
+        // iterate over each fieldNames
+        for (var n = 0; n < fieldNames.length; n++) {
+            amp += "SET "+varName+"_output = Concat("+varName+"_output,'\""+fieldNames[n]+"\":\"', Field(Row("+varName+", "+varName+"_i) ,'"+fieldNames[n]+"',0),'\"') ";
+            amp += (n<(fieldNames.length-1)) ? "SET "+varName+"_output = Concat("+varName+"_output,', ') " : " ";
+        }
+        
+        // close for loop
+        amp += "SET "+varName+"_output = Concat("+varName+"_output,'}') ";
+        amp += "IF "+varName+"_i < RowCount("+varName+") THEN SET "+varName+"_output = Concat("+varName+"_output,',') ENDIF ";
+        amp += "NEXT "+varName+"_i ";
+
+        // close ouput object
+        amp += "SET "+varName+"_output = Concat("+varName+"_output,'] }') ";
+
         // output
-        amp += "output(concat("+varName+")) ";
+        amp += "Output(v("+varName+"_output)) ";
         // end of AMP
         amp += "]\%\%";
 
-        return Platform.Function.TreatAsContent(amp);
+        try {
+            return Platform.Function.ParseJSON(Platform.Function.TreatAsContent(amp)); 
+        } catch(e) {
+            return Platform.Function.ParseJSON('{"Status": "Error cannot retrieve Salesforce Object", "Results": ['+Stringify(amp)+']}');
+        }
     }
 
     /**
