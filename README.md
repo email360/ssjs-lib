@@ -1,9 +1,3 @@
----
-title: Getting strated
-description: A simple showcase of how to start with the SFMC library
-date: 07-01-20 (mm-dd-yy)
----
-
 <p align="center">
   <a href="https://email360.io/">
     <img src="https://master.d191e0i68achd6.amplifyapp.com/img/logo.c8a328b5.png" alt="email360 logo" width="400" height="223">
