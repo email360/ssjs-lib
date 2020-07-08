@@ -2992,6 +2992,61 @@
         };
 
         /**
+         * Create a ScriptContentBlock asset
+         * 
+         * @param {string}          name            The name of the content block
+         * @param {string}          content         The content of the file. e.g. HTML code
+         * @param {string|number}   [folderId]      The identifier for the folder. Name or folderId. Default is the root defined in settings
+         * @param {string}          [customerKey]   A specific Customer Key to use
+         * @param {string}          [description]   A brief description about the file
+         *
+         * @returns {object} Result set of the request.
+         */
+        this.createAssetScriptContentBlock = function(name,content,folderId,customerKey,description) {
+            var customerKey = (customerKey) ? customerKey : Platform.Function.GUID().toUpperCase(),
+                folderId = (folderId) ? folderId : this.settings.folderId['Content Builder'];
+
+            // retrieve folder
+            var req = this.retrieveDataFolder(folderId),
+                id = req.Results[0].ID,
+                folderName = req.Results[0].Name,
+                contentType = req.Results[0].ContentType;
+
+            // asset folder does not exist
+            if( req.Status != 'OK' || req.Results.length != 1) {
+                return (req.Status != 'OK') ? req : {Status: 'Error: Multiple folders with folderId "'+folderId+'" where found.'};
+            }
+                    
+            // asset folder is not type of asset
+            if( contentType != 'asset' ) {
+                req = {Status: 'Error: folderId '+folderId+' is not an asset contentType'};
+                debug('(createAssetScriptContentBlock)\n\t'+req.Status);
+                return req;
+            }
+
+            req = this.api.createItem("Asset", {
+                Name: name,
+                AssetType: {
+                    Id: 220
+                },
+                Content: content,
+                ContentType: "text/html",
+                CustomerKey: customerKey,
+                Category: {
+                    Id: parentFolder
+                },
+                Description: description
+            });
+
+            if( req.Status == "OK" && req.Results.length > 0 ) {
+                debug('(createAssetScriptContentBlock)\n\tOK: ContentBlock '+name+' successfully created in folder '+folderName);
+            } else {
+                debug('(createAssetScriptContentBlock)\n\t'+req.Results[0].StatusCode+' '+req.Results[0].StatusMessage);
+            }
+            return req;
+        };
+
+        /**
          * Create an image asset
          *
          * Note: This function will create an image but the return object does not hold
@@ -3002,25 +3057,18 @@
          * @param {string}          imageBase64     A base64 encoded image file
          * @param {string}          imageName       The name of the image
          * @param {string}          imageType       The image type e.g.: jpg, png
-         * @param {string|number}   folderId        The identifier for the folder. Name or folderId.
-         * @param {string}          description     A brief description about the file
+         * @param {string|number}   [folderId]      The identifier for the folder. Name or folderId.
+         * @param {string}          [description]   A brief description about the file
          *
          * @returns {object} Result set of the request.
          */
         this.createAssetImage = function(imageBase64,imageName,imageType,folderId,description) {
-            var res = null,
+            var folderId = (folderId) ? folderId : this.settings.folderId['Content Builder'];
                 assetId = this.assetTypes[imageType];
 
             // asset type not supporterd
             if( typeof assetId == 'undefined' ) {
-                res = {Status: 'Error: assetType '+assetType+' is not supporterd'};
-                debug('(createAssetImage)\n\t'+res.Status);
-                return res;
-            }
-
-            // folderId must be given
-            if( !folderId ) {
-                res = {Status: 'Error: folderId is required'};
+                var res = {Status: 'Error: assetType '+assetType+' is not supporterd'};
                 debug('(createAssetImage)\n\t'+res.Status);
                 return res;
             }
@@ -3035,14 +3083,14 @@
                 return (req.Status != 'OK') ? req : {Status: 'Error: Multiple folders with folderId "'+folderId+'" where found.'};
             }
                     
-            // asset folder is not type of assert
+            // asset folder is not type of asset
             if( contentType != 'asset' ) {
                 req = {Status: 'Error: folderId '+folderId+' is not an asset contentType'};
-                debug('(createAssetImage)\n\t'+res.Status);
+                debug('(createAssetImage)\n\t'+req.Status);
                 return req;
             }
 
-            var setting = {
+            req = this.api.createItem("Asset", {
                 Name: imageName,
                 AssetType: {
                     Id: assetId,
@@ -3053,9 +3101,7 @@
                     Id: folderId
                 },
                 Description: description
-            };
-
-            req = this.api.createItem("Asset", setting);
+            });
 
             if( req.Status == "OK" && req.Results.length > 0 ) {
                 debug('(createAssetImage)\n\tOK: Image '+imageName+' successfully uploaded to folder '+folderName);
