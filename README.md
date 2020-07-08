@@ -1,3 +1,9 @@
+---
+title: Getting strated
+description: A simple showcase of how to start with the SFMC library
+date: 07-01-20 (mm-dd-yy)
+---
+
 <p align="center">
   <a href="https://email360.io/">
     <img src="https://master.d191e0i68achd6.amplifyapp.com/img/logo.c8a328b5.png" alt="email360 logo" width="400" height="223">
@@ -36,7 +42,7 @@ Looking to quickly add the email360 SSJS lib to your project? Simple create a cl
 %%=TreatAsContent(HTTPGet('https://raw.githubusercontent.com/email360/ssjs-lib/master/setup/setup.js'))=%%
 ```
 
-> If your cloudpage encounter a timeout, simply refresh the page or alternativly add the above code to a script activity.
+> If your cloudpage encounter a timeout, simply refresh the page.
 
 
 ## What's installed
