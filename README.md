@@ -10,9 +10,9 @@
   A sleek and powerful library for faster and easier development in Salesforce Marketing Cloud ©.
   <br>
   <br>
-  <a href="https://master.d191e0i68achd6.amplifyapp.com/salesforce-marketing-cloud-library/docs/1.0.0">Explore the Docs</a>
+  <a href="https://docs.email360.io/">Explore the Docs</a>
   ·
-  <a href="https://master.d191e0i68achd6.amplifyapp.com/#contact">Get in touch</a>
+  <a href="https://email360.io/#contact">Get in touch</a>
   ·
   <a href="https://blog.email360.io/">email360 Blog</a>
 </p>
@@ -74,7 +74,7 @@ Marketing Cloud/
 
 ## Documentation
 
-Email360's SSJS Lib documentation, included in this repo in the root directory and publicly hosted on <https://master.d191e0i68achd6.amplifyapp.com/salesforce-marketing-cloud-library/docs/1.0.0>.
+Email360's SSJS Lib documentation, included in this repo in the root directory and publicly hosted on <https://docs.email360.io/>.
 
 
 ## Creators
