@@ -1,5 +1,4 @@
 <script runat="server" language="javascript">
-    Platform.Load("Core", "1.1.5");
     Platform.Function.ContentBlockByKey('email360-ssjs-lib');
 
     // initiate cloudpage with public access
@@ -17,7 +16,7 @@
         qs.origin = (qs.origin) ? Base64Decode(qs.origin.replace(/@/gi,'=')) : getPageUrl(false);
       
         // for security reason we fetch password outside the runtime storage of payload
-        var password = Request.GetQueryStringParameter('password');
+        var password = Platform.Request.GetQueryStringParameter('password');
 
         // already signed in?
         if( cp.isTokenValid(Platform.Request.GetCookieValue(cookieName)) ) {
@@ -38,9 +37,7 @@
                 cp.setCookie(cookieName,cp.newToken(settings.auth.tokenKey,60*60*24,payload));
 
                 // redirect to origin page 
-                try { 
-                    Redirect(qs.origin, false);
-                } catch(e) {} // workaround as Redirect always throws an error.
+                Platform.Response.Redirect(qs.origin, false);
 
             // login failed
             } else {
@@ -52,11 +49,17 @@
         createAmpVariables(qs);
 
     } catch(e){
-        // redirect error page
-        cp.redirectError({
-            errorCode: 500,
-            errorDebug: Stringify(e)
-        });
+        // workaround for Thread Abort Exception from redirect
+        var desc = e.description; //Pulls the description from error object
+        if(desc === "ExactTarget.OMM.AMPScriptRedirectException: Error in the application. - from OMMCommon\r\n\r\n") {
+            Platform.Response.Write(desc); //This is arbitrary as will not be run
+        } else {
+            // redirect error page
+            cp.redirectError({
+                errorCode: 500,
+                errorDebug: Platform.Function.Stringify(e)
+            });
+        }
     }
 </script>
 

@@ -77,7 +77,7 @@
                 this.redirectError({
                     errorCode: 403,
                     errorMessage: 'Authentication failed - Access denied',
-                    errorDebug: 'Token: '+ Stringify(token)
+                    errorDebug: 'Token: '+ Platform.Function.Stringify(token)
                 });
             }
         };
@@ -100,14 +100,14 @@
 
             // no cookie found > redirect to login
             if( !token || token == "" ) {
-                url = (Number.isInteger(url)) ? CloudPagesURL(url,payload) : url +'?payload='+Base64Encode(Stringify(payload));
+                url = (Number.isInteger(url)) ? CloudPagesURL(url,payload) : url +'?payload='+Base64Encode(Platform.Function.Stringify(payload));
                 Redirect(url,false);
 
             // cookie is not valid - destory
             } else if( !this.isTokenValid(token) ) {
                 this.expireCookie(cookieName);
                 payload.tokenExpired = 1;
-                url = (Number.isInteger(url)) ? CloudPagesURL(url,payload) : url +'?payload='+Base64Encode(Stringify(payload));
+                url = (Number.isInteger(url)) ? CloudPagesURL(url,payload) : url +'?payload='+Base64Encode(Platform.Function.Stringify(payload));
                 Redirect(url,false);
             }
             debug('(authLogin)\n\tOK: Logged in successfully');
@@ -128,7 +128,7 @@
         this.logout = function() {
             this.expireCookie();
             var payload = { origin: Base64Encode(getPageUrl()).replace(/=/gi, '@') },
-                url = (Number.isInteger(this.settings.cp.login)) ? CloudPagesURL(this.settings.cp.login,payload) : this.settings.cp.login +'?payload='+Base64Encode(Stringify(payload));
+                url = (Number.isInteger(this.settings.cp.login)) ? CloudPagesURL(this.settings.cp.login,payload) : this.settings.cp.login +'?payload='+Base64Encode(Platform.Function.Stringify(payload));
 
             Redirect(url,false);
         };
@@ -204,12 +204,12 @@
             }
 
             var signature = SHA256(
-                Platform.Function.Base64Encode(Stringify(header)) +
-                Platform.Function.Base64Encode(Stringify(payload)) +
+                Platform.Function.Base64Encode(Platform.Function.Stringify(header)) +
+                Platform.Function.Base64Encode(Platform.Function.Stringify(payload)) +
                 Platform.Function.Lookup(this.settings.de.authentication.Name, 'value', 'key', pid)
             );
 
-            var token = Platform.Function.Base64Encode(Stringify(header))+'.'+Platform.Function.Base64Encode(Stringify(payload))+'.'+signature;
+            var token = Platform.Function.Base64Encode(Platform.Function.Stringify(header))+'.'+Platform.Function.Base64Encode(Platform.Function.Stringify(payload))+'.'+signature;
             debug('(generateToken)\n\tOK: Token created: '+token);
             return token;
         };
@@ -296,7 +296,7 @@
          */
         this.redirectError = function(payload) {
             payload.debugMode = debugMode;
-            var url = (Number.isInteger(this.settings.cp.error)) ? CloudPagesURL(this.settings.cp.error,payload) : this.settings.cp.error +'?payload='+Base64Encode(Stringify(payload));
+            var url = (Number.isInteger(this.settings.cp.error)) ? CloudPagesURL(this.settings.cp.error,payload) : this.settings.cp.error +'?payload='+Base64Encode(Platform.Function.Stringify(payload));
 
             Redirect(url,false);
         };

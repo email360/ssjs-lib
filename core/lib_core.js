@@ -438,9 +438,9 @@
      * SSJS wrorkaround to use console server side 
      */
     function console_log() {
-        Write('<scr' + 'ipt>');
-        Write('console.log.apply(null,' + Stringify(Array.from(arguments)) + ')');
-        Write('</scr' + 'ipt>'); 
+        Platform.Response.Write('<scr' + 'ipt>');
+        Platform.Response.Write('console.log.apply(null,' + Platform.Function.Stringify(Array.from(arguments)) + ')');
+        Platform.Response.Write('</scr' + 'ipt>'); 
     }
 
     /**
@@ -454,11 +454,11 @@
                 console_log(message);
             }
             if(debugMode.includes('html')) {
-                var m = (typeof message == 'string') ? message.replace('\n', '<br/>').replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp') : Stringify(message);
-                Write('<pre style="margin:0.85em 0px;"><span style="font-size: 11px;">'+m+'</span></pre>');
+                var m = (typeof message == 'string') ? message.replace('\n', '<br/>').replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp') : Platform.Function.Stringify(message);
+                Platform.Response.Write('<pre style="margin:0.85em 0px;"><span style="font-size: 11px;">'+m+'</span></pre>');
             }
             if(debugMode.includes('text')) {
-                Write('{'+Stringify(message)+'}\n');
+                Platform.Response.Write('{'+Platform.Function.Stringify(message)+'}\n');
             }
         }
     }
@@ -504,7 +504,7 @@
      */
     function getPageUrl(withParam) {
         var p = (typeof withParam != 'boolean') ? true : withParam,
-            url = Request.GetQueryStringParameter('PAGEURL');
+            url = Platform.Request.GetQueryStringParameter('PAGEURL');
         return (p) ? url : url.split('?')[0];
     }
 
@@ -538,7 +538,7 @@
             req.setHeader(k, header[k]);
         }
         if(typeof contentType !== 'undefined' && contentType !== null) { req.contentType = contentType; }
-        if(typeof payload !== 'undefined' && payload !== null) { req.postData = Stringify(payload); }
+        if(typeof payload !== 'undefined' && payload !== null) { req.postData = Platform.Function.Stringify(payload); }
 
         try {
             debug('(httpRequest)\n\tCall method '+method+' on '+url); 

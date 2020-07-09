@@ -303,7 +303,7 @@
                     debug('\tCustomerKey: '+req.Results[0].Object.CustomerKey+'\n\tObjectId: '+req.Results[0].NewObjectID);
                     return req;
                 } else {
-                    debug('(createDataExtension)\n\tError: '+Stringify(req));
+                    debug('(createDataExtension)\n\tError: '+Platform.Function.Stringify(req));
                     return req;
                 }
             } else {
@@ -721,11 +721,11 @@
                     debug('(moveDataExtension)\n\tOK: DataExtension '+customerKey+' moved to folder '+categoryID);
                     return true;
                 } else {
-                    debug('(moveDataExtension)\n\tError: '+Stringify(req));
+                    debug('(moveDataExtension)\n\tError: '+Platform.Function.Stringify(req));
                     return false;
                 }
             } catch(e) {
-                debug('(deleteDataExtension)\n\t'+Stringify(e));
+                debug('(deleteDataExtension)\n\t'+Platform.Function.Stringify(e));
                 return false;     
             }
         };
@@ -751,11 +751,11 @@
                         debug('(deleteDataExtension)\n\tOK: DataExtension '+name+' deleted');
                         return true;
                     } else {
-                        debug('(deleteDataExtension)\n\tError: '+Stringify(res));
+                        debug('(deleteDataExtension)\n\tError: '+Platform.Function.Stringify(res));
                         return false;
                     }
                 } catch(e) {
-                    debug('(deleteDataExtension)\n\t'+Stringify(e));
+                    debug('(deleteDataExtension)\n\t'+Platform.Function.Stringify(e));
                     return false;     
                 }
             }
@@ -886,7 +886,7 @@
                     debug('(copyDataExtension)\n\tOK: Data Extension "'+deSettings.Name+'" has been created');
                     debug('\tCustomerKey: '+deSettings.CustomerKey+'\n\tObjectId: '+req.Results[0].NewObjectID);
                 } else {
-                    debug('(copyDataExtension)\n\tError: '+Stringify(req));
+                    debug('(copyDataExtension)\n\tError: '+Platform.Function.Stringify(req));
                     return false;
                 }
             } else {
@@ -902,9 +902,12 @@
                 req = this.retrieveDataExtensionRecords(customerKey,null,true);
 
                 // retrieve records failed
-                if( req.Status != 'OK' || req.Results.length <= 0 ) { return false; }
+                if( req.Status != 'OK' || req.Results.length <= 0 ) { 
+                    return false; 
+                }
 
-                if( this.createDataExtensionRecords(deSettings.CustomerKey,req.Results) == true) {
+                req = this.createDataExtensionRecords(deSettings.CustomerKey,req.Results);
+                if( req.Status == 'OK' ) {
                     debug('(copyDataExtension)\n\tOK: DataExtension: '+name+' has been copied as '+deSettings.Name+' with '+req.Results.length+' records');
                     return true;
                 } else {
@@ -933,11 +936,11 @@
                         debug('(clearDataExtension)\n\tOK: DataExtension '+id+' has been cleared');
                         return true;
                     } else {
-                        debug('(clearDataExtension)\n\t'+Stringify(req));
+                        debug('(clearDataExtension)\n\t'+Platform.Function.Stringify(req));
                         return false;
                     }
                 } catch(e) {
-                    debug('(clearDataExtension)\n\t'+Stringify(e));
+                    debug('(clearDataExtension)\n\t'+Platform.Function.Stringify(e));
                     return false;     
                 }
             }
@@ -996,11 +999,11 @@
                         debug('(updateDataExtension)\n\tOK: DataExtension '+id+' has been updated');
                         return true;
                     } else {
-                        debug('(updateDataExtension)\n\t'+Stringify(req));
+                        debug('(updateDataExtension)\n\t'+Platform.Function.Stringify(req));
                         return false;
                     }
                 } catch(e) {
-                    debug('(updateDataExtension)\n\t'+Stringify(e));
+                    debug('(updateDataExtension)\n\t'+Platform.Function.Stringify(e));
                     return false;     
                 }
             }
@@ -1215,11 +1218,11 @@
                         debug('(deleteDataExtentionTemplate)\n\tOK: DataExtentionTemplate '+name+' deleted');
                         return true;
                     } else {
-                        debug('(deleteDataExtentionTemplate)\n\tError: '+Stringify(res));
+                        debug('(deleteDataExtentionTemplate)\n\tError: '+Platform.Function.Stringify(res));
                         return false;
                     }
                 } catch(e) {
-                    debug('(deleteDataExtentionTemplate)\n\t'+Stringify(e));
+                    debug('(deleteDataExtentionTemplate)\n\t'+Platform.Function.Stringify(e));
                     return false;     
                 }
             }
@@ -1246,7 +1249,7 @@
          * @param {string}  id      The identifier for the DataExtension. Name or customerKey.
          * @param {array}   data    Array of objects to add.
          *
-         * @returns {boolean}
+         * @returns {object} Result set of the request.
          *
          * @example
          * // create 1 record in DataExtension with name "MyDataExtension"
@@ -1276,18 +1279,18 @@
                     var req = this.api.createBatch('DataExtensionObject', payload);
 
                     if( req.Status == 'OK' && req.Results.length > 0 ) {
-                        debug('(createRecords)\n\tOK: '+payload.length+' Record(s) were added to the DataExtension '+id);
-                        return true;     
+                        debug('(createDataExtensionRecords)\n\tOK: '+payload.length+' Record(s) were added to the DataExtension '+id);
+                        return req;     
                     } else {
-                        debug('(createRecords)\n\t'+Stringify(req));
-                        return false;
+                        debug('(createDataExtensionRecords)\n\t'+Platform.Function.Stringify(req));
+                        return req;
                     }
                 } catch(e) {
-                    debug('(createRecords)\n\t'+Stringify(e));
-                    return false;     
+                    debug('(createDataExtensionRecords)\n\t'+Platform.Function.Stringify(e));
+                    return {Status: "Error "+Platform.Function.Stringify(e), Results: []}; 
                 }
             }
-            return false;
+            return {Status: 'Error: Cannot find DataExtension with id: '+id, Results: []};
         };
 
         /**
@@ -1378,7 +1381,7 @@
          * @param {string}  id      The identifier for the DataExtension. Name or customerKey.
          * @param {array}   data    An array of Objects with data to add.
          *
-         * @returns {boolean}
+         * @returns {object} result of the request
          *
          * @example
          * // update or add 1 record in DataExtension with name "MyDataExtension"
@@ -1408,19 +1411,19 @@
 
                     if( req.Status == 'OK' ) {
                         debug('(upsertDataExtensionRecord)\n\tOK: '+data.length+' Record has been updated / added in DataExtension '+id);
-                        return true;
+                        return req;
                     } else {
-                        debug('(upsertDataExtensionRecord)\n\tError: '+Stringify(req));
-                        return false;
+                        debug('(upsertDataExtensionRecord)\n\tError: '+Platform.Function.Stringify(req));
+                        return req;
                     }
 
                 } catch(e) {
-                    debug('(upsertDataExtensionRecord)\n\t'+Stringify(e));
-                    return false;     
+                    debug('(upsertDataExtensionRecord)\n\t'+Platform.Function.Stringify(e));
+                    return {Status: "Error "+Platform.Function.Stringify(e), Results: []}; 
                 }
 
             } else {
-                return false;
+                return {Status: 'Error: Cannot find DataExtension with id: '+id, Results: []};
             }
         };
 
@@ -1464,7 +1467,7 @@
                     debug('(deleteDataExtensionRecord)\n\tOK: '+data.length+' Record(s) have been deleted in DataExtension '+id );
                     return true;
                 } else {
-                    debug('(deleteDataExtensionRecord)\n\tError: '+Stringify(req));
+                    debug('(deleteDataExtensionRecord)\n\tError: '+Platform.Function.Stringify(req));
                     return false;
                 }
             } else {
@@ -1522,7 +1525,7 @@
                 if( req.Status == 'OK' && req.Results.length > 0) {
                     debug('(createDataExtensionFields)\n\tFields created for DataExtension '+customerKey);
                 } else {
-                    debug('(createDataExtensionFields)\n\tError: '+ Stringify(req));
+                    debug('(createDataExtensionFields)\n\tError: '+Platform.Function.Stringify(req));
                 }
                 return req;
 
@@ -1552,7 +1555,7 @@
                 if( req.Status == 'OK' && req.Results.length > 0) {
                     debug('(retrieveFields)\n\tOK: Retrieved fields for DataExtension '+customerKey);
                 } else {
-                    debug('(retrieveFields)\n\tError: '+ Stringify(req));
+                    debug('(retrieveFields)\n\tError: '+Platform.Function.Stringify(req));
                 }
                 return req;
             } else {
@@ -2092,9 +2095,9 @@
             } else {
                 // @todo: find workaround for this problem
                 if( contentType == 'asset' ) {
-                    throw '(isDataFolderEmpty)\n\tError: Cannot search object inside folder of contentType: '+contentType+'. Requires workaround: '+Stringify(req);    
+                    throw '(isDataFolderEmpty)\n\tError: Cannot search object inside folder of contentType: '+contentType+'. Requires workaround: '+Platform.Function.Stringify(req);    
                 } else {
-                    throw '(isDataFolderEmpty)\n\tError: Something went wrong for folder '+name+'. Cannot determine if folder is empty: '+Stringify(req);    
+                    throw '(isDataFolderEmpty)\n\tError: Something went wrong for folder '+name+'. Cannot determine if folder is empty: '+Platform.Function.Stringify(req);    
                 }
             }
         };
@@ -2237,12 +2240,12 @@
                     debug('(upsertSubscriberRecords)\n\tOK: '+records.length+' Records has been updated / added in Subscriber');
                     return true;
                 } else {
-                    debug('(upsertSubscriberRecords)\n\t'+Stringify(req));
+                    debug('(upsertSubscriberRecords)\n\t'+Platform.Function.Stringify(req));
                     return false;
                 }
 
             } catch(e) {
-                debug('(upsertSubscriberRecords)\n\t'+Stringify(e));
+                debug('(upsertSubscriberRecords)\n\t'+Platform.Function.Stringify(e));
                 return false;     
             }
         };
@@ -2287,7 +2290,7 @@
                 debug('(deleteSubscriberRecords)\n\tOK: '+records.length+' Record(s) have been deleted in Subscriber' );
                 return true;
             } else {
-                debug('(deleteSubscriberRecords)\n\t'+Stringify(req));
+                debug('(deleteSubscriberRecords)\n\t'+Platform.Function.Stringify(req));
                 return false;
             }
         };
@@ -2835,11 +2838,11 @@
                         debug('(deleteQueryDefinition)\n\tOK: QueryDefinition '+name+' deleted');
                         return true;
                     } else {
-                        debug('(deleteQueryDefinition)\n\tError: '+Stringify(res));
+                        debug('(deleteQueryDefinition)\n\tError: '+Platform.Function.Stringify(res));
                         return false;
                     }
                 } catch(e) {
-                    debug('(deleteQueryDefinition)\n\t'+Stringify(e));
+                    debug('(deleteQueryDefinition)\n\t'+Platform.Function.Stringify(e));
                     return false;     
                 }
             }
@@ -3151,7 +3154,7 @@
             if( req.Status == 'OK' && req.Results.length > 0) {
                 debug('(logUnsubEvent)\n\tOK: Subscriber '+emailAddress+' has been successfully unsubscribed');
             } else {
-                debug('(logUnsubEvent)\n\t'+Stringify(req));
+                debug('(logUnsubEvent)\n\t'+Platform.Function.Stringify(req));
             }
             return req;
         };
@@ -3385,7 +3388,7 @@
             if( req.Status == 'OK' && req.Results.length > 0) {
                 debug('(retrieveTriggeredSendSummary)\n\tOK: TriggeredSendSummary retrieved for TriggeredSendDefinition Key: '+customerKey);
             } else {
-                debug('(retrieveTriggeredSendSummary)\n\t'+Stringify(req));
+                debug('(retrieveTriggeredSendSummary)\n\t'+Platform.Function.Stringify(req));
             }
             return req;
         };
@@ -3592,7 +3595,7 @@
                 debug('(sendTriggeredSend)\n\tOK: Successfully send '+customerKey+' to '+recipients.length+' subscribers');
                 return true;
             } else {
-                debug('(sendTriggeredSend)\n\t'+Stringify(req));
+                debug('(sendTriggeredSend)\n\t'+Platform.Function.Stringify(req));
                 return false;
             }
         };

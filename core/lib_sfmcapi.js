@@ -106,7 +106,7 @@
                 debug('(getToken)\n\tNew token: '+ token);
                 return token;
             } else {
-                debug('(getToken)\n\tError: Could not get a new token '+ Stringify(req));
+                debug('(getToken)\n\tError: Could not get a new token '+ Platform.Function.Stringify(req));
                 return null;
             }
         };
@@ -319,7 +319,7 @@
             if( req.status == 200 ) {
                 debug('(retrieveSendDefinitions)\n\tOK: Retrieved send definitions');
             } else {
-                debug('(retrieveSendDefinitions)\n\tError: '+ Stringify(req));
+                debug('(retrieveSendDefinitions)\n\tError: '+ Platform.Function.Stringify(req));
             }
             req.content.definitions = r;
             return req;
@@ -353,7 +353,7 @@
             if( req.status == 200 ) {
                 debug('(emailPreview)\n\tOK: Retrieved email preview');
             } else {
-                debug('(emailPreview)\n\tError: '+ Stringify(req));
+                debug('(emailPreview)\n\tError: '+ Platform.Function.Stringify(req));
             }
             return req;
         };
@@ -547,9 +547,9 @@
             var req = httpRequest('POST',config.url,config.contentType,config.payload,config.header);
 
             if( req.status == 200 ) {
-                debug('(sendTestEmail)\n\tOK: Test email has been send to: '+Stringify(recipients));
+                debug('(sendTestEmail)\n\tOK: Test email has been send to: '+Platform.Function.Stringify(recipients));
             } else {
-                debug('(sendTestEmail)\n\tError: '+ Stringify(req));
+                debug('(sendTestEmail)\n\tError: '+Platform.Function.Stringify(req));
             }
             return req;
         };
@@ -602,9 +602,9 @@
             var req = httpRequest('POST',config.url,config.contentType,config.payload,config.header);
 
             if( req.status == 200 ) {
-                debug('(triggerSMSMessage)\n\tOK: SMS Message has been triggered to phone numnbers: '+Stringify(phoneNumbers));
+                debug('(triggerSMSMessage)\n\tOK: SMS Message has been triggered to phone numnbers: '+Platform.Function.Stringify(phoneNumbers));
             } else {
-                debug('(triggerSMSMessage)\n\tError: '+ Stringify(req));
+                debug('(triggerSMSMessage)\n\tError: '+Platform.Function.Stringify(req));
             }
             return req;
         };
@@ -633,7 +633,7 @@
             if( req.status == 200 ) {
                 debug('(retrieveSMSMessageStatus)\n\tOK: Status for message : '+messageId+' retrieved');
             } else {
-                debug('(retrieveSMSMessageStatus)\n\tError: '+ Stringify(req));
+                debug('(retrieveSMSMessageStatus)\n\tError: '+Platform.Function.Stringify(req));
             }
             return req;
         };
@@ -680,7 +680,7 @@
             if( req.status == 201 ) {
                 debug('(createScriptActivity)\n\tOK: Script Activity '+name+' has been created');
             } else {
-                debug('(createScriptActivity)\n\tError: '+ Stringify(req));
+                debug('(createScriptActivity)\n\tError: '+Platform.Function.Stringify(req));
             }
             return req;
         };
@@ -713,7 +713,7 @@
                 req.content.script = req.content.script.replace(/<\/script>/gi, '');
                 debug('(retrieveScriptActivity)\n\tOK: Script Activity retrieved');
             } else {
-                debug('(retrieveScriptActivity)\n\tError: '+ Stringify(req));
+                debug('(retrieveScriptActivity)\n\tError: '+Platform.Function.Stringify(req));
             }
             return req;
         };
@@ -790,7 +790,7 @@
 
                 debug('(retrieveScriptActivities)\n\tOK: '+req.content.count+' Script Activities retrieved');
             } else {
-                debug('(retrieveScriptActivities)\n\tError: '+ Stringify(req));
+                debug('(retrieveScriptActivities)\n\tError: '+Platform.Function.Stringify(req));
             }
             req.content.items = r;
             return req;
@@ -820,7 +820,7 @@
                 debug('(retrieveScriptActivityId)\n\tOK: ssjsActivityId for ScriptActivity '+name+' found: ' +ssjsActivityId);
                 return ssjsActivityId;
             } else {
-                debug('(retrieveScriptActivityId)\n\tError: '+ Stringify(req));
+                debug('(retrieveScriptActivityId)\n\tError: '+Platform.Function.Stringify(req));
                 return null;
             }
         };
@@ -856,7 +856,7 @@
             if( req.status == 200 ) {
                 debug('(retrieveScriptActivitiesInFolder)\n\tOK: Script Activities in fodler '+folderId+' retrieved');
             } else {
-                debug('(retrieveScriptActivitiesInFolder)\n\tError: '+ Stringify(req));
+                debug('(retrieveScriptActivitiesInFolder)\n\tError: '+Platform.Function.Stringify(req));
             }
             return req;
         };
@@ -958,7 +958,7 @@
                 debug('(validateScript)\n\tOK: Script is valid');
                 return true;
             } else {
-                debug('(validateScript)\n\tError: '+ Stringify(req));
+                debug('(validateScript)\n\tError: '+ Platform.Function.Stringify(req));
                 return false;
             }
         };
@@ -996,7 +996,7 @@
             if( req.status == 200 ) {
                 debug('(updateScriptActivity)\n\tOK: Script Activity has been updated');
             } else {
-                debug('(updateScriptActivity)\n\tError: '+ Stringify(req));
+                debug('(updateScriptActivity)\n\tError: '+ Platform.Function.Stringify(req));
             }
             return req;
         };
@@ -1078,7 +1078,7 @@
                 debug('(triggerScriptActivity)\n\tOK: Script Activity has been started');
                 return true;
             } else {
-                debug('(triggerScriptActivity)\n\tError: '+ Stringify(req));
+                debug('(triggerScriptActivity)\n\tError: '+ Platform.Function.Stringify(req));
                 return false;
             }
         };
@@ -1110,7 +1110,7 @@
                 debug('(deleteScriptActivity)\n\tOK: Script Activity has been deleted');
                 return true;
             } else {
-                debug('(deleteScriptActivity)\n\tError: '+ Stringify(req));
+                debug('(deleteScriptActivity)\n\tError: '+ Platform.Function.Stringify(req));
                 return false;
             }
         };
