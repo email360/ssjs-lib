@@ -1,6 +1,6 @@
 <script runat="server" language="javascript">
     Platform.Load("Core", "1.1.5");
-    Platform.Function.ContentBlockByKey('email360-ssjs-lib');
+    Platform.Function.ContentBlockByKey('%%prefix%%-ssjs-lib');
 
     var dm = Platform.Request.GetQueryStringParameter('debugMode'),
     	debugMode = (dm) ? dm : null;

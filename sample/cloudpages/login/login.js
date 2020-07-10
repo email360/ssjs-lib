@@ -1,5 +1,5 @@
 <script runat="server" language="javascript">
-    Platform.Function.ContentBlockByKey('email360-ssjs-lib');
+    Platform.Function.ContentBlockByKey('%%prefix%%-ssjs-lib');
 
     // initiate cloudpage with public access
     var cp = new cloudpage();
