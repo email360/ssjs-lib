@@ -72,7 +72,7 @@
      * @param  {string}    id              Record identifier to update
      * @param  {array}     parameters      Array of name-valiue pair to update
      *
-     * @see {@link https://ampscript.guide/retrievesalesforceobjects/|RetrieveSalesforceObjects}
+     * @see {@link https://ampscript.guide/updatesinglesalesforceobject/|UpdateSingleSalesforceObject}
      */
     function UpdateSingleSalesforceObject(sfObject,id,parameters) {
         var varName = '@amp__UpdateSingleSalesforceObject';

@@ -570,7 +570,7 @@
          *
          * @param {string}  messageId       Message Id provided for the messageContact
          * @param {array}   phoneNumbers    An array of one or more mobile numbers
-         * @param {string}  keyword         The keyword must align with code on message. Required when subscribe and/or resubscribe are true.
+         * @param {string}  [keyword]       The keyword must align with code on message. Required when subscribe and/or resubscribe are true.
          * @param {object}  [params]        Key-Value pair for additional params to set. See SFMC for more information
          *
          * @returns {object} Result set of the request.
@@ -602,7 +602,7 @@
             var req = httpRequest('POST',config.url,config.contentType,config.payload,config.header);
 
             if( req.status == 200 ) {
-                debug('(triggerSMSMessage)\n\tOK: SMS Message has been triggered to phone numnbers: '+Platform.Function.Stringify(phoneNumbers));
+                debug('(triggerSMSMessage)\n\tOK: SMS Message has been triggered to phone numnbers: '+phoneNumbers.join(", "));
             } else {
                 debug('(triggerSMSMessage)\n\tError: '+Platform.Function.Stringify(req));
             }

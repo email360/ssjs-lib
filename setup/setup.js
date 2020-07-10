@@ -18,7 +18,7 @@
     // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
     // DEALINGS IN THE SOFTWARE.
     Platform.Load("Core", "1.1.5");
-    var prefix = 'email360';
+    var prefix = (Variable.GetValue("@prefix")) ? Variable.GetValue("@prefix") : 'email360';
 
     Write('<pre>');
 
