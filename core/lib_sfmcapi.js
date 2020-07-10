@@ -665,7 +665,7 @@
                     },
                     payload : {
                         name: name,
-                        key: Platform.Function.GUID(),
+                        key: Platform.Function.GUID().toUpperCase(),
                         description: description,
                         script: script,
                         categoryId: categoryId

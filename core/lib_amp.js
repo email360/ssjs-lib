@@ -182,7 +182,7 @@
         try {
             return Platform.Function.ParseJSON(Platform.Function.TreatAsContent(amp)); 
         } catch(e) {
-            return Platform.Function.ParseJSON('{"Status": "Error cannot retrieve Salesforce Object", "Results": ['+Stringify(amp)+']}');
+            return Platform.Function.ParseJSON('{"Status": "Error cannot retrieve Salesforce Object", "Results": ['+Platform.Function.Stringify(amp)+']}');
         }
     }
 

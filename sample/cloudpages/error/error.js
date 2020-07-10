@@ -2,10 +2,10 @@
     Platform.Load("Core", "1.1.5");
     Platform.Function.ContentBlockByKey('%%prefix%%-ssjs-lib');
 
-    var dm = Platform.Request.GetQueryStringParameter('debugMode'),
+    var dm = Request.GetQueryStringParameter('debugMode'),
     	debugMode = (dm) ? dm : null;
 
-	debug(Platform.Request.GetQueryStringParameter('errorDebug'));
+	debug(Request.GetQueryStringParameter('errorDebug'));
 </script>
 
 %%[

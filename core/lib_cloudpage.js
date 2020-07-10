@@ -92,7 +92,7 @@
          */
         this.authLogin = function() {
             var cookieName = this.settings.auth.cookieName,
-                payload = { origin: Base64Encode(getPageUrl()).replace(/=/gi, '@') },
+                payload = { origin: Platform.Function.Base64Encode(getPageUrl()).replace(/=/gi, '@') },
                 url = this.settings.cp.login;
 
             debug('(authLogin)\n\tRetrieve cookie: '+cookieName);
@@ -100,15 +100,15 @@
 
             // no cookie found > redirect to login
             if( !token || token == "" ) {
-                url = (Number.isInteger(url)) ? CloudPagesURL(url,payload) : url +'?payload='+Base64Encode(Platform.Function.Stringify(payload));
-                Redirect(url,false);
+                url = (Number.isInteger(url)) ? CloudPagesURL(url,payload) : url +'?payload='+Platform.Function.Base64Encode(Platform.Function.Stringify(payload));
+                Platform.Response.Redirect(url,false);
 
             // cookie is not valid - destory
             } else if( !this.isTokenValid(token) ) {
                 this.expireCookie(cookieName);
                 payload.tokenExpired = 1;
-                url = (Number.isInteger(url)) ? CloudPagesURL(url,payload) : url +'?payload='+Base64Encode(Platform.Function.Stringify(payload));
-                Redirect(url,false);
+                url = (Number.isInteger(url)) ? CloudPagesURL(url,payload) : url +'?payload='+Platform.Function.Base64Encode(Platform.Function.Stringify(payload));
+                Platform.Response.Redirect(url,false);
             }
             debug('(authLogin)\n\tOK: Logged in successfully');
         };
@@ -127,10 +127,10 @@
          */
         this.logout = function() {
             this.expireCookie();
-            var payload = { origin: Base64Encode(getPageUrl()).replace(/=/gi, '@') },
-                url = (Number.isInteger(this.settings.cp.login)) ? CloudPagesURL(this.settings.cp.login,payload) : this.settings.cp.login +'?payload='+Base64Encode(Platform.Function.Stringify(payload));
+            var payload = { origin: Platform.Function.Base64Encode(getPageUrl()).replace(/=/gi, '@') },
+                url = (Number.isInteger(this.settings.cp.login)) ? CloudPagesURL(this.settings.cp.login,payload) : this.settings.cp.login +'?payload='+Platform.Function.Base64Encode(Platform.Function.Stringify(payload));
 
-            Redirect(url,false);
+            Platform.Response.Redirect(url,false);
         };
 
         /**
@@ -296,9 +296,9 @@
          */
         this.redirectError = function(payload) {
             payload.debugMode = debugMode;
-            var url = (Number.isInteger(this.settings.cp.error)) ? CloudPagesURL(this.settings.cp.error,payload) : this.settings.cp.error +'?payload='+Base64Encode(Platform.Function.Stringify(payload));
+            var url = (Number.isInteger(this.settings.cp.error)) ? CloudPagesURL(this.settings.cp.error,payload) : this.settings.cp.error +'?payload='+Platform.Function.Base64Encode(Platform.Function.Stringify(payload));
 
-            Redirect(url,false);
+            Platform.Response.Redirect(url,false);
         };
 
         // function init

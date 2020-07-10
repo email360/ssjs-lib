@@ -1,4 +1,5 @@
 <script runat="server" language="javascript">
+    Platform.Load("Core", "1.1.5");
     Platform.Function.ContentBlockByKey('%%prefix%%-ssjs-lib');
 
     // initiate cloudpage with public access
@@ -13,10 +14,10 @@
         cp.isPayload(['username','origin','tokenExpired','login']);
 
         // decode origin URL due to CloudPageURL issue with equal (=) sign 
-        qs.origin = (qs.origin) ? Base64Decode(qs.origin.replace(/@/gi,'=')) : getPageUrl(false);
+        qs.origin = (qs.origin) ? Platform.Function.Base64Decode(qs.origin.replace(/@/gi,'=')) : getPageUrl(false);
       
         // for security reason we fetch password outside the runtime storage of payload
-        var password = Platform.Request.GetQueryStringParameter('password');
+        var password = Request.GetQueryStringParameter('password');
 
         // already signed in?
         if( cp.isTokenValid(Platform.Request.GetCookieValue(cookieName)) ) {
@@ -51,7 +52,7 @@
     } catch(e){
         // workaround for Thread Abort Exception from redirect
         var desc = e.description; //Pulls the description from error object
-        if(desc === "ExactTarget.OMM.AMPScriptRedirectException: Error in the application. - from OMMCommon\r\n\r\n") {
+        if(desc.includes("ExactTarget.OMM.AMPScriptRedirectException: Error in the application. - from")) {
             Platform.Response.Write(desc); //This is arbitrary as will not be run
         } else {
             // redirect error page
