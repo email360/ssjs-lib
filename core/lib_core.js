@@ -504,7 +504,7 @@
      */
     function getPageUrl(withParam) {
         var p = (typeof withParam != 'boolean') ? true : withParam,
-            url = Platform.Request.GetQueryStringParameter('PAGEURL');
+            url = Request.GetQueryStringParameter('PAGEURL');
         return (p) ? url : url.split('?')[0];
     }
 
