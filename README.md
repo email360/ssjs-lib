@@ -3,9 +3,6 @@
     <img src="https://email360.io/img/logo_dark.84e942c8.png" alt="email360 logo" width="400" height="223">
   </a>
 </p>
-
-<h3 align="center">email360 SSJS Lib</h3>
-
 <p align="center">
   A sleek and powerful library for faster and easier development in Salesforce Marketing Cloud ©.
   <br>
