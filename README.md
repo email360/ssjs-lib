@@ -20,6 +20,7 @@
 - [Quick start](#quick-start)
 - [What's installed](#whats-installed)
 - [Documentation](#documentation)
+- [Code](#code)
 - [Creators](#creators)
 - [Thanks](#thanks)
 - [Copyright and license](#copyright-and-license)
@@ -27,19 +28,19 @@
 
 ## Quick start
 
-Looking to quickly add the email360 SSJS lib to your project? Simple create a cloudpage and copy-paste the following code:
+To install the Email360 ssjs-lib into your project create a Cloudpage and insert the following code:
 
 ```javascript
 %%=TreatAsContent(HTTPGet('https://raw.githubusercontent.com/email360/ssjs-lib/master/setup/setup.js'))=%%
 ```
+Now open the URL of your new Cloudpage, if you experience a timeout refresh the page.
 
-> If your cloudpage encounter a timeout, simply refresh the page.
+> Details of the script that is run for installation can be found at <https://raw.githubusercontent.com/email360/ssjs-lib/master/setup/setup.js>
 
 
 ## What's installed
 
-After executing the installation process you'll find the following directories and files, logically grouping common assets. You'll see something like this:
-
+After executing the installation process you'll find the following directories and files, logically grouping common assets. 
 ```text
 Marketing Cloud/
 ├── Data Extensions/
@@ -52,27 +53,30 @@ Marketing Cloud/
 │       └── email360 SSJS Lib - WSProxy Cols
 └── Content Builder/
     └── email360 SSJS Lib/
-	    │   └── email360 SSJS Lib
-        └── CloudPages/
-        	├── Error/
-	        │   └── email360 Error Page
-        	├── Login/
-	        │   └── email360 Login Page
-            └── Lib/
-            	├── email360 SSJS Lib - settings
-            	├── email360 SSJS Lib - cloudpage
-            	├── email360 SSJS Lib - amp
-            	├── email360 SSJS Lib - wsproxy
-            	├── email360 SSJS Lib - core
-            	├── email360 SSJS Lib - polyfill
-            	└── email360 SSJS Lib - sfmcapi
+        │   └── email360 SSJS Lib
+        ├── CloudPages/
+        │   ├── Error/
+        │   │   └── email360 Error Page
+        │   └── Login/
+        │       └── email360 Login Page
+        └── Lib/
+            ├── email360 SSJS Lib - settings
+            ├── email360 SSJS Lib - cloudpage
+            ├── email360 SSJS Lib - amp
+            ├── email360 SSJS Lib - wsproxy
+            ├── email360 SSJS Lib - core
+            ├── email360 SSJS Lib - polyfill
+            └── email360 SSJS Lib - sfmcapi
 ```
 
 
 ## Documentation
 
-Email360's SSJS Lib documentation, included in this repo in the root directory and publicly hosted on <https://docs.email360.io/>.
+Email360's SSJS Lib documentation can be found at <https://docs.email360.io>
 
+## Code
+
+Email360's SSJS Lib can be found at <https://github.com/email360/ssjs-lib>
 
 ## Creators
 
