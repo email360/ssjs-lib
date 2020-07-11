@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://email360.io/">
-    <img src="https://email360.io/img/logo_dark.84e942c8.pngg" alt="email360 logo" width="400" height="223">
+    <img src="https://email360.io/img/logo_dark.84e942c8.png" alt="email360 logo" width="400" height="223">
   </a>
 </p>
 
