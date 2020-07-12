@@ -28,8 +28,7 @@
 
             // verify login against the Data Extension
             if( SHA256(password) == Platform.Function.Lookup(settings.de.authUsers.Name,'password','username',qs.username) ) {
-                var res = Platform.Function.ParseJSON(req.Response[0]),
-                    payload = {
+                var payload = {
                         iss: getPageUrl(false), // issuer of the token
                         usr: qs.username
                     };
