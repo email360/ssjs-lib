@@ -449,6 +449,10 @@
      * @param {string} message The message to be displayed. 
      */
     function debug(message) {
+
+        // remove script tags from string
+        var message = (typeof message === 'string') ? message.replace(/<script[\s\S]*?>/gi, '').replace(/<\/script>/gi, '') : message;
+
         if( Array.isArray(debugMode) ) {
             if(debugMode.includes('console')) {
                 console_log(message);
