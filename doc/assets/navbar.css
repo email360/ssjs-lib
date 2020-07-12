@@ -40,12 +40,12 @@ header {
 .btn-area {
     cursor: pointer;
     color: #fff;
-    font-size: 16px;
-    letter-spacing: 2px;
     padding: 10px 30px;
     border-radius: 5px;
     background: 006c87;
     text-decoration: none;
+    border: 2px solid #ffc451;
+    background-color: inherit;
 }
 
 .logo {
