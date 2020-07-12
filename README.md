@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://email360.io/">
-    <img src="https://email360.io/img/logo_dark.84e942c8.png" alt="email360 logo" width="400" height="223">
+    <img src="https://blog.email360.io/imgages/logo_dark.png" alt="email360 logo" width="400" height="223">
   </a>
 </p>
 <p align="center">
@@ -100,7 +100,8 @@ Special thanks to the following people for their active contribution to the comm
 **[Gregory (Gortonington) Gifford](https://www.linkedin.com/in/gregory-gortonington-gifford-238a0625/)**, 
 **[Ivan Razine](https://www.linkedin.com/in/ivanrazine/)**, 
 **[Adam Spriggs](https://www.linkedin.com/in/adamspriggs/)**, 
-**[Zuzanna Jarczynska](https://www.linkedin.com/in/zuzannajarczynska/)**
+**[Zuzanna Jarczynska](https://www.linkedin.com/in/zuzannajarczynska/)**,
+**[Eliot Harper](https://www.linkedin.com/in/eliot/)**
 
 
 ## Copyright and license
