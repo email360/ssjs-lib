@@ -97,7 +97,6 @@ This library would not have been possible without the [Salesforce Marketing Clou
 
 Special thanks to the following people for their active contribution to the community: 
 
-**[Gregory (Gortonington) Gifford](https://www.linkedin.com/in/gregory-gortonington-gifford-238a0625/)**, 
 **[Ivan Razine](https://www.linkedin.com/in/ivanrazine/)**, 
 **[Adam Spriggs](https://www.linkedin.com/in/adamspriggs/)**, 
 **[Zuzanna Jarczynska](https://www.linkedin.com/in/zuzannajarczynska/)**,
