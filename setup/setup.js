@@ -114,11 +114,11 @@
 
         // create demo login page code
         var res = httpRequest('GET','https://raw.githubusercontent.com/email360/ssjs-lib/master/sample/cloudpages/login/login.js');
-        createScriptContentBlock(prefix+' Login Page',prefix.toLowerCase()+'-login-page',res.content,settings.folderId['Asset SSJS Lib CloudPages Login']);
+        createScriptContentBlock(prefix+' Login Page',prefix.toLowerCase()+'-login-page',res.content.replace(/%%prefix%%/gi, prefix),settings.folderId['Asset SSJS Lib CloudPages Login']);
 
         // create demo error page code
         var res = httpRequest('GET','https://raw.githubusercontent.com/email360/ssjs-lib/master/sample/cloudpages/error/error.js');
-        createScriptContentBlock(prefix+' Error Page',prefix.toLowerCase()+'-error-page',res.content,settings.folderId['Asset SSJS Lib CloudPages Error']);
+        createScriptContentBlock(prefix+' Error Page',prefix.toLowerCase()+'-error-page',res.content.replace(/%%prefix%%/gi, prefix),settings.folderId['Asset SSJS Lib CloudPages Error']);
 
 
         // Settings: add SFMC api settings
