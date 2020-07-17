@@ -38,12 +38,10 @@
      * @param   {number}    [o.listid]                      The ListId if the error is caused from an email sent.
      * @param   {number}    [o.batchid]                     The BatchId if the error is caused from an email sent.
      * @param   {string}    [o.sourceType]                  The SourceType. e.g. Email, Web, CRM.
-     * @param   {boolean}   [o.skipRecipient=true]          Indicates whether the function skips the send for current 
-     *                                                      Subscriber and continues or stops. A value of true skips the 
+     * @param   {boolean}   [o.raiseError]                  Indicates whether an error should be raised to stop an email
+     *                                                      from sending out. Only works in Email Studio. A value of true skips the 
      *                                                      send for current Subscriber and moves to next Subscriber
      *                                                      A value of false stops the send and returns an error.
-     * @param   {boolean}   [o.raiseError=false]            Indicates whether an error should be raised to stop an email
-     *                                                      from sending out. Only works in Email Studio.
      */
     function logError(o) {
         var settings = new settings(),
@@ -61,8 +59,7 @@
                 Source: o.source,
                 SourceType: (!o.sourceType) ? null : o.sourceType,
                 SubscriberKey: (!o.subscriberKey) ? null : o.subscriberKey
-            },
-            skipRecipient = (!o.skipRecipient) ? true : false;
+            };
 
         for( var i in error ) {
             name.push(i);
@@ -70,11 +67,11 @@
         }
 
         // write error log to DE
-        if( !debugMode ) {
+       if( !Array.isArray(debugMode) ) {
             var r = Platform.Function.InsertDE(de,name,value);
 
-            if (o.raiseError) {
-                Platform.Function.RaiseError(o.message, skipRecipient);
+            if (o.hasOwnProperty('raiseError') && typeof o.raiseError == 'boolean') {
+                Platform.Function.RaiseError(o.message, o.raiseError);
             }
         }
         debug('(logError) Error:');
@@ -122,7 +119,7 @@
         }
 
         // write warning log to DE
-        if( !debugMode ) {
+        if( !Array.isArray(debugMode) ) {
             var r = Platform.Function.InsertDE(de,name,value);
         }
         debug('(logWarning) Warning:');
