@@ -3196,31 +3196,12 @@ for this purpose instead. On error, a record will be written to the error log DE
 </tr>
 
 
-           
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>o.skipRecipient</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
-  
-    (default <code>true</code>)
-  </td>
-  <td class='break-word'><span>Indicates whether the function skips the send for current
-Subscriber and continues or stops. A value of true skips the
-send for current Subscriber and moves to next Subscriber
-A value of false stops the send and returns an error.
-</span></td>
-</tr>
-
 
               
                 <tr>
   <td class='break-word'><span class='code bold'>o.raiseError</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
-  
-    (default <code>false</code>)
   </td>
-  <td class='break-word'><span>Indicates whether an error should be raised to stop an email
-from sending out. Only works in Email Studio.
+  <td class='break-word'><span>Indicates whether an error should be raised to stop an email from sending out. Only works in Email Studio. A value of true skips the send for current Subscriber and moves to next Subscriber. A value of false stops the send and returns an error.
 </span></td>
 </tr>
 
