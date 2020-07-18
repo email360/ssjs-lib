@@ -28,20 +28,22 @@
      *
      * This function requires a DataExtension defined in settings.de.logError
      *
-     * @param   {object}    o                               Holds the data for the error log.
+     * @param   {object}    o                       Holds the data for the error log.
      *
-     * @param   {string}    o.method                        The method calling the error.
-     * @param   {string}    o.message                       The error message for better understanding of the error.
-     * @param   {string}    o.source                        A detailed name of the error origin. E.g. [Email] Survey.
-     * @param   {string}    [o.subscriberKey]               If given, the subscriberKey triggering the error
-     * @param   {number}    [o.jobid]                       The JobId if the error is caused from an email sent.
-     * @param   {number}    [o.listid]                      The ListId if the error is caused from an email sent.
-     * @param   {number}    [o.batchid]                     The BatchId if the error is caused from an email sent.
-     * @param   {string}    [o.sourceType]                  The SourceType. e.g. Email, Web, CRM.
-     * @param   {boolean}   [o.raiseError]                  Indicates whether an error should be raised to stop an email
-     *                                                      from sending out. Only works in Email Studio. A value of true skips the 
-     *                                                      send for current Subscriber and moves to next Subscriber
-     *                                                      A value of false stops the send and returns an error.
+     * @param   {string}    o.method                The method calling the error.
+     * @param   {string}    o.message               The error message for better understanding of the error.
+     * @param   {string}    o.source                A detailed name of the error origin. E.g. [Email] Survey.
+     * @param   {string}    [o.subscriberKey]       If given, the subscriberKey triggering the error
+     * @param   {number}    [o.jobid]               The JobId if the error is caused from an email sent.
+     * @param   {number}    [o.listid]              The ListId if the error is caused from an email sent.
+     * @param   {number}    [o.batchid]             The BatchId if the error is caused from an email sent.
+     * @param   {string}    [o.sourceType]          The SourceType. e.g. Email, Web, CRM.
+     * @param   {boolean}   [o.raiseError]          Indicates whether an error should be raised to stop an email
+     *                                              from sending out. Only works in Email Studio. A value of true skips the 
+     *                                              send for current Subscriber and moves to next Subscriber
+     *                                              A value of false stops the send and returns an error.
+     *
+     * @returns  {string}                           The eventId for the error.
      */
     function logError(o) {
         var settings = new settings(),
@@ -76,6 +78,8 @@
         }
         debug('(logError) Error:');
         debug(o);
+
+        return error.EventId;
     }
 
     /**
@@ -84,16 +88,18 @@
      *
      * This function requires a DataExtension defined in settings.de.logWarning.
      *
-     * @param   {object}    o                               Holds the data for the warning log.
+     * @param   {object}    o                       Holds the data for the warning log.
      *
-     * @param   {string}    o.method                        The method calling the warning.
-     * @param   {string}    o.message                       The warning message for better understanding of the warning.
-     * @param   {string}    o.source                        A detailed name of the warning origin. E.g. [Email] Survey.
-     * @param   {string}    [o.subscriberKey]               If given, the subscriberKey triggering the warning
-     * @param   {number}    [o.jobid]                       The JobId if the warning is caused from an email sent.
-     * @param   {number}    [o.listid]                      The ListId if the warning is caused from an email sent.
-     * @param   {number}    [o.batchid]                     The BatchId if the warning is caused from an email sent.
-     * @param   {string}    [o.sourceType]                  The SourceType. e.g. Email, Web, CRM.
+     * @param   {string}    o.method                The method calling the warning.
+     * @param   {string}    o.message               The warning message for better understanding of the warning.
+     * @param   {string}    o.source                A detailed name of the warning origin. E.g. [Email] Survey.
+     * @param   {string}    [o.subscriberKey]       If given, the subscriberKey triggering the warning
+     * @param   {number}    [o.jobid]               The JobId if the warning is caused from an email sent.
+     * @param   {number}    [o.listid]              The ListId if the warning is caused from an email sent.
+     * @param   {number}    [o.batchid]             The BatchId if the warning is caused from an email sent.
+     * @param   {string}    [o.sourceType]          The SourceType. e.g. Email, Web, CRM.
+     *
+     * @returns  {string}                           The eventId for the warning.
      */
     function logWarning(o) {
         var settings = new settings(),
@@ -124,6 +130,9 @@
         }
         debug('(logWarning) Warning:');
         debug(o);
+
+        return warning.EventId;
+
     }
 
     /**
