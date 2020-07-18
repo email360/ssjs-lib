@@ -460,7 +460,7 @@
                 <li><a
                   href='#sfmcapi'
                   class=" toggle-sibling">
-                  sfmcApi
+                  sfmcapi
                   <span class='icon'>▸</span>
                 </a>
                 
@@ -1255,6 +1255,12 @@
                       </a></li>
                       
                       <li><a
+                        href='#wsproxycreateassetscriptcontentblock'
+                        class='regular pre-open'>
+                        #createAssetScriptContentBlock
+                      </a></li>
+                      
+                      <li><a
                         href='#wsproxycreateassetimage'
                         class='regular pre-open'>
                         #createAssetImage
@@ -1626,7 +1632,7 @@ an email) and the object has lock contention, the records may fail to update.</p
     <div class='py1 quiet mt1 prose-big'>Related</div>
     
       
-        <a href="https://ampscript.guide/retrievesalesforceobjects/">RetrieveSalesforceObjects</a>
+        <a href="https://ampscript.guide/updatesinglesalesforceobject/">UpdateSingleSalesforceObject</a>
 
       
     
@@ -1676,7 +1682,7 @@ other AMPscript functions that return a row set — for example, LookupRows whic
 the number of rows to 2000 — there is not the same type of limitation on the number of
 rows returned by this function.</p>
 
-    <div class='pre p1 fill-light mt0'>new RetrieveSalesforceObjects(sfObject: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, fieldNames: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>, parameters: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>)</div>
+    <div class='pre p1 fill-light mt0'>new RetrieveSalesforceObjects(sfObject: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, fieldNames: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>, parameters: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
   
   
 
@@ -1751,6 +1757,14 @@ rows returned by this function.</p>
   
 
   
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
+        The result of the request
+
+      
+    
+  
 
   
     <div class='py1 quiet mt1 prose-big'>Related</div>
@@ -1798,7 +1812,7 @@ For example, you could share a single unsubscription or profile center page for 
 any sent email message. This method passes information in an encrypted query string without
 passing subscriber information or values in clear text.</p>
 
-    <div class='pre p1 fill-light mt0'>new CloudPagesURL(pid: integer, parameters: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</div>
+    <div class='pre p1 fill-light mt0'>new CloudPagesURL(pid: integer, parameters: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -1840,6 +1854,14 @@ in encrypted query string
 
   
 
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+        A full URL
+
+      
+    
   
 
   
@@ -3088,7 +3110,7 @@ have access to all page protected by JWT.
 for this purpose instead. On error, a record will be written to the error log DE.</p>
 <p>This function requires a DataExtension defined in settings.de.logError</p>
 
-    <div class='pre p1 fill-light mt0'>logError(o: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</div>
+    <div class='pre p1 fill-light mt0'>logError(o: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -3196,12 +3218,14 @@ for this purpose instead. On error, a record will be written to the error log DE
 </tr>
 
 
-
               
                 <tr>
-  <td class='break-word'><span class='code bold'>o.raiseError</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+  <td class='break-word'><span class='code bold'>o.raiseError</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?</code>
   </td>
-  <td class='break-word'><span>Indicates whether an error should be raised to stop an email from sending out. Only works in Email Studio. A value of true skips the send for current Subscriber and moves to next Subscriber. A value of false stops the send and returns an error.
+  <td class='break-word'><span>Indicates whether an error should be raised to stop an email
+from sending out. Only works in Email Studio. A value of true skips the
+send for current Subscriber and moves to next Subscriber
+A value of false stops the send and returns an error.
 </span></td>
 </tr>
 
@@ -3217,6 +3241,14 @@ for this purpose instead. On error, a record will be written to the error log DE
 
   
 
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+        The eventId for the error.
+
+      
+    
   
 
   
@@ -3253,7 +3285,7 @@ for this purpose instead. On error, a record will be written to the error log DE
   <p>Log a warning to a DataExtension.</p>
 <p>This function requires a DataExtension defined in settings.de.logWarning.</p>
 
-    <div class='pre p1 fill-light mt0'>logWarning(o: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</div>
+    <div class='pre p1 fill-light mt0'>logWarning(o: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -3372,6 +3404,14 @@ for this purpose instead. On error, a record will be written to the error log DE
 
   
 
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
+        The eventId for the warning.
+
+      
+    
   
 
   
@@ -5147,7 +5187,7 @@ Date, Phone, Locale, Text.</p>
   <div class='clearfix'>
     
     <h3 class='fl m0' id='sfmcapi'>
-      sfmcApi
+      sfmcapi
     </h3>
     
     
@@ -5161,7 +5201,7 @@ Date, Phone, Locale, Text.</p>
 <br>License:     MIT</p>
 <p>Collection of wrapper functions for the usage of the Salesforce Marketing Cloud REST API.</p>
 
-    <div class='pre p1 fill-light mt0'>sfmcApi(setting: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>?)</div>
+    <div class='pre p1 fill-light mt0'>sfmcapi(setting: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>?)</div>
   
   
 
@@ -6542,7 +6582,7 @@ via the UI or by using the personalised string %%_emailid%% inside an email
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>triggerSMSMessage(messageId, phoneNumbers, keyword, params?)</span>
+            <span class='code strong strong truncate'>triggerSMSMessage(messageId, phoneNumbers, keyword?, params?)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -6559,7 +6599,7 @@ country code 1 and the area code, eg: 13175551212.
 To ensure that the mobile number exists for the contact and that the contact subscribed to the specified keyword on your
 short code, set the Subscribe and Resubscribe values to true and specify the keyword parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>triggerSMSMessage(messageId: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, phoneNumbers: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>, keyword: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, params: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
+    <div class='pre p1 fill-light mt0'>triggerSMSMessage(messageId: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, phoneNumbers: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>, keyword: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?, params: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
   
   
 
@@ -6594,7 +6634,7 @@ short code, set the Subscribe and Resubscribe values to true and specify the key
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>keyword</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+            <span class='code bold'>keyword</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</code>
 	    The keyword must align with code on message. Required when subscribe and/or resubscribe are true.
 
           </div>
@@ -11339,7 +11379,7 @@ object will be converted. Expecting the following sample object:</p>
 }
 </pre>
 
-    <div class='pre p1 fill-light mt0'>createDataExtensionRecords(id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, data: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+    <div class='pre p1 fill-light mt0'>createDataExtensionRecords(id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, data: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
   
   
 
@@ -11380,8 +11420,8 @@ object will be converted. Expecting the following sample object:</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:
-        
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
+        Result set of the request.
 
       
     
@@ -11551,7 +11591,7 @@ Expecting the following sample object:</p>
 }.
 </pre>
 
-    <div class='pre p1 fill-light mt0'>upsertDataExtensionRecords(id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, data: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+    <div class='pre p1 fill-light mt0'>upsertDataExtensionRecords(id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, data: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
   
   
 
@@ -11592,8 +11632,8 @@ Expecting the following sample object:</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:
-        
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
+        result of the request
 
       
     
@@ -15606,11 +15646,118 @@ In order to retrieve more informations about the asset, use the REST API.</p>
       </div>
     </div>
   
+    <div class='border-bottom' id='wsproxycreateassetscriptcontentblock'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>createAssetScriptContentBlock(name, content, folderId?, customerKey?, description?)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Create a ScriptContentBlock asset</p>
+
+    <div class='pre p1 fill-light mt0'>createAssetScriptContentBlock(name: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, content: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, folderId: (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)?, customerKey: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?, description: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    The name of the content block
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>content</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    The content of the file. e.g. HTML code
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>folderId</span> <code class='quiet'>((<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)?)</code>
+	    The identifier for the folder. Name or folderId. Default is the root defined in settings
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>customerKey</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</code>
+	    A specific Customer Key to use
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>description</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</code>
+	    A brief description about the file
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
+        Result set of the request.
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='wsproxycreateassetimage'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>createAssetImage(imageBase64, imageName, imageType, folderId, description)</span>
+            <span class='code strong strong truncate'>createAssetImage(imageBase64, imageName, imageType, folderId?, description?)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -15624,7 +15771,7 @@ any informations about the image itself. This may change in a later stage
 when SFMC is adding these informations. If these informations are required,
 use the REST API function instead.</p>
 
-    <div class='pre p1 fill-light mt0'>createAssetImage(imageBase64: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, imageName: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, imageType: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, folderId: (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>), description: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
+    <div class='pre p1 fill-light mt0'>createAssetImage(imageBase64: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, imageName: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, imageType: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, folderId: (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)?, description: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
   
   
 
@@ -15668,7 +15815,7 @@ use the REST API function instead.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>folderId</span> <code class='quiet'>((<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>))</code>
+            <span class='code bold'>folderId</span> <code class='quiet'>((<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)?)</code>
 	    The identifier for the folder. Name or folderId.
 
           </div>
@@ -15677,7 +15824,7 @@ use the REST API function instead.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>description</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+            <span class='code bold'>description</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</code>
 	    A brief description about the file
 
           </div>
