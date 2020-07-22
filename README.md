@@ -98,7 +98,7 @@ We welcome all who want to contribute to this repository, to contribute please f
 
 2. Make your changes, test where/if possible.
 
-3. If your changes alter the behaviour of any of the code update the corresponding documentation comments within the codebase.  The updated documentation will then be used to update the documentation found within our [docs](https://docs.email360.io)
+3. If your changes alter the behaviour of any of the code, update the corresponding comments within the codebase. The updated comment will then be used to update the documentation found within our [docs](https://docs.email360.io)
 
 4. Open a pull request against the `master` branch at https://github.com/email360/ssjs-lib.
 
