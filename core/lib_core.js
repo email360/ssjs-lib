@@ -261,7 +261,7 @@
      *
      * @returns  {number}  hours difference
      */
-    function dateDiffInHours(d1, d2) { return (d1.valueOf() - d2.valueOf()) / 1000 / 60; }
+    function dateDiffInHours(d1, d2) { return (d1.valueOf() - d2.valueOf()) / 1000 / 60 / 60; }
 
     /**
      * Get the difference in days between two datetimes
@@ -604,7 +604,10 @@
             return n;
         }
         if(fieldType == "Locale") {
-            var locales = ['af-za','am-et','ar-ae','ar-bh','ar-dz','ar-eg','ar-iq','ar-jo','ar-kw','ar-lb','ar-ly','ar-ma','ar-om','ar-qa','ar-sa','ar-sy','ar-tn','ar-ye','as-in','ba-ru','be-by','bg-bg','bn-bd','bn-in','bo-cn','br-fr','ca-es','co-fr','cs-cz','cy-gb','da-dk','de-at','de-ch','de-de','de-li','de-lu','dv-mv','el-gr','en-au','en-bz','ca','en-gb','en-ie','en-in','en-jm','en-my','en-nz','en-ph','en-sg','en-tt','en-us','en-za','en-zw','es-ar','es-bo','es-cl','es-co','es-cr','es-do','es-ec','es-es','es-gt','es-hn','es-mx','es-ni','es-pa','es-pe','es-pr','es-py','es-sv','es-us','es-uy','es-ve','et-ee','eu-es','fa-ir','fi-fi','fo-fo','fr-be','fr-ca','fr-ch','fr-fr','fr-lu','fr-mc','fy-nl','ga-ie','gd-gb','gl-es','gu-in','he-il','hi-in','hr-ba','hr-hr','hu-hu','hy-am','id-id','ig-ng','ii-cn','is-is','it-ch','it-it','ja-jp','ka-ge','kk-kz','kl-gl','km-kh','kn-in','ko-kr','ky-kg','lb-lu','lo-la','lt-lt','lv-lv','mi-nz','mk-mk','ml-in','mn-mn','mr-in','ms-bn','ms-my','mt-mt','nb-no','ne-np','nl-be','nl-nl','nn-no','oc-fr','or-in','pa-in','pl-pl','ps-af','pt-br','pt-pt','rm-ch','ro-ro','ru-ru','rw-rw','sa-in','se-fi','se-no','se-se','si-lk','sk-sk','sl-si','sq-al','sv-fi','sv-se','sw-ke','ta-in','te-in','th-th','tk-tm','tn-za','tr-tr','tt-ru','ug-cn','uk-ua','ur-pk','vi-vn','wo-sn','xh-za','yo-ng','zh-cn','zh-hk','zh-mo','zh-sg','zh-tw','zu-za'];
+            // Maximum character length per liner in email studio is around 768 characters.
+            var l1 = ['af-za','am-et','ar-ae','ar-bh','ar-dz','ar-eg','ar-iq','ar-jo','ar-kw','ar-lb','ar-ly','ar-ma','ar-om','ar-qa','ar-sa','ar-sy','ar-tn','ar-ye','as-in','ba-ru','be-by','bg-bg','bn-bd','bn-in','bo-cn','br-fr','ca-es','co-fr','cs-cz','cy-gb','da-dk','de-at','de-ch','de-de','de-li','de-lu','dv-mv','el-gr','en-au','en-bz','ca','en-gb','en-ie','en-in','en-jm','en-my','en-nz','en-ph','en-sg','en-tt','en-us','en-za','en-zw','es-ar','es-bo','es-cl','es-co','es-cr','es-do','es-ec','es-es','es-gt','es-hn','es-mx','es-ni','es-pa','es-pe','es-pr','es-py','es-sv','es-us','es-uy','es-ve','et-ee','eu-es','fa-ir','fi-fi','fo-fo','fr-be','fr-ca','fr-ch','fr-fr','fr-lu','fr-mc','fy-nl','ga-ie','gd-gb','gl-es','gu-in','he-il','hi-in','hr-ba','hr-hr','hu-hu','hy-am'];
+            var l2 = ['id-id','ig-ng','ii-cn','is-is','it-ch','it-it','ja-jp','ka-ge','kk-kz','kl-gl','km-kh','kn-in','ko-kr','ky-kg','lb-lu','lo-la','lt-lt','lv-lv','mi-nz','mk-mk','ml-in','mn-mn','mr-in','ms-bn','ms-my','mt-mt','nb-no','ne-np','nl-be','nl-nl','nn-no','oc-fr','or-in','pa-in','pl-pl','ps-af','pt-br','pt-pt','rm-ch','ro-ro','ru-ru','rw-rw','sa-in','se-fi','se-no','se-se','si-lk','sk-sk','sl-si','sq-al','sv-fi','sv-se','sw-ke','ta-in','te-in','th-th','tk-tm','tn-za','tr-tr','tt-ru','ug-cn','uk-ua','ur-pk','vi-vn','wo-sn','xh-za','yo-ng','zh-cn','zh-hk','zh-mo','zh-sg','zh-tw','zu-za'];
+            var locales = l1.concat(l2);
             return locales[Math.floor(Math.random() * locales.length)].toUpperCase();
         }
         if(fieldType ==  "Text") {
