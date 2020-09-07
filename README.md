@@ -22,6 +22,7 @@
 - [Documentation](#documentation)
 - [Code](#code)
 - [Creators](#creators)
+- [Contributing](#contributing)
 - [Thanks](#thanks)
 - [Copyright and license](#copyright-and-license)
 
@@ -89,6 +90,21 @@ Email360's SSJS Lib can be found at <https://github.com/email360/ssjs-lib>
 - [GitHub](https://github.com/colins44)
 - [LinkedIn](https://www.linkedin.com/in/colin-pringle-wood-49194053/)
 
+## Contributing
+
+We welcome all who want to contribute to this repository, to contribute please follow these guidelines.
+
+1. Fork the repo and create your branch from `master`. A guide on how to fork a repository can be found [here](https://help.github.com/articles/fork-a-repo/).
+
+2. Make your changes, test where/if possible.
+
+3. If your changes alter the behaviour of any of the code, update the corresponding comments within the codebase. The updated comment will then be used to update the documentation found within our [docs](https://docs.email360.io)
+
+4. Open a pull request against the `master` branch at https://github.com/email360/ssjs-lib.
+
+5. Leave a comment on the pull request stating the reason for the change.
+
+5. One of the administrators of `email360/ssjs-lib` will review your code, merge it or ask for changes.
 
 ## Thanks
 
