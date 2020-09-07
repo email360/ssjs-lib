@@ -31,11 +31,31 @@
   };
 
 
-
+  if (Number.parseFloat === undefined) {
+      Number.parseFloat = parseFloat;
+  }
 
 
   /************************* STRING *************************/
 
+
+  if (!String.prototype.trim) {
+      String.prototype.trim = function() {
+          return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+      };
+  }
+
+  if (!String.prototype.substr) {
+      String.prototype.substr = function(a, b) {
+          var s = (!Number.isInteger(a)) ? 0 : a,
+              l = (typeof b == 'undefined') ? null : (s > 0 && b > 0) ? s + b : b;
+          if (s < 0) {
+              s = this.length + a;
+              l = (l < 0) ? 0 : s + l;
+          }
+          return (typeof b == 'undefined' && b != 0 && Number.isInteger(a)) ? this.substring(s) : (l <= 0 || !Number.isInteger(l)) ? "" : this.substring(s, l);
+      };
+  }
 
   // ECMAScript 2015 specification
   if (!String.prototype.startsWith) {
@@ -112,6 +132,46 @@
 
   /************************* ARRAY *************************/
 
+
+  if (!Array.prototype.filter) {
+      Array.prototype.filter = function(func, thisArg) {
+          'use strict';
+          if (!((typeof func === 'Function' || typeof func === 'function') && this))
+              throw new TypeError();
+
+          var len = this.length >>> 0,
+              res = new Array(len), // preallocate array
+              t = this,
+              c = 0,
+              i = -1;
+
+          var kValue;
+          if (thisArg === undefined) {
+              while (++i !== len) {
+                  // checks to see if the key was set
+                  if (i in this) {
+                      kValue = t[i]; // in case t is changed in callback
+                      if (func(t[i], i, t)) {
+                          res[c++] = kValue;
+                      }
+                  }
+              }
+          } else {
+              while (++i !== len) {
+                  // checks to see if the key was set
+                  if (i in this) {
+                      kValue = t[i];
+                      if (func.call(thisArg, t[i], i, t)) {
+                          res[c++] = kValue;
+                      }
+                  }
+              }
+          }
+
+          res.length = c; // shrink down array to proper size
+          return res;
+      };
+  }
 
 
   // Production steps of ECMA-262, Edition 5, 15.4.4.21
