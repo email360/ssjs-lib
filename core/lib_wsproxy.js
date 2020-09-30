@@ -2722,12 +2722,7 @@
                     var r = req.Results;
 
                     for (var k = 0; k < r.length; k++) {
-                        var o = {};
-                        for (var i = 0; i < cols.length; i++) {
-                            var v = cols[i];
-                            o[v] = r[k][v];
-                        }
-                        a.push(o);
+                        a.push(this.retrievableColsValues(cols,r[k]));
                     }
                 } else {
                     debug('(retrieveQueryDefinitions)\n\tError: '+req);
@@ -3239,12 +3234,7 @@
                     var r = req.Results;
 
                     for (var k = 0; k < r.length; k++) {
-                        var o = {};
-                        for (var i = 0; i < cols.length; i++) {
-                            var v = cols[i];
-                            o[v] = r[k][v];
-                        }
-                        a.push(o);
+                        a.push(this.retrievableColsValues(cols,r[k]));
                     }
                 } else {
                     debug('(retrieveTriggeredSendDefinitions)\n\tError: '+req);
