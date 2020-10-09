@@ -31,8 +31,8 @@
      * @param {object} [setting] Used to update the settings object with a custom setting object
      *
      * @example
-     * // initialise a new sfmcApi instance
-     * var rest = new sfmcApi();
+     * // initialise a new sfmcapi instance
+     * var rest = new sfmcapi();
      */
      function sfmcapi(setting) {
         this.settings = _updateSettings(setting);
