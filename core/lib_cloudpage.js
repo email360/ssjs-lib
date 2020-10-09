@@ -203,14 +203,20 @@
                 payload.acs = access;
             }
 
+            var secret = Platform.Function.Lookup(this.settings.de.authentication.Name, 'value', 'key', pid);
+            if( secret === null ) {
+                debug( '(newToken)\n\tError while generating new token');
+                throw 'Cannot find pid: '+pid+' inside '+this.settings.de.authentication.Name;
+            }
+
             var signature = SHA256(
                 Platform.Function.Base64Encode(Platform.Function.Stringify(header)) +
                 Platform.Function.Base64Encode(Platform.Function.Stringify(payload)) +
-                Platform.Function.Lookup(this.settings.de.authentication.Name, 'value', 'key', pid)
+                secret
             );
 
             var token = Platform.Function.Base64Encode(Platform.Function.Stringify(header))+'.'+Platform.Function.Base64Encode(Platform.Function.Stringify(payload))+'.'+signature;
-            debug('(generateToken)\n\tOK: Token created: '+token);
+            debug('(newToken)\n\tOK: Token created: '+token);
             return token;
         };
 
