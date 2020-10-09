@@ -441,6 +441,14 @@
     }
 
     /**
+     * Returns the current member id where this code is executed
+     */
+    function getMemberID() {
+        return Platform.Function.AuthenticatedMemberID();
+    }
+
+
+    /**
      * SSJS wrorkaround to use console server side 
      */
     function console_log() {
