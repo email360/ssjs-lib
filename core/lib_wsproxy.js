@@ -2451,8 +2451,8 @@
                 reqID = null,
                 req = null;
 
-            // additional filter rules?
-            f = (filter) ? { LeftOperand: f, LogicalOperator: "AND", RightOperand: filter } : f;
+            // additional filter rules? No complex filter is allowed so we have to choose one.
+            f = (filter) ? filter : f;
 
             while (moreData) {
 
