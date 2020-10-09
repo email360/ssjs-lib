@@ -67,6 +67,7 @@ Marketing Cloud/
             ├── email360 SSJS Lib - wsproxy
             ├── email360 SSJS Lib - core
             ├── email360 SSJS Lib - polyfill
+            ├── email360 SSJS Lib - einstein
             └── email360 SSJS Lib - sfmcapi
 ```
 
