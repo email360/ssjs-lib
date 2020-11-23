@@ -173,7 +173,7 @@
                 date.setMinutes(date.getMinutes() + number);
             break;
             case 'Days':
-                date.setDate(date.getDay() + number);
+                date.setHours(date.getHours() + (number*24));
             break;
             case 'Months':
                 date.setMonth(date.getMonth() + number);
@@ -213,7 +213,7 @@
                 date.setMinutes(date.getMinutes() - number);
             break;
             case 'Days':
-                date.setDate(date.getDay() - number);
+                date.setHours(date.getHours() - (number*24));
             break;
             case 'Months':
                 date.setMonth(date.getMonth() - number);
