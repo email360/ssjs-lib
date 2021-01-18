@@ -165,6 +165,9 @@
             debug('(dateAdd)\n\tUnit not allowed: '+u+'. Use Hours instead' );
         }
 
+        // convert number to integer
+        number = Number(number);
+
         switch(u) {
             case 'Seconds':
                 date.setSeconds(date.getSeconds() + number);
@@ -204,6 +207,9 @@
         if(!validUnits.includes(u)) {
             debug('(dateSubtract)\n\tUnit not allowed: '+u+'. Use Hours instead' );
         }
+
+        // convert number to integer
+        number = Number(number);
 
         switch(u) {
             case 'Seconds':
@@ -251,7 +257,10 @@
      *
      * @returns {number} The current UnixTimestamp in UTC
      */
-    function getUnixTimestamp() { return Math.floor(getDateUTC() / 1000); }
+    function getUnixTimestamp() { 
+        var now = new Date();
+        return Math.floor(now.valueOf() / 1000); 
+    }
 
     /**
      * Get the difference in hours between two datetimes
