@@ -47,7 +47,7 @@
 
         /** Holds the payload for each call */
         this.payload = { qs:{}, jwt:{} };
-        jsonBody = Platform.Function.ParseJSON(Platform.Request.GetPostData());
+        jsonBody = Platform.Function.ParseJSON(Platform.Request.GetPostData('utf-8'));
         this.payload.qs = (isObject(jsonBody)) ? jsonBody : {};
 
         /**
