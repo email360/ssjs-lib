@@ -643,6 +643,65 @@
         }
     }
 
+    /**
+     * Generate amp script variables from a SSJS Object
+     *
+     * The SSJS object will be flatten. Object keys will retain
+     * the key as name while array items will add the key position.
+     *
+     * Example: { "Hello": "World", "MyArray": ["one","two"], "MyNestedObject": {"name": "John"} }
+     * Output: @Hello = "World"
+     *         @MyArray_0 = "one"
+     *         @MyArray_1 = "two"
+     *         @MyNestedObject_name = "John"
+     *
+     * @param {object} ssjsObject       The object to be converted
+     * @param {string} [prefix=null]    An optional prefix for each ampScirpt variable
+     * @param {sring} [delimiter=-]     THe delimiter between each nested item
+     *
+     * @returns {string} The generated data string
+     */
+    function createAmpVariablesFromObject(ssjsObject,prefix,delimiter) {
+        var p = (prefix)?prefix:'',
+            d = (delimiter)?delimiter:'_',
+            ampObject = {};
+
+        flatten(ssjsObject, '');
+
+        createAmpVariables(ampObject);
+        return ampObject;
+
+        function flatten(currentObject, previousKeyName) {
+
+            if( Array.isArray(currentObject) ) {
+                for (var i = 0; i < currentObject.length; i++) {
+                    flatten(currentObject[i], (previousKeyName == null || previousKeyName == '') ? i : previousKeyName + d + i + d );
+                }
+
+            } else {
+
+                for (var key in currentObject) {
+                    var value = currentObject[key];
+
+                    if (!isObject(value)) {
+                        if (previousKeyName == null || previousKeyName == '') {
+                            ampObject[p+key] = value;
+                        } else {
+                            if (key == null || key == '') {
+                                ampObject[p+previousKeyName] = value;
+                            } else {
+                                ampObject[p+previousKeyName + d + key] = value;
+                            }
+                        }
+                    } else {
+                        flatten(value, (previousKeyName == null || previousKeyName == '') ? key : previousKeyName + d + key);
+                    }
+                }
+            }
+        }
+    }
+
+
     // undocumented on purpose. Used to update the settings object with a custom setting object
     function _updateSettings(setting) {
         orgSetting = new settings();
@@ -652,5 +711,7 @@
         }
         return orgSetting;
     }
+
+
 
 </script>
