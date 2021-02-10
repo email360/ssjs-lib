@@ -146,7 +146,7 @@
 
                 // Automation cols retrieve is bugged
                 if( objectType == 'Automation' ) {
-                    debug('(retrievableCols)\n\tInfo: Using retrievableCols on Automation results in cols which are not retrievable. ObjectID must be ProgrammID, Client. and Schedule. are also invalid. Using Wildcard(*) instead'); 
+                    debug('(retrievableCols)\n\tInfo: Using retrievableCols on Automation results in cols which are not retrievable. ObjectID must be ProgramID, Client. and Schedule. are also invalid. Using Wildcard(*) instead'); 
                     this.cols[objectType] = ['*'];
                 } else {
 
@@ -868,9 +868,13 @@
             }
             /* order each field by ordinal 
              * Note: in case oridnal is not given: The polyfill Array.sort used, cannot handle undefined comparison -> handle each case itself
-             * @todo update polyfill Array.sort to hanlde undefined comparison
+             * @todo update polyfill Array.sort to handle undefined comparison
              */
             fields.sort(function(a,b) { return (a.Ordinal && b.Ordinal) ? a.Ordinal - b.Ordinal : ( (a.Ordinal) ? a.Ordinal-0 : 0-b.Ordinal); });
+            
+            // if we have a new order array, use the new order
+            
+
             // add fields to deSettings
             deSettings.Fields = fields;
 
