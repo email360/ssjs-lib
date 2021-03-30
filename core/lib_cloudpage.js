@@ -125,10 +125,10 @@
          *
          * @param {string} [redirectUrl] An optional redirect URL as CloudPage ID or full URI
          */
-        this.logout = function() {
-            this.expireCookie();
+        this.logout = function(redirectUrl) {
+            this.expireCookie(this.settings.auth.cookieName);
             var payload = { origin: Platform.Function.Base64Encode(getPageUrl()).replace(/=/gi, '@') },
-                url = (Number.isInteger(this.settings.cp.login)) ? CloudPagesURL(this.settings.cp.login,payload) : this.settings.cp.login +'?payload='+Platform.Function.Base64Encode(Platform.Function.Stringify(payload));
+                url = (redirectUrl) ? (Number.isInteger(redirectUrl)) ? CloudPagesURL(redirectUrl,payload) : redirectUrl : (Number.isInteger(this.settings.cp.login)) ? CloudPagesURL(this.settings.cp.login,payload) : this.settings.cp.login +'?payload='+Platform.Function.Base64Encode(Platform.Function.Stringify(payload));
 
             Platform.Response.Redirect(url,false);
         };
