@@ -688,7 +688,7 @@
 
             if( Array.isArray(currentObject) ) {
                 for (var i = 0; i < currentObject.length; i++) {
-                    flatten(currentObject[i], (previousKeyName == null || previousKeyName == '') ? i : previousKeyName + d + i + d );
+                    flatten(currentObject[i], (previousKeyName == null || previousKeyName == '') ? i : previousKeyName + d + i );
                 }
 
             } else {
