@@ -143,22 +143,26 @@
                 }
 
                 this.cols[objectType] = [];
-
-                // Automation cols retrieve is bugged
-                if( objectType == 'Automation' ) {
-                    debug('(retrievableCols)\n\tInfo: Using retrievableCols on Automation results in cols which are not retrievable. ObjectID must be ProgramID, Client. and Schedule. are also invalid. Using Wildcard(*) instead'); 
-                    this.cols[objectType] = ['*'];
-                } else {
-
-                    var req = this.api.describe(objectType);
-                    var props = req.Results[0].Properties;
-                    if( props.length > 0 ) {
-                        for(var i=0; i<props.length; i++) {
-                            if( props[i].IsRetrievable ) {
-                                this.cols[objectType].push(props[i].Name);
-                            }
+                
+                var req = this.api.describe(objectType);
+                var props = req.Results[0].Properties;
+                if( props.length > 0 ) {
+                    for(var i=0; i<props.length; i++) {
+                        if( props[i].IsRetrievable ) {
+                            this.cols[objectType].push(props[i].Name);
                         }
                     }
+                }
+                // Automation cols retrieve is bugged
+                if( objectType == 'Automation' ) {
+                    debug('(retrievableCols)\n\tInfo: Using retrievableCols on Automation results in cols which are not retrievable. ObjectID must be ProgramID, Client. and Schedule. are also invalid. Adding legacy ProgramId to retrieve ObjectId'); 
+                    this.cols[objectType].push('ProgramID','LastRunTime');
+                }
+
+                // describe of AutomationInstance is bugged
+                if( objectType == 'AutomationInstance' ) {
+                    debug('(retrievableCols)\n\tInfo: Using retrievableCols on AutomationInstance results in bugged cols.'); 
+                    this.cols[objectType].push("Name","Status","CompletedTime","CustomerKey","StatusMessage","StartTime","ScheduledTime","StatusLastUpdate");
                 }
 
                 // update DataExtension if DataExtension exist
@@ -2391,6 +2395,69 @@
 
         // ============================== AUTOMATION ==============================
 
+        /**
+         * Retrieve the Automation history and the status
+         *
+         * @param {string}  id  The identifier for the Automation. Name or CustomerKey.
+         *
+         * @returns {object} Result set of the request.
+         */
+        this.retrieveAutomationHistory = function(id) {
+            var property = ['Name','CustomerKey'],
+                customerKey = null,
+                a = [],
+                moreData = true,
+                reqID = null,
+                req = {};
+
+            for (var i = 0; i < property.length; i++) {
+                if(customerKey === null) {
+                    req = this.api.retrieve("Automation", this.retrievableCols('Automation'), { 
+                        Property: property[i], 
+                        SimpleOperator: "equals", 
+                        Value: id
+                    });
+
+                    // found the automation
+                    if( req.Status == 'OK' && req.Results.length > 0 && req.Results[0].CustomerKey !== null ) {
+                        customerKey = req.Results[0].CustomerKey;
+                        
+                        var cols = this.retrievableCols('AutomationInstance'),
+                            filter = { 
+                                Property: "CustomerKey", 
+                                SimpleOperator: "equals", 
+                                Value: customerKey
+                            };
+                        
+                        while (moreData) {
+                            moreData = false;
+
+                            req = (reqID == null) ? req = this.api.retrieve("AutomationInstance", cols, filter) : req = this.api.getNextBatch("AutomationInstance", reqID);
+
+                            if( req.Status == 'OK' || req.Status == 'MoreDataAvailable' ) {
+                                moreData = (retrieveAll) ? req.HasMoreRows : false;
+                                reqID = req.RequestID;
+                                var r = req.Results;
+                                for (var n = 0; n < r.length; n++) {
+                                    a.push(this.retrievableColsValues(cols,r[n]));
+                                }
+                            } else {
+                                debug('(retrieveAutomationHistory)\n\tError: '+req);
+                                return req;
+                            }
+                        }
+                        debug('(retrieveAutomationHistory)\n\tOK: Retrieved '+a.length+' AutomationHistory');
+                        req.Results = a;
+                        return req;
+                    }
+                }
+            }
+
+            req.Status = 'Error: Failed to retrieve Automation History: '+id;
+            debug('(retrieveAutomationHistory)\n\t' + req.Status);
+            return req;
+        };
+
 
         /**
          * Retrieve information about an Automation
@@ -2405,7 +2472,7 @@
                 req = {};
 
             for (var i = 0; i < 2; i++) {
-                req = this.api.retrieve("Automation", ['*'], { 
+                req = this.api.retrieve("Automation", cols, { 
                     Property: property[i], 
                     SimpleOperator: "equals", 
                     Value: id
@@ -2424,7 +2491,7 @@
                     if( res.Status == 'OK' && res.Results.length > 0 ) {
                         req.Results[0].AutomationTasks = [];
                         for (var n = 0; n < res.Results.length; n++) {
-                            req.Results[0].AutomationTasks.push(this.retrievableColsValues(this.retrievableCols('Activity'),res.Results[i]));
+                            req.Results[0].AutomationTasks.push(this.retrievableColsValues(this.retrievableCols('Activity'),res.Results[n]));
                         }
                     }
 
