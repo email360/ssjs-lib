@@ -250,8 +250,21 @@
      *
      * @returns {date} UTC Date
      */
-    function getDateUTC() { return dateAdd(new Date(), 6, 'Hours'); }
+    function getDateUTC() {
+        var utc = dateAdd(new Date(), 6, 'Hours'),
+            pad = function(number) { return(number < 10) ? '0' + number : number; };
 
+        return new Date( utc.getFullYear() +
+          '-' + pad(utc.getMonth() + 1) +
+          '-' + pad(utc.getDate()) +
+          'T' + pad(utc.getHours()) +
+          ':' + pad(utc.getMinutes()) +
+          ':' + pad(utc.getSeconds()) +
+          '.' + (utc.getMilliseconds() / 1000).toFixed(3).slice(2, 5) +
+          'Z'
+        );
+    }
+    
     /**
      * Get the current UnixTimestamp
      *
