@@ -749,6 +749,7 @@
      */
     function getGitHubRepoContent(obj){
         var resource = 'https://api.github.com/repos/'+ obj.username + '/' + obj.repoName + '/contents/' + obj.filePath;
+        debug('(getGitHubRepoContent)\n\tOK: Call Github for the following resource: '+resource);
         var req = new Script.Util.HttpRequest(resource);
             req.emptyContentHandling = 0;
             req.retries = 2;
