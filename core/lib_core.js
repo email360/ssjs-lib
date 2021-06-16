@@ -670,7 +670,7 @@
      *
      * @param {object} ssjsObject       The object to be converted
      * @param {string} [prefix=null]    An optional prefix for each ampScirpt variable
-     * @param {sring} [delimiter=-]     THe delimiter between each nested item
+     * @param {string} [delimiter=-]     THe delimiter between each nested item
      *
      * @returns {string} The generated data string
      */
@@ -712,6 +712,57 @@
                 }
             }
         }
+    }
+
+
+    /**
+     * Load a content file from any github repo
+     *
+     * This can be used to speed up development of cloudpages while keep the benefit of github
+     *
+     * @param {object} obj              The object holding the required parameters
+     *
+     * @param {string} obj.username     The github username
+     * @param {string} obj.repoName     The name of the repository
+     * @param {string} obj.filePath     The full file path including the filename inside the repo
+     * @param {string} obj.token        The access token generated for the repo inside github
+     *
+     * @returns {string} The entire content of the github content
+     *
+     * @example
+     * // set github parameter
+     * var obj = {
+     *     username : "email360-github",
+     *     token    : "De0ed0b390deabBfGc30761bD535c036fbc7eAe5",
+     *     repoName : "email360",
+     *     fileName : "sample.js"
+     *  };
+     *
+     * // pull the content from github
+     * var githubContent = getGitHubRepoContent(obj);
+     *
+     * // convert the content into an AMPScript variable
+     * Platform.Variable.SetValue("@githubContent", githubContent);
+     * 
+     * // execute the content
+     * %%=TreatAsContent(@githubContent)=%%
+     */
+    function getGitHubRepoContent(obj){
+        var resource = 'https://api.github.com/repos/'+ obj.username + '/' + obj.repoName + '/contents/' + obj.filePath;
+        var req = new Script.Util.HttpRequest(resource);
+            req.emptyContentHandling = 0;
+            req.retries = 2;
+            req.continueOnError = true;
+            req.setHeader("Authorization","Bearer " + obj.token);
+            req.setHeader("User-Agent", obj.username + '/' + obj.repoName);
+            //  This header is very important! It allows to get the file content raw version.
+            req.setHeader("Accept", "application/vnd.github.v3.raw");
+            req.setHeader("Cache-Control", "no-cache");
+            req.method = "GET";
+
+        var resp = req.send();
+
+        return resp.content;
     }
 
 
