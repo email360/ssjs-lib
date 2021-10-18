@@ -18,9 +18,17 @@
                 <li><a href="https://email360.io/#contact">Contact</a></li>
                 <li><a href="https://blog.email360.io/">Blog</a></li>
                 <li><a href="https://email360.io/#services">Products</a></li>
+                <li><a href="https://blog.email360.io/getting-started.html">Install Guide</a></li>
             </ul>
         </nav>
-        <a class="btn-area" href="https://blog.email360.io/getting-started.html">Install Guide</a> 
+        <div class="flex-container">
+          <p class="nav-text">Stay up to date with Email360 docs and product news.</p>
+        <form id="emailSubscriptionForm" method="post">
+          <input type="email" name="email" id="emailInput" placeholder="your@email.com" class="nav-input"/>
+          <input type="submit" name="Submit" value="Subscribe" class="btn-area"/>
+        </form>
+        </div>
+
     </header>
     <div class='flex'>
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
@@ -18217,5 +18225,20 @@ subscriber or publication lists (not suppression lists).
   <script src='assets/anchor.js'></script>
   <script src='assets/split.js'></script>
   <script src='assets/site.js'></script>
+  <script>
+    emailSubscriptionForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const data = new FormData(emailSubscriptionForm)
+      if(!data.get('email')) return;
+      const body = {
+        email: data.get("email")
+      }
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'https://test-api.email360.io/api/subscription');
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(JSON.stringify(body));
+      document.getElementById("emailInput").value = "Thanks for Subscribing";
+    }
+  </script>
 </body>
 </html>
