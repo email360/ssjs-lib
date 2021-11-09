@@ -358,5 +358,89 @@
 
         return Platform.Function.TreatAsContent(amp);
      }
-     
+
+    /**
+     * Enables the AMP function EncryptSymmetric in SSJS
+     *
+     * This function encrypts a string with the specified algorithm and qualifiers. Outputs a Base64 encoded value.
+     *
+     * @param {string} string           String to encrypt
+     * @param {string} algorithm        Algorithm used to encrypt the string. Valid values are aes, des, and tripledes
+     * @param {string} password_key     Password External Key for retrieval from Key Management
+     * @param {string} password         Password value
+     * @param {string} salt_key         Salt External Key for retrieval from Key Management
+     * @param {string} salt             Salt value as an 8-byte hex string
+     * @param {string} vector_key       Initialization vector External Key for retrieval from Key Management
+     * @param {string} vector           Initialization vector value as a 16-byte hex string
+     *
+     * @see {@link https://ampscript.guide/encryptsymmetric|EncryptSymmetric}
+     */
+     function EncryptSymmetric(string,algorithm,password_key,password,salt_key,salt,vector_key,vector) {
+        var varName = '@amp__EncryptSymmetric',
+            param = [algorithm,password_key,password,salt_key,salt,vector_key,vector];
+
+        // AMP decleration
+        var amp = "\%\%[ ";
+        // function open        
+        amp += "set "+varName+" = EncryptSymmetric(";
+        // string parameter
+        amp += "'" + string + "'";
+
+        for (var i = 0; i < param.length; i++) {
+            var value = (param[i]) ? "'"+param[i]+"'" : '@null';
+            amp += "," + value;    
+        }
+
+        // function close
+        amp += ") ";
+        // output
+        amp += "output(concat("+varName+")) ";
+        // end of AMP
+        amp += "]\%\%";
+
+        return Platform.Function.TreatAsContent(amp);
+    }
+
+    /**
+     * Enables the AMP function DecryptSymmetric in SSJS
+     *
+     * This function decrypts a string with the specified algorithm and qualifiers.
+     *
+     * @param {string} string           String to decrypt
+     * @param {string} algorithm        Algorithm used to encrypt the string. Valid values are aes, des, and tripledes
+     * @param {string} password_key     Password External Key for retrieval from Key Management
+     * @param {string} password         Password value
+     * @param {string} salt_key         Salt External Key for retrieval from Key Management
+     * @param {string} salt             Salt value as an 8-byte hex string
+     * @param {string} vector_key       Initialization vector External Key for retrieval from Key Management
+     * @param {string} vector           Initialization vector value as a 16-byte hex string
+     *
+     * @see {@link https://ampscript.guide/decryptsymmetric/|DecryptSymmetric}
+     */
+     function DecryptSymmetric(string,algorithm,password_key,password,salt_key,salt,vector_key,vector) {
+        var varName = '@amp__DecryptSymmetric',
+            param = [algorithm,password_key,password,salt_key,salt,vector_key,vector];
+
+        // AMP decleration
+        var amp = "\%\%[ ";
+        // function open        
+        amp += "set "+varName+" = DecryptSymmetric(";
+        // string parameter
+        amp += "'" + string + "'";
+
+        for (var i = 0; i < param.length; i++) {
+            var value = (param[i]) ? "'"+param[i]+"'" : '@null';
+            amp += "," + value;    
+        }
+
+        // function close
+        amp += ") ";
+        // output
+        amp += "output(concat("+varName+")) ";
+        // end of AMP
+        amp += "]\%\%";
+
+        return Platform.Function.TreatAsContent(amp);
+    }
+
 </script>
