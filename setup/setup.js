@@ -100,7 +100,8 @@
                 wsproxy: 'https://raw.githubusercontent.com/email360/ssjs-lib/master/core/lib_wsproxy.js',
                 amp: 'https://raw.githubusercontent.com/email360/ssjs-lib/master/core/lib_amp.js',
                 cloudpage: 'https://raw.githubusercontent.com/email360/ssjs-lib/master/core/lib_cloudpage.js',
-                einstein: 'https://raw.githubusercontent.com/email360/ssjs-lib/master/core/lib_einstein.js'
+                einstein: 'https://raw.githubusercontent.com/email360/ssjs-lib/master/core/lib_einstein.js',
+                jwt: 'https://raw.githubusercontent.com/email360/ssjs-lib/master/core/jwt.js'
             };
         for( var name in libFiles ) {
             var res = httpRequest('GET',libFiles[name]),
