@@ -86,7 +86,7 @@
             }
 
             // get payload
-            return Platform.Function.ParseJSON(Platform.Function.Base64Decode(token.split('.')[1]));
+            return this._decode(token.split('.')[1]);
         };
 
         /**
@@ -146,8 +146,8 @@
 
             // create segments
             var segments = [];
-            segments.push(Platform.Function.Base64Encode(Platform.Function.Stringify(header)));
-            segments.push(Platform.Function.Base64Encode(Platform.Function.Stringify(payload)));
+            segments.push(this._encode(header));
+            segments.push(this._encode(payload));
             segments.push(this.sign(segments[0], segments[1], key));
 
             return segments.join('.');
@@ -171,44 +171,32 @@
             // check segments
             var segments = token.split('.');
             if (segments.length !== 3) {
-                throw({message:'Token structure is invalid',code:400,method:'jwt_verify'});
+                throw({message:'Token structure is invalid: '+Stringify(token),code:400,method:'jwt_verify'});
             }
 
-            // verify signature.
-            if (!this.verifySignature(token, key)) {
-                throw({message:'Signature verification failed',code:401,method:'jwt_verify'});
+            // verify signature
+            if (segments[2] !== this.sign(segments[0], segments[1], key)) {
+                throw({message:'Signature verification failed: '+Stringify(token),code:401,method:'jwt_verify'});
             }
 
-            // base64 decode and parse JSON
-            var payload = Platform.Function.ParseJSON(Platform.Function.Base64Decode(segments[1]));
+            // base64 decode
+            var payload = this._decode(segments[1])
 
             // Support for nbf and exp claims.
             if (payload.nbf && getUnixTimestamp() < payload.nbf) {
-                throw({message:'Token not yet active',code:400,method:'jwt_verify'});
+                throw({message:'Token not yet active: '+Stringify(token),code:400,method:'jwt_verify'});
             }
 
             if (payload.exp && getUnixTimestamp() > payload.exp) {
-                throw({message:'Token expired',code:400,method:'jwt_verify'});
+                throw({message:'Token expired: '+Stringify(token),code:400,method:'jwt_verify'});
             }
 
             // access granted for given page?
             if(payload.acs && !((Array.isArray(payload.acs)) ? payload.acs.includes(Platform.Function.MD5(getPageUrl(false))) : payload.acs == Platform.Function.MD5(getPageUrl(false)))) {
-                throw({message:'Access to page not allowed',code:401,method:'jwt_verify'});
+                throw({message:'Access to page not allowed: '+Stringify(token),code:401,method:'jwt_verify'});
             }
 
             return true;
-        };
-
-        /**
-         * verify the jwt signature against a private secret
-         *
-         * @param   {string}    token   A valid JWT token
-         * @param   {string}    key     The private key to sign the token
-         *
-         * @returns  {boolean}
-         */
-        this.verifySignature = function(token, key) {
-            return (token.split('.')[2] === this.sign(token.split('.')[0], token.split('.')[1], key));
         };
 
         /**
@@ -221,9 +209,16 @@
          * @returns  {string}   The signature
          */
         this.sign = function(header, payload, key) {
-            return SHA256(header + payload + key);
+            return SHA256([header,payload,key].join('.'));
         };
 
+        this._encode = function(str) {
+            return base64urlEscape(Platform.Function.Base64Encode(Platform.Function.Stringify(str)))
+        }
+
+        this._decode = function(str) {
+            return Platform.Function.ParseJSON(Platform.Function.Base64Decode(base64urlUnescape(str)));
+        }
     }
 
 </script>
