@@ -766,6 +766,36 @@
         return resp.content;
     }
 
+    /**
+     * Unescape sepcial characters in a base64 string and adds padding if needed
+     *
+     * @param {string} str  The escaped string to unescape
+     *
+     * @returns {string} The unescaped base64 string including padding
+     */
+    function base64urlUnescape(str) {
+        // workaround as new Array(n) is not initialising an empty array of length n
+        var padding = 4 - str.length % 4
+        if (padding < 4) {
+            for (var i = 0; i < padding; i++) {
+                str += '='
+            }
+        }
+        return str.replace(/\-/g, '+').replace(/_/g, '/');
+    }
+
+    /**
+     * Escape sepcial characters in a base64 string and removes padding to
+     * make the base64 string URL safe.
+     *
+     * @param {string} str  The string we want to escape
+     *
+     * @returns {string} The escaped URL safe base64 string
+     */
+    function base64urlEscape(str) {
+        return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    }
+
 
     // undocumented on purpose. Used to update the settings object with a custom setting object
     function _updateSettings(setting) {
