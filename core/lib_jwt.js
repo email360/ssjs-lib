@@ -132,8 +132,8 @@
             }
 
             // add nbf
-            if (Number.isInteger(nbf))  {
-                payload.nbf = (getUnixTimestamp() + exp);
+            if (nbf && Number.isInteger(nbf))  {
+                payload.nbf = (getUnixTimestamp() + nbf);
             }
 
             // add access
