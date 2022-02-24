@@ -37,6 +37,7 @@
      function sfmcapi(setting) {
         this.settings = _updateSettings(setting);
         this.token = null;
+        this.assetTypes = { ai: 16, psd: 17, pdd: 18, eps: 19, gif: 20, jpe: 21, jpeg: 22, jpg: 23, jp2: 24, jpx: 25, pict: 26, pct: 27, png: 28, tif: 29, tiff: 30, tga: 31, bmp: 32, wmf: 33, vsd: 34, pnm: 35, pgm: 36, pbm: 37, ppm: 38, svg: 39, "3fr": 40, ari: 41, arw: 42, bay: 43, cap: 44, crw: 45, cr2: 46, dcr: 47, dcs: 48, dng: 49, drf: 50, eip: 51, erf: 52, fff: 53, iiq: 54, k25: 55, kdc: 56, mef: 57, mos: 58, mrw: 59, nef: 60, nrw: 61, orf: 62, pef: 63, ptx: 64, pxn: 65, raf: 66, raw: 67, rw2: 68, rwl: 69, rwz: 70, srf: 71, sr2: 72, srw: 73, x3f: 74, "3gp": 75, "3gpp": 76, "3g2": 77, "3gp2": 78, asf: 79, avi: 80, m2ts: 81, mts: 82, dif: 83, dv: 84, mkv: 85, mpg: 86, f4v: 87, flv: 88, mjpg: 89, mjpeg: 90, mxf: 91, mpeg: 92, mp4: 93, m4v: 94, mp4v: 95, mov: 96, swf: 97, wmv: 98, rm: 99, ogv: 100, indd: 101, indt: 102, incx: 103, wwcx: 104, doc: 105, docx: 106, dot: 107, dotx: 108, mdb: 109, mpp: 110, ics: 111, xls: 112, xlsx: 113, xlk: 114, xlsm: 115, xlt: 116, xltm: 117, csv: 118, tsv: 119, tab: 120, pps: 121, ppsx: 122, ppt: 123, pptx: 124, pot: 125, thmx: 126, pdf: 127, ps: 128, qxd: 129, rtf: 130, sxc: 131, sxi: 132, sxw: 133, odt: 134, ods: 135, ots: 136, odp: 137, otp: 138, epub: 139, dvi: 140, key: 141, keynote: 142, pez: 143, aac: 144, m4a: 145, au: 146, aif: 147, aiff: 148, aifc: 149, mp3: 150, wav: 151, wma: 152, midi: 153, oga: 154, ogg: 155, ra: 156, vox: 157, voc: 158, "7z": 159, arj: 160, bz2: 161, cab: 162, gz: 163, gzip: 164, iso: 165, lha: 166, sit: 167, tgz: 168, jar: 169, rar: 170, tar: 171, zip: 172, gpg: 173, htm: 174, html: 175, xhtml: 176, xht: 177, css: 178, less: 179, sass: 180, js: 181, json: 182, atom: 183, rss: 184, xml: 185, xsl: 186, xslt: 187, md: 188, markdown: 189, as: 190, fla: 191, eml: 192, text: 193, txt: 194, freeformblock: 195, textblock: 196, htmlblock: 197, textplusimageblock: 198, imageblock: 199, abtestblock: 200, dynamicblock: 201, stylingblock: 202, einsteincontentblock: 203, webpage: 205, webtemplate: 206, templatebasedemail: 207, htmlemail: 208, textonlyemail: 209, socialshareblock: 210, socialfollowblock: 211, buttonblock: 212, layoutblock: 213, defaulttemplate: 214, smartcaptureblock: 215, smartcaptureformfieldblock: 216, smartcapturesubmitoptionsblock: 217, slotpropertiesblock: 218, externalcontentblock: 219, codesnippetblock: 220, rssfeedblock: 221, formstylingblock: 222, referenceblock: 223, imagecarouselblock: 224, customblock: 225, liveimageblock: 226, livesettingblock: 227, contentmap: 228, jsonmessage: 230 };
         var setup = this.settings.sfmcApi;
 
         /**
@@ -131,8 +132,141 @@
             }
         };
 
+        // ============================== USER INFO ============================
+
+        /**
+         * Retrieve the user info of the given BU
+         *
+         * @returns {object}    The user info of the given BU
+         */        
+        this.retrieveUserInfo = function() {
+            var token = this.getToken(),
+                config = {
+                    url: setup.authBaseURI + "v2/userinfo",
+                    header: {
+                        Authorization: "Bearer " + token
+                    }
+                };
+
+            return httpRequest('GET',config.url,null,null,config.header);
+        };
+
+        /**
+         * Retrieve the enterprise name of the user info
+         *
+         * @returns {string|null}   The name or null if none is found
+         */      
+        this.retrieveUserInfoEnterpriseName = function() {
+            var userInfo = this.retrieveUserInfo();
+            if (userInfo.status == 200 && userInfo.content.organization.enterprise_name != null) {
+                return userInfo.content.organization.enterprise_name;
+            } else {
+                return null;
+            }
+        }
+
 
         // ============================== JOURNEY ============================
+
+        /**
+         * Gets a list of jounreys based on a filter
+         *
+         * @param {object}  filter                              Filter object
+         * 
+         * @param {string}  filter.status                       A status description upon which to filter journeys. Can be one of: Draft, Published, 
+         *                                                      ScheduledToPublish, Stopped, Unpublished, Deleted. The default value is blank, which 
+         *                                                      returns all statuses. ScheduledToSend, Sent, and Stopped are unique to single-send journeys. 
+         *                                                      A single send journey can be 'Cancelled' via the UI, but the API status for this is 'Stopped.'
+         * @param {number}  filter.versionNumber                Version number of the journey to retrieve. The default value is published version or latest 
+         *                                                      available version number which meets other search criteria.
+         * @param {number}  filter.specificApiVersionNumber     Version number of the workflowApiVersion upon which to filter journeys. 
+         *                                                      The default value is 1.
+         * @param {boolean} filter.mostRecentVersionOnly        A flag to indicate whether to fetch only the most recent version of matching journeys. 
+         *                                                      The default value is true.
+         * @param {string}  filter.definitionType               Type of definition to retrieve. Valid values include: transactional (retrieves all 
+         *                                                      transactional send definitions).
+         * @param {string}  filter.nameOrDescription            A search string inside the journey's name or description properties upon which to match for filtering.
+         * @param {string}  filter.extras                       A list of additional data to fetch. Available values are: all, activities, outcome and stats. 
+         *                                                      The default value is blank, which returns all extras.
+         * @param {string}  filter.orderBy                      Specify how to order the journeys. Valid ordering columns are: ModifiedDate (default), Name, Performance. 
+         *                                                      Valid values are: DESC, ASC. The default value is 'ModifiedDate DESC'.
+         * @param {string}  filter.tag                          Specify a single tag to filter results to only include journeys associated with that tag.
+         * @param {number}  filter.page                         The number of pages to retrieve. The default value is 1.
+         * @param {number}  filter.pageSize                     The number of results to return on a page. The default and maximum is 50.
+         * 
+         * 
+         * @param {boolean} [retrieveAll=false] Retrieve all records.
+         * 
+         * 
+         * @returns {object} Result set of the request.
+         *
+         * 
+         * @see {@link https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/getInteractionCollection.html|getInteractionCollection}
+         *
+         * @example
+         * var rest = new sfmcapi();
+         *
+         * // retrieve all Journeys
+         * var resp = rest.retrieveJourneys(null,true);
+         *
+         * // retrieve only with tag 'email360' ordered by modifcation date
+         * var resp = rest.retrieveJourneys({
+         *          "$orderBy": "ModifiedDate DESC",
+         *          "tag": "email360"
+         *      });
+         */
+        this.retrieveJourneys = function(filter,retrieveAll) {
+            var token = this.getToken(),
+                param = [],
+                res = [],
+                page = (filter.page && !retrieveAll) ? filter.page : 1,
+                addResult = function(a) {
+                    for (var i = 0; i < a.length; i++) {
+                        res.push(a[i])
+                    }
+                }
+                config = {
+                    url: setup.restBaseURI + "interaction/v1/interactions/",
+                    header: {
+                        Authorization: "Bearer " + token
+                    }
+                };
+                
+            for (var key in filter) {
+                if (key != 'page') {
+                    var k = (key == 'orderBy' || key == 'pageSize') ? '$'+key : key;
+                    param.push(k+'='+filter[key]);
+                }
+            }
+
+            var url = config.url+'?'+param.join('&')+'&$page='+page,
+                req = httpRequest('GET',url,null,null,config.header);
+
+            if (req.status == 200) {
+                addResult(req.content.items);
+
+                if (retrieveAll) {
+                    page++;
+                    var totalPages = Math.ceil(req.content.count/req.content.pageSize);
+
+                    while (page <= totalPages) {
+                        url = config.url+'?'+param.join('&')+'&$page='+page;
+                        req = httpRequest('GET',url,null,null,config.header);
+                        
+                        if (req.status == 200) {
+                            addResult(req.content.items);
+                            page++;
+                        } else {
+                            throw "searchJourney retrieve failed: " + Stringify(req);
+                        }
+                    }
+                }
+            } else {
+                throw "searchJourney retrieve failed: " + Stringify(req);
+            }
+            return res;
+        }
+
 
         /**
          * Trigger a journey entry event.
@@ -209,7 +343,6 @@
             var token = this.getToken();
             //match asset type with uploaded file
             var res = null,
-                assetTypes = { ai: 16, psd: 17, pdd: 18, eps: 19, gif: 20, jpe: 21, jpeg: 22, jpg: 23, jp2: 24, jpx: 25, pict: 26, pct: 27, png: 28, tif: 29, tiff: 30, tga: 31, bmp: 32, wmf: 33, vsd: 34, pnm: 35, pgm: 36, pbm: 37, ppm: 38, svg: 39, "3fr": 40, ari: 41, arw: 42, bay: 43, cap: 44, crw: 45, cr2: 46, dcr: 47, dcs: 48, dng: 49, drf: 50, eip: 51, erf: 52, fff: 53, iiq: 54, k25: 55, kdc: 56, mef: 57, mos: 58, mrw: 59, nef: 60, nrw: 61, orf: 62, pef: 63, ptx: 64, pxn: 65, raf: 66, raw: 67, rw2: 68, rwl: 69, rwz: 70, srf: 71, sr2: 72, srw: 73, x3f: 74, "3gp": 75, "3gpp": 76, "3g2": 77, "3gp2": 78, asf: 79, avi: 80, m2ts: 81, mts: 82, dif: 83, dv: 84, mkv: 85, mpg: 86, f4v: 87, flv: 88, mjpg: 89, mjpeg: 90, mxf: 91, mpeg: 92, mp4: 93, m4v: 94, mp4v: 95, mov: 96, swf: 97, wmv: 98, rm: 99, ogv: 100, indd: 101, indt: 102, incx: 103, wwcx: 104, doc: 105, docx: 106, dot: 107, dotx: 108, mdb: 109, mpp: 110, ics: 111, xls: 112, xlsx: 113, xlk: 114, xlsm: 115, xlt: 116, xltm: 117, csv: 118, tsv: 119, tab: 120, pps: 121, ppsx: 122, ppt: 123, pptx: 124, pot: 125, thmx: 126, pdf: 127, ps: 128, qxd: 129, rtf: 130, sxc: 131, sxi: 132, sxw: 133, odt: 134, ods: 135, ots: 136, odp: 137, otp: 138, epub: 139, dvi: 140, key: 141, keynote: 142, pez: 143, aac: 144, m4a: 145, au: 146, aif: 147, aiff: 148, aifc: 149, mp3: 150, wav: 151, wma: 152, midi: 153, oga: 154, ogg: 155, ra: 156, vox: 157, voc: 158, "7z": 159, arj: 160, bz2: 161, cab: 162, gz: 163, gzip: 164, iso: 165, lha: 166, sit: 167, tgz: 168, jar: 169, rar: 170, tar: 171, zip: 172, gpg: 173, htm: 174, html: 175, xhtml: 176, xht: 177, css: 178, less: 179, sass: 180, js: 181, json: 182, atom: 183, rss: 184, xml: 185, xsl: 186, xslt: 187, md: 188, markdown: 189, as: 190, fla: 191, eml: 192, text: 193, txt: 194, freeformblock: 195, textblock: 196, htmlblock: 197, textplusimageblock: 198, imageblock: 199, abtestblock: 200, dynamicblock: 201, stylingblock: 202, einsteincontentblock: 203, webpage: 205, webtemplate: 206, templatebasedemail: 207, htmlemail: 208, textonlyemail: 209, socialshareblock: 210, socialfollowblock: 211, buttonblock: 212, layoutblock: 213, defaulttemplate: 214, smartcaptureblock: 215, smartcaptureformfieldblock: 216, smartcapturesubmitoptionsblock: 217, slotpropertiesblock: 218, externalcontentblock: 219, codesnippetblock: 220, rssfeedblock: 221, formstylingblock: 222, referenceblock: 223, imagecarouselblock: 224, customblock: 225, liveimageblock: 226, livesettingblock: 227, contentmap: 228, jsonmessage: 230 },
                 config = {
                     url : setup.restBaseURI + "asset/v1/content/assets",
                     contentType : "application/json",
@@ -220,7 +353,7 @@
                         name: imageName,
                         assetType: {
                             name: imageType,
-                            id: assetTypes[imageType]
+                            id: this.assetTypes[imageType]
                         },
                         file: imageBase64,
                         category: {
@@ -231,8 +364,8 @@
                 };
 
             // asset type not supporterd
-            if( typeof assetTypes[imageType] == 'undefined' ) {
-                res = {status: 'Error: fileType '+imageType+' is not supporterd'};
+            if( typeof this.assetTypes[imageType] == 'undefined' ) {
+                res = {status: 'Error: fileType '+imageType+' is not supported'};
                 debug('(uploadImage)\n\t'+res.Status);
                 return res;
             }
@@ -247,6 +380,75 @@
                     debug('(uploadImage)\n\t'+res.content.Message);
                     return res;
                 }
+            }
+        };
+
+        /**
+         * Create an html email asset
+         * 
+         * @param {string}          emailName       The name of the email
+         * @param {string}          subject         The subject of the email
+         * @param {string}          html            The name of the image
+         * @param {string}          [text]          The Plain text part of the HTML email
+         * @param {string}          [preheader]     The preheader for the email  
+         * @param {string|number}   [folderId]      The identifier for the folder. Name or folderId.
+         * @param {string}          [description]   A brief description about the email
+         *
+         * @returns {object} Result set of the request.
+         */
+         this.createAssetHtmlEmail = function(emailName,subject,html,text,preheader,folderId,description) {
+            var token = this.getToken();
+            var res = null,
+                assetType = 'htmlemail',
+                assetId = this.assetTypes[assetType],
+                config = {
+                    url : setup.restBaseURI + "asset/v1/content/assets",
+                    contentType : "application/json",
+                    header : {
+                        Authorization: "Bearer " + token
+                    },
+                    payload : {
+                        name: emailName,
+                        assetType: {
+                            name: assetType,
+                            id: assetId
+                        },
+                        category: {
+                            id: folderId
+                        },
+                        description: description,
+                        views: {
+                            html: {
+                                content: html
+                            },
+                            text: {
+                                content: text
+                            },
+                            subjectline: {
+                                content:subject
+                            },
+                            preheader: {
+                                content: preheader
+                            }
+                        }
+                    }
+                };
+
+            // asset type not supporterd
+            if( typeof this.assetTypes[assetType] == 'undefined' || this.assetTypes[assetType] == null ) {
+                res = {status: 'Error: assetType '+assetType+' is not supported'};
+                debug('(createAssetHtmlEmail)\n\tERROR: '+res.Status);
+                return res;
+            }
+
+            res = httpRequest('POST', config.url, config.contentType, config.payload, config.header);
+
+            if( res.status == 201 ) {
+                debug('(createAssetHtmlEmail)\n\tOK: Email '+emailName+' successfully create in folder '+res.content.category.name);
+                return res;
+            } else {
+                debug('(createAssetHtmlEmail)\n\tERROR: '+Stringify(res));
+                return res;
             }
         };
 
@@ -1115,5 +1317,91 @@
             }
         };
     }
+
+
+    // ============================== CONTACTS ==============================
+
+
+    /** 
+     * Deletes contacts based on specified contact key values. This operation runs asynchronously. 
+     * Use the OperationID value returned to check the status of the delete.
+     *
+     * This request deletes contacts specified by the contact key values passed in the values array.
+     * This asynchronous process places the deletion call in a queue for processing. The queue processes 
+     * only one deletion call at a time, and each process can take several hours to complete.
+     * 
+     * This resource deletes contact information from the account, including the Email, MobileConnect, 
+     * MobilePush, and GroupConnect apps, as well as lists, audiences, journeys, and Einstein analytics. 
+     * 
+     * This deletion occurs at the enterprise level 
+     * A successful request suppresses any sends or other activities to the specified contacts for a 
+     * specified number of days. You may still see the contact record in Marketing Cloud, but you can't 
+     * include these suppressed contacts in any activities. After the specified number of days, 
+     * Marketing Cloud deletes the contact from all lists and sendable data extensions. 
+     * 
+     * You can't restore any contact information associated with this delete process. 
+     * 
+     * Any subscriberID number assigned to the contact can be recycled in the future. For Enterprise accounts, 
+     * this process deletes all information at the Enterprise level.
+     *
+     * 
+     * @param {array}   values                  Array of contact key values to delete
+     * @param {string}  deleteOperationType     Type of delete operation to perform. Specify ContactAndAttributes to 
+     *                                          delete a contact and all its attributes from the entire account and channels. 
+     *                                          AttributesOnly is reserved for future use.
+     *
+     * @returns {object} Result set of the request including the operationID
+     */
+    this.deleteContactByKeys = function(values,deleteOperationType) {
+        if( values.length < 1 ) {
+            throw 'Required values';
+        }
+        var type = (!deleteOperationType) ? 'ContactAndAttributes' : deleteOperationType,
+            token = this.getToken(),
+            config = {
+                url: setup.restBaseURI + "contacts/v1/contacts/actions/delete?type=keys",
+                contentType : "application/json",
+                header: {
+                    Authorization: "Bearer " + token
+                },
+                payload : {
+                    "values": values,
+                    "deleteOperationType": type
+                }
+            };
+
+        var req = httpRequest('POST',config.url,config.contentType,config.payload,config.header);
+
+        if( req.status == 200 ) {
+            debug('(deleteContactbyKeys)\n\tOK: Delete of keys has been added to the queue');
+        } else {
+            debug('(deleteContactbyKeys)\n\tError: '+Platform.Function.Stringify(req));
+        }
+
+        return req;
+    };    
+
+
+    /** 
+     * Retrieves status of contact deletion operation.
+     * 
+     * @param {integer}   operationID   Query string parameter indicating ID of operation to check status
+     *
+     * @returns {object} Result set of the request
+     */
+    this.getDeleteStatus = function(operationID) {
+        var token = this.getToken(),
+            config = {
+                url: setup.restBaseURI + "contacts/v1/contacts/actions/delete/status?operationID="+operationID,
+                contentType : "application/json",
+                header: {
+                    Authorization: "Bearer " + token
+                }
+            };
+
+        return httpRequest('GET',config.url,config.contentType,null,config.header);
+    }
+
+
 
 </script>
