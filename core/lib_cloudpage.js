@@ -176,6 +176,23 @@
         };
 
         /**
+         * Wrapper / new name for isPayload
+         *
+         * If QueryStringParameter was found it is save at runtime 
+         * to cp.payload. E.g.: cp.payload.qs.subscriberKey.
+         * 
+         * @param {array}   data            An array of strings to be loaded.
+         * @param {boolean} [isRequired]    Check if any of the given payload exists, if not redirect to the error page / redirectURL.
+         * 
+         * @return {object} The given payload
+         * 
+         */
+        this.getPayload = function(data,isRequired) {
+            this.isPayload(data,isRequired);
+            return this.payload.qs;
+        }
+
+        /**
          * Generate a new JWT token.
          * 
          * @param   {string}    pid             Page ID (KEY) inside the Authentication DataExtension to fetch the salt.
