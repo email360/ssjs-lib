@@ -51,7 +51,7 @@
     } catch(e){
         // workaround for Thread Abort Exception from redirect
         var desc = e.description; //Pulls the description from error object
-        if(desc.includes("ExactTarget.OMM.AMPScriptRedirectException: Error in the application. - from")) {
+        if(desc && desc.includes("ExactTarget.OMM.AMPScriptRedirectException: Error in the application. - from")) {
             Platform.Response.Write(desc); //This is arbitrary as will not be run
         } else {
             // redirect error page

@@ -157,6 +157,8 @@
          * 
          * @param {array}   data            An array of strings to be loaded.
          * @param {boolean} [isRequired]    Check if any of the given payload exists, if not redirect to the error page / redirectURL.
+         * 
+         * @return {object} The given payload
          */
         this.isPayload = function(data,isRequired) {
             for(var i = 0; i < data.length; i++) {
@@ -173,7 +175,9 @@
                     this.payload.qs[data[i]] = r;
                 }
             }
+            return this.payload.qs;
         };
+
 
         /**
          * Wrapper / new name for isPayload

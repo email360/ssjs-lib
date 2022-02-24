@@ -268,13 +268,11 @@
     /**
      * Get the current UnixTimestamp
      *
-     * @param {boolean} ms  Return the UnixTimestamp in ms
-     * 
      * @returns {number} The current UnixTimestamp in UTC
      */
-    function getUnixTimestamp(ms) {
-        var ts = Math.round((new Date()).valueOf()); 
-        return (ms) ? ts : Math.floor(ts / 1000);
+    function getUnixTimestamp() { 
+        var now = new Date();
+        return Math.floor(now.valueOf() / 1000); 
     }
 
     /**
@@ -769,15 +767,33 @@
     }
 
     /**
-     * Convert XML to JSON using XSLT
-     * 
-     * @param {string} xml  The xml to convert to JSON
-     * 
-     * @return {object} the converted JSON
+     * Unescape sepcial characters in a base64 string and adds padding if needed
+     *
+     * @param {string} str  The escaped string to unescape
+     *
+     * @returns {string} The unescaped base64 string including padding
      */
-    function convertXMLToJSON(xml) {
-        var xslt = '<?xml version="1.0" encoding="UTF-8" ?> <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"><xsl:output method="text" encoding="utf-8"><xsl:template match="/"><xsl:text>{</xsl:text><xsl:apply-templates select="." mode="detect"><xsl:text>}</xsl:text></xsl:template><xsl:template match="*" mode="detect"><xsl:choose><xsl:when test="name(preceding-sibling::*[1]) = name(current()) and name(following-sibling::*[1]) != name(current())"><xsl:apply-templates select="." mode="obj-content"><xsl:text>]</xsl:text><xsl:if test="count(following-sibling::*[name() != name(current())]) &gt; 0">,</xsl:if></xsl:when><xsl:when test="name(preceding-sibling::*[1]) = name(current())"><xsl:apply-templates select="." mode="obj-content"><xsl:if test="name(following-sibling::*) = name(current())">,</xsl:if></xsl:when><xsl:when test="following-sibling::*[1][name() = name(current())]"><xsl:text>"</xsl:text><xsl:value-of select="name()"><xsl:text>" : [</xsl:text><xsl:apply-templates select="." mode="obj-content"><xsl:text>,</xsl:text></xsl:when><xsl:when test="count(./child::*) > 0 or count(@*) > 0"><xsl:text>"</xsl:text><xsl:value-of select="name()">" :<xsl:apply-templates select="." mode="obj-content"><xsl:if test="count(following-sibling::*) &gt; 0">,</xsl:if></xsl:when><xsl:when test="count(./child::*) = 0"><xsl:text>"</xsl:text><xsl:value-of select="name()">" : "<xsl:apply-templates select="."><xsl:text>"</xsl:text><xsl:if test="count(following-sibling::*) &gt; 0">,</xsl:if></xsl:when></xsl:choose></xsl:template><xsl:template match="*" mode="obj-content"><xsl:text>{</xsl:text><xsl:apply-templates select="@*" mode="attr"><xsl:if test="count(@*) &gt; 0 and (count(child::*) &gt; 0 or text())">,</xsl:if><xsl:apply-templates select="./*" mode="detect"><xsl:if test="count(child::*) = 0 and text() and not(@*)"><xsl:text>"</xsl:text><xsl:value-of select="name()">" : "<xsl:value-of select="text()"><xsl:text>"</xsl:text></xsl:if><xsl:if test="count(child::*) = 0 and text() and @*"><xsl:text>"text" : "</xsl:text><xsl:value-of select="text()"><xsl:text>"</xsl:text></xsl:if><xsl:text>}</xsl:text><xsl:if test="position() &lt; last()">,</xsl:if></xsl:template><xsl:template match="@*" mode="attr"><xsl:text>"</xsl:text><xsl:value-of select="name()">" : "<xsl:value-of select="."><xsl:text>"</xsl:text><xsl:if test="position() &lt; last()">,</xsl:if></xsl:template><xsl:template match="node/@TEXT | text()" name="removeBreaks"><xsl:param name="pText" select="normalize-space(.)"><xsl:choose><xsl:when test="not(contains($pText, \'&#xA;\'))"><xsl:copy-of select="$pText"></xsl:when><xsl:otherwise><xsl:value-of select="concat(substring-before($pText, \'&#xD;&#xA;\'), \' \')"><xsl:call-template name="removeBreaks"><xsl:with-param name="pText" select="substring-after($pText, \'&#xD;&#xA;\')"></xsl:call-template></xsl:otherwise></xsl:choose></xsl:template></xsl:stylesheet>';
-        return Platform.Function.ParseJSON(TransformXML(xml,xslt));
+    function base64urlUnescape(str) {
+        // workaround as new Array(n) is not initialising an empty array of length n
+        var padding = 4 - str.length % 4
+        if (padding < 4) {
+            for (var i = 0; i < padding; i++) {
+                str += '='
+            }
+        }
+        return str.replace(/\-/g, '+').replace(/_/g, '/');
+    }
+
+    /**
+     * Escape sepcial characters in a base64 string and removes padding to
+     * make the base64 string URL safe.
+     *
+     * @param {string} str  The string we want to escape
+     *
+     * @returns {string} The escaped URL safe base64 string
+     */
+    function base64urlEscape(str) {
+        return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
     }
 
 
@@ -790,8 +806,6 @@
         }
         return orgSetting;
     }
-
-
 
 
 

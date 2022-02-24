@@ -1083,51 +1083,51 @@
         // ============================== DATAEXENSION TEMPLATE ==============================
 
         /**
-         * Retrieve informations about a single DataExtentionTemplate.
+         * Retrieve informations about a single DataExtensionTemplate.
          * 
-         * @param {string}  id  The identifier for the DataExtentionTemplate. Name or customerKey.
+         * @param {string}  id  The identifier for the DataExtensionTemplate. Name or customerKey.
          *
          * @returns {object} Result set of the request.
          *
          * @example
-         * // Retrieve informations about a sepcific DataExtentionTemplate
+         * // Retrieve informations about a sepcific DataExtensionTemplate
          * var prox = new wsproxy();
-         * var resp = prox.retrieveDataExtentionTemplate('MySampleDataExtension');
+         * var resp = prox.retrieveDataExtensionTemplate('MySampleDataExtension');
          *
          * // using a customerKey
-         * var resp = prox.retrieveDataExtentionTemplate('53b54b8a-b604-4fc2-90x9-33eec99c8a93');
+         * var resp = prox.retrieveDataExtensionTemplate('53b54b8a-b604-4fc2-90x9-33eec99c8a93');
          */
-        this.retrieveDataExtentionTemplate = function(id) {
-            var cols = this.retrievableCols('DataExtentionTemplate'),
+        this.retrieveDataExtensionTemplate = function(id) {
+            var cols = this.retrievableCols('DataExtensionTemplate'),
                 property = ['Name','CustomerKey'],
                 req = {};
 
             for (var i = 0; i < 2; i++) {
-                req = this.api.retrieve("DataExtentionTemplate", cols, { 
+                req = this.api.retrieve("DataExtensionTemplate", cols, { 
                     Property: property[i], 
                     SimpleOperator: "equals", 
                     Value: id 
                 });
 
                 if( req.Status == 'OK' && req.Results.length > 0 ) {
-                    debug('(retrieveDataExtentionTemplate)\n\tOK: Retrieve DataExtentionTemplate with '+property[i]+': '+id);
+                    debug('(retrieveDataExtensionTemplate)\n\tOK: Retrieve DataExtensionTemplate with '+property[i]+': '+id);
                     return req;
                 }
             }
-            debug('(retrieveDataExtentionTemplate)\n\t' + req.Status);
+            debug('(retrieveDataExtensionTemplate)\n\t' + req.Status);
             return req;
         };
 
         /**
-         * Retrieve a list of all DataExtentionTemplate(s) in the business unit.
+         * Retrieve a list of all DataExtensionTemplate(s) in the business unit.
          *
          * @param {object}      [filter]            SFMC filter.
          * @param {boolean}     [retrieveAll=false] Retrieve more than 2,500 records.
          *
          * @returns {object} Result set of the request.
          */
-        this.retrieveDataExtentionTemplates = function(filter,retrieveAll) {
-            var cols = this.retrievableCols('DataExtentionTemplate'),
+        this.retrieveDataExtensionTemplates = function(filter,retrieveAll) {
+            var cols = this.retrievableCols('DataExtensionTemplate'),
                 a = [],
                 f = {Property:"CustomerKey", SimpleOperator:"isNotNull", Value:" "},
                 moreData = true,
@@ -1141,7 +1141,7 @@
 
                 moreData = false;
 
-                req = (reqID == null) ? req = this.api.retrieve("DataExtentionTemplate", cols, f) : req = this.api.getNextBatch("DataExtentionTemplate", reqID);
+                req = (reqID == null) ? req = this.api.retrieve("DataExtensionTemplate", cols, f) : req = this.api.getNextBatch("DataExtensionTemplate", reqID);
 
                 if( req.Status == 'OK' || req.Status == 'MoreDataAvailable' ) {
                     moreData = (retrieveAll) ? req.HasMoreRows : false;
@@ -1151,95 +1151,95 @@
                         a.push(r[k]);
                     }
                 } else {
-                    debug('(retrieveDataExtentionTemplates)\n\tError: '+req);
+                    debug('(retrieveDataExtensionTemplates)\n\tError: '+req);
                     return req;
                 }
             }
-            debug('(retrieveDataExtentionTemplates)\n\tOK: Retrieved '+a.length+' DataExtentionTemplates');
+            debug('(retrieveDataExtensionTemplates)\n\tOK: Retrieved '+a.length+' DataExtensionTemplates');
             req.Results = a;
             return req;
         };
 
         /**
-         * Retrieves a property of a DataExtentionTemplate.
+         * Retrieves a property of a DataExtensionTemplate.
          *
-         * @param {string}  id          The identifier for the DataExtentionTemplate. Name or customerKey.
+         * @param {string}  id          The identifier for the DataExtensionTemplate. Name or customerKey.
          * @param {string}  property    The property name to retrieve.
          *
-         * @returns {string|NULL}  The DataExtentionTemplate property or NULL
+         * @returns {string|NULL}  The DataExtensionTemplate property or NULL
          */
-        this.retrieveDataExtentionTemplateProperty = function(id,property) {
-            var req = this.retrieveDataExtentionTemplate(id),
+        this.retrieveDataExtensionTemplateProperty = function(id,property) {
+            var req = this.retrieveDataExtensionTemplate(id),
                 prop = req.Results[0][property];
 
             if( req.Status == 'OK' && req.Results.length == 1 && prop ) {
-                debug('(retrieveDataExtentionTemplate'+property+')\n\tOK: '+property+' for DataExtentionTemplate '+id+': '+prop );
+                debug('(retrieveDataExtensionTemplate'+property+')\n\tOK: '+property+' for DataExtensionTemplate '+id+': '+prop );
                 return prop;
             } else {
-                debug('(retrieveDataExtentionTemplate'+property+')\n\tError: Cannot retrieve '+property+' for DataExtentionTemplate: '+id);
+                debug('(retrieveDataExtensionTemplate'+property+')\n\tError: Cannot retrieve '+property+' for DataExtensionTemplate: '+id);
                 return null;
             }
         };
 
         /**
-         * Retrieve the CustomerKey of the given DataExtentionTemplate.
+         * Retrieve the CustomerKey of the given DataExtensionTemplate.
          * 
-         * @param {string}  id  The name of the DataExtentionTemplate.
+         * @param {string}  id  The name of the DataExtensionTemplate.
          *
-         * @returns {string|NULL}  The CustomerKey of the DataExtentionTemplate or NULL
+         * @returns {string|NULL}  The CustomerKey of the DataExtensionTemplate or NULL
          */
-        this.retrieveDataExtentionTemplateCustomerKey = function(id) { return (isCustomerKey(id)) ? id : this.retrieveDataExtentionTemplateProperty(id,'CustomerKey'); };
+        this.retrieveDataExtensionTemplateCustomerKey = function(id) { return (isCustomerKey(id)) ? id : this.retrieveDataExtensionTemplateProperty(id,'CustomerKey'); };
 
         /**
-         * Retrieve the Name of the given DataExtentionTemplate.
+         * Retrieve the Name of the given DataExtensionTemplate.
          * 
-         * @param {string}  id  The customerKey of the DataExtentionTemplate.
+         * @param {string}  id  The customerKey of the DataExtensionTemplate.
          *
-         * @returns {string|NULL}  The Name of the DataExtentionTemplate or NULL
+         * @returns {string|NULL}  The Name of the DataExtensionTemplate or NULL
          */
-        this.retrieveDataExtentionTemplateName = function(id) { return this.retrieveDataExtentionTemplateProperty(id,'Name'); };
+        this.retrieveDataExtensionTemplateName = function(id) { return this.retrieveDataExtensionTemplateProperty(id,'Name'); };
 
         /**
-         * Retrieve the ObjectID of the given DataExtentionTemplate.
+         * Retrieve the ObjectID of the given DataExtensionTemplate.
          * 
-         * @param {string}  id  The identifier for the DataExtentionTemplate. Name or customerKey.
+         * @param {string}  id  The identifier for the DataExtensionTemplate. Name or customerKey.
          *
-         * @returns {string|NULL}  The ObjectID of the DataExtentionTemplate or NULL
+         * @returns {string|NULL}  The ObjectID of the DataExtensionTemplate or NULL
          */
-        this.retrieveDataExtentionTemplateObjectID = function(id) { return this.retrieveDataExtentionTemplateProperty(id,'ObjectID'); };
+        this.retrieveDataExtensionTemplateObjectID = function(id) { return this.retrieveDataExtensionTemplateProperty(id,'ObjectID'); };
 
         /**
-         * Retrieve the CategoryID of the given DataExtentionTemplate.
+         * Retrieve the CategoryID of the given DataExtensionTemplate.
          * 
-         * @param {string}  id  The identifier for the DataExtentionTemplate. Name or customerKey.
+         * @param {string}  id  The identifier for the DataExtensionTemplate. Name or customerKey.
          *
-         * @returns {string|NULL}  The CategoryID of the DataExtentionTemplate or NULL
+         * @returns {string|NULL}  The CategoryID of the DataExtensionTemplate or NULL
          */
-        this.retrieveDataExtentionTemplateCategoryID = function(id) { return this.retrieveDataExtentionTemplateProperty(id,'CategoryID'); };
+        this.retrieveDataExtensionTemplateCategoryID = function(id) { return this.retrieveDataExtensionTemplateProperty(id,'CategoryID'); };
 
         /**
-         * Retrieve the ModifiedDate of the given DataExtentionTemplate.
+         * Retrieve the ModifiedDate of the given DataExtensionTemplate.
          *
-         * <b>Note:</b> ModifiedDate is the the last modification of the properties for the given DataExtentionTemplate. This does not apply 
-         * to changes of the data within the DataExtentionTemplate.
+         * <b>Note:</b> ModifiedDate is the the last modification of the properties for the given DataExtensionTemplate. This does not apply 
+         * to changes of the data within the DataExtensionTemplate.
          * 
-         * @param {string}  id  The identifier for the DataExtentionTemplate. Name or customerKey.
+         * @param {string}  id  The identifier for the DataExtensionTemplate. Name or customerKey.
          *
-         * @returns {string|NULL}  The ModifiedDate of the DataExtentionTemplate or NULL
+         * @returns {string|NULL}  The ModifiedDate of the DataExtensionTemplate or NULL
          */
-        this.retrieveDataExtentionTemplateModifiedDate = function(id) { return this.retrieveDataExtentionTemplateProperty(id,'ModifiedDate'); };
+        this.retrieveDataExtensionTemplateModifiedDate = function(id) { return this.retrieveDataExtensionTemplateProperty(id,'ModifiedDate'); };
 
         /**
-         * Retrieve a list of all DataExtentionTemplate Names.
+         * Retrieve a list of all DataExtensionTemplate Names.
          * 
          * @param {object}  [filter]            SFMC filter.
          * @param {boolean} [retrieveAll=false] Retrieve more than 2,500 records.
          *
-         * @returns {string|NULL}  Array of all DataExtentionTemplate Names or NULL.
+         * @returns {string|NULL}  Array of all DataExtensionTemplate Names or NULL.
          */
-        this.retrieveDataExtentionTemplateNames = function(filter,retrieveAll) {
+        this.retrieveDataExtensionTemplateNames = function(filter,retrieveAll) {
             var res = [],
-                req = this.retrieveDataExtentionTemplates(filter,retrieveAll),
+                req = this.retrieveDataExtensionTemplates(filter,retrieveAll),
                 r = req.Results;
 
             if( req.Status == 'OK' && r.length > 0) {
@@ -1252,45 +1252,45 @@
         };
 
         /**
-         * Check if a DataExtentionTemplate with the given id already exists.
+         * Check if a DataExtensionTemplate with the given id already exists.
          * 
-         * @param {string}  id  The identifier for the DataExtentionTemplate. Name or customerKey.
+         * @param {string}  id  The identifier for the DataExtensionTemplate. Name or customerKey.
          *
          * @returns {boolean}
          */
-        this.isDataExtentionTemplate = function(id) {
+        this.isDataExtensionTemplate = function(id) {
             this._toogleDebugMode();
-            var req = this.retrieveDataExtentionTemplate(id);
+            var req = this.retrieveDataExtensionTemplate(id);
             this._toogleDebugMode();
             return (req.Status == 'OK' && req.Results.length > 0) ? true : false;
         };
 
         /**
-         * Delete a DataExtentionTemplate
+         * Delete a DataExtensionTemplate
          * 
-         * @param {string}  id  The identifier for the DataExtentionTemplate. Name or customerKey.
+         * @param {string}  id  The identifier for the DataExtensionTemplate. Name or customerKey.
          *
          * @returns {boolean}
          */
-        this.deleteDataExtentionTemplate = function(id) {
-            var req = this.retrieveDataExtentionTemplate(id);
+        this.deleteDataExtensionTemplate = function(id) {
+            var req = this.retrieveDataExtensionTemplate(id);
 
             if( req.Status == 'OK' && req.Results.length > 0 ) {
 
                 try {   
                     var objectID = req.Results[0].ObjectID,
                         name = req.Results[0].Name,
-                        res = this.api.deleteItem("DataExtentionTemplate", { "ObjectID": objectID });
+                        res = this.api.deleteItem("DataExtensionTemplate", { "ObjectID": objectID });
 
                     if( res.Status == 'OK' ) { 
-                        debug('(deleteDataExtentionTemplate)\n\tOK: DataExtentionTemplate '+name+' deleted');
+                        debug('(deleteDataExtensionTemplate)\n\tOK: DataExtensionTemplate '+name+' deleted');
                         return true;
                     } else {
-                        debug('(deleteDataExtentionTemplate)\n\tError: '+Platform.Function.Stringify(res));
+                        debug('(deleteDataExtensionTemplate)\n\tError: '+Platform.Function.Stringify(res));
                         return false;
                     }
                 } catch(e) {
-                    debug('(deleteDataExtentionTemplate)\n\t'+Platform.Function.Stringify(e));
+                    debug('(deleteDataExtensionTemplate)\n\t'+Platform.Function.Stringify(e));
                     return false;     
                 }
             }

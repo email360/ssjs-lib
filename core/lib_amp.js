@@ -249,7 +249,7 @@
         // parameters
         amp += "'" + string + "'";
         if(encoding) {
-            amp += ",'" + encoding + "'";
+            amp += "'" + encoding + "'";
         }
         // function close
         amp += ") ";
@@ -283,7 +283,7 @@
         // parameters
         amp += "'" + string + "'";
         if(encoding) {
-            amp += ",'" + encoding + "'";
+            amp += "'" + encoding + "'";
         }
         // function close
         amp += ") ";
@@ -317,7 +317,7 @@
         // parameters
         amp += "'" + string + "'";
         if(encoding) {
-            amp += ",'" + encoding + "'";
+            amp += "'" + encoding + "'";
         }
         // function close
         amp += ") ";
@@ -328,37 +328,6 @@
 
         return Platform.Function.TreatAsContent(amp);
      }
-
-    /**
-     * This function allows users to create JSON web tokens (JWTs). 
-     * 
-     * It uses a key to create a hash of the JWT payload. The hash is included in the JWT content to allow validation. 
-     * The JWT payload isn’t encrypted.
-     * The difference between GetJWT() and its companion function GetJWTByKeyName() is the first parameter. 
-     * The GetJWT() first parameter is a key string that the caller supplies directly through their preferred method. 
-     * For example, the key string is encrypted and stored in a data extension.
-     *
-     *
-     * @param  {string}    string       A key string.
-     * @param  {string}    algorithm    Name of a JWT standard hash algorithm from among HS256, HS384, or HS512.
-     * @param  {object}    payload      The payload, a JSON object with name-value pairs. The payload isn't encrypted.
-     *
-     * @returns {string}    A jwt token
-     */
-    function GetJWT(key,algorithm,payload) {
-        var varName = '@amp__GetJWT';
-
-        // AMP decleration
-        var amp = "\%\%[ ";
-        // function open        
-        amp += "set "+varName+" = GetJWT('"+key+"','"+algorithm+"','"+payload+"')";
-        // output
-        amp += "output(concat("+varName+")) ";
-        // end of AMP
-        amp += "]\%\%";
-
-        return Platform.Function.TreatAsContent(amp);
-    }
 
     /**
      * Enables the AMP function DataExtensionRowCount in SSJS
@@ -437,7 +406,7 @@
      *
      * This function decrypts a string with the specified algorithm and qualifiers.
      *
-     * @param {string} string           String to encrypt
+     * @param {string} string           String to decrypt
      * @param {string} algorithm        Algorithm used to encrypt the string. Valid values are aes, des, and tripledes
      * @param {string} password_key     Password External Key for retrieval from Key Management
      * @param {string} password         Password value
@@ -473,42 +442,5 @@
 
         return Platform.Function.TreatAsContent(amp);
     }
-
-    /**
-     * Enables the AMP function DecryptSymmetric in SSJS
-     *
-     * Applies an XSL transform to an XML document.
-     *
-     * @param {string} xml      XML to transform
-     * @param {string} xsl      XSL document used in the transformation
-     *
-     * @see {@link https://developer.salesforce.com/docs/atlas.en-us.noversion.mc-programmatic-content.meta/mc-programmatic-content/transformxml.htm}
-     */
-     function TransformXML(xml,xsl) {
-        var varName = '@amp__TransformXML',
-            param = [xml,xsl];
-
-        // AMP decleration
-        var amp = "\%\%[ ";
-        // function open        
-        amp += "set "+varName+" = TransformXML(";
-        // string parameter
-        amp += "'" + string + "'";
-
-        for (var i = 0; i < param.length; i++) {
-            var value = (param[i]) ? "'"+param[i]+"'" : '@null';
-            amp += "," + value;    
-        }
-
-        // function close
-        amp += ") ";
-        // output
-        amp += "output(concat("+varName+")) ";
-        // end of AMP
-        amp += "]\%\%";
-
-        return Platform.Function.TreatAsContent(amp);
-    }
-
 
 </script>
