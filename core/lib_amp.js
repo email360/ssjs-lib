@@ -239,7 +239,7 @@
      *
      * @returns {string}    The string as a SHA1 hex value hashed
      */
-     function SHA1(string,encoding) {
+    function SHA1(string,encoding) {
         var varName = '@amp__SHA1';
 
         // AMP decleration
@@ -273,7 +273,7 @@
      *
      * @returns {string}    The string as a SHA256 hex value hashed
      */
-     function SHA256(string,encoding) {
+    function SHA256(string,encoding) {
         var varName = '@amp__SHA256';
 
         // AMP decleration
@@ -307,7 +307,7 @@
      *
      * @returns {string}    The string as a SHA512 hex value hashed
      */
-     function SHA512(string,encoding) {
+    function SHA512(string,encoding) {
         var varName = '@amp__SHA512';
 
         // AMP decleration
@@ -327,7 +327,38 @@
         amp += "]\%\%";
 
         return Platform.Function.TreatAsContent(amp);
-     }
+    }
+
+    /**
+     * This function allows users to create JSON web tokens (JWTs). 
+     * 
+     * It uses a key to create a hash of the JWT payload. The hash is included in the JWT content to allow validation. 
+     * The JWT payload isn’t encrypted.
+     * The difference between GetJWT() and its companion function GetJWTByKeyName() is the first parameter. 
+     * The GetJWT() first parameter is a key string that the caller supplies directly through their preferred method. 
+     * For example, the key string is encrypted and stored in a data extension.
+     *
+     *
+     * @param  {string}    string       A key string.
+     * @param  {string}    algorithm    Name of a JWT standard hash algorithm from among HS256, HS384, or HS512.
+     * @param  {object}    payload      The payload, a JSON object with name-value pairs. The payload isn't encrypted.
+     *
+     * @returns {string}    A jwt token
+     */
+    function GetJWT(key,algorithm,payload) {
+        var varName = '@amp__GetJWT';
+
+        // AMP decleration
+        var amp = "\%\%[ ";
+        // function open        
+        amp += "set "+varName+" = GetJWT('"+key+"','"+algorithm+"','"+payload+"')";
+        // output
+        amp += "output(concat("+varName+")) ";
+        // end of AMP
+        amp += "]\%\%";
+
+        return Platform.Function.TreatAsContent(amp);
+    }
 
     /**
      * Enables the AMP function DataExtensionRowCount in SSJS
@@ -435,6 +466,32 @@
 
         // function close
         amp += ") ";
+        // output
+        amp += "output(concat("+varName+")) ";
+        // end of AMP
+        amp += "]\%\%";
+
+        return Platform.Function.TreatAsContent(amp);
+    }
+
+    /**
+     * Enables the AMP function TransformXML in SSJS
+     *
+     * Applies an XSL transform to an XML document.
+     *
+     * @param {string} xml      XML to transform
+     * @param {string} xsl      XSL document used in the transformation
+     *
+     * @see {@link https://developer.salesforce.com/docs/atlas.en-us.noversion.mc-programmatic-content.meta/mc-programmatic-content/transformxml.htm}
+     */
+     function TransformXML(xml,xsl) {
+        var varName = '@amp__TransformXML',
+            param = [xml,xsl];
+
+        // AMP decleration
+        var amp = "\%\%[ ";
+        // function        
+        amp += "set "+varName+" = TransformXML('"+xml+"','"+xsl+"')";
         // output
         amp += "output(concat("+varName+")) ";
         // end of AMP
