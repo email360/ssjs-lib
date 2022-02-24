@@ -74,7 +74,7 @@
             ]);
         settings.de.sfmcApiToken = createDataExtension('SFMC Api Token', [
                 { "Name": "clientId", "FieldType": "Text", "MaxLength": 50, "IsPrimaryKey": true, "IsRequired": true },
-                { "Name": "token", "FieldType": "Text", "MaxLength": 500, "IsPrimaryKey": true, "IsRequired": true },
+                { "Name": "token", "FieldType": "Text", "MaxLength": 1000, "IsPrimaryKey": true, "IsRequired": true },
                 { "Name": "expire", "FieldType": "Date" }
             ]);
         settings.de.wsproxyCols = createDataExtension('WSProxy Cols', [
