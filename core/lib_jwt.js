@@ -72,25 +72,6 @@
     function jwt() {
 
         /**
-         * Pad a base64 string to its correct length
-         * 
-         * @param {string}  The base64 string
-         * 
-         * @return {string} The padded base64 string
-         */
-        this.padBase64 = function(base64) {
-            var pad = 4 - ( (base64.length + 4) % 4);
-            if (pad == 4) {
-                return base64;
-            }
-            // for loop as padEnd, repeat and Array(n) is not availabe in ECMA3
-            for (var i = 0; i < pad; i++) {
-                base64 += '=';
-            }
-            return base64;
-        };
-
-        /**
          * Decode a jwt token
          *
          * @param   {string}    token       A valid JWT token
@@ -111,7 +92,7 @@
             }
 
             // get payload
-            return Platform.Function.ParseJSON(Platform.Function.Base64Decode(this.padBase64(token.split('.')[1])));
+            return Platform.Function.ParseJSON(Platform.Function.Base64Decode(base64pad(token.split('.')[1])));
         };
 
         /**
@@ -202,7 +183,7 @@
             }
 
             // base64 decode and parse JSON
-            var payload = Platform.Function.ParseJSON(Platform.Function.Base64Decode(this.padBase64(segments[1])));
+            var payload = Platform.Function.ParseJSON(Platform.Function.Base64Decode(base64pad(segments[1])));
 
             // Support for nbf and exp claims
             if (payload.nbf) {
@@ -251,8 +232,8 @@
          * @returns  {string}   The signature
          */
         this.sign = function(header, payload, key) {
-            var p = Platform.Function.ParseJSON(Platform.Function.Base64Decode(this.padBase64(payload))),
-                h = Platform.Function.ParseJSON(Platform.Function.Base64Decode(this.padBase64(header))),
+            var p = Platform.Function.ParseJSON(Platform.Function.Base64Decode(base64pad(payload))),
+                h = Platform.Function.ParseJSON(Platform.Function.Base64Decode(base64pad(header))),
                 alg = h.alg,
                 jwt = GetJWT(key,alg,Stringify(p));
 
