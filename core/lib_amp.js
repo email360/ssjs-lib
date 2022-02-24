@@ -351,7 +351,7 @@
         // AMP decleration
         var amp = "\%\%[ ";
         // function open        
-        amp += "set "+varName+" = GetJWT('"+key+"','"+algorithm+"','"+payload+"')";
+        amp += "set "+varName+" = GetJWT('"+key+"','"+algorithm+"','"+payload+"') ";
         // output
         amp += "output(concat("+varName+")) ";
         // end of AMP
@@ -491,7 +491,7 @@
         // AMP decleration
         var amp = "\%\%[ ";
         // function        
-        amp += "set "+varName+" = TransformXML('"+xml+"','"+xsl+"')";
+        amp += "set "+varName+" = TransformXML('"+xml+"','"+xsl+"') ";
         // output
         amp += "output(concat("+varName+")) ";
         // end of AMP
