@@ -268,11 +268,13 @@
     /**
      * Get the current UnixTimestamp
      *
+     * @param {boolean} ms  Return the UnixTimestamp in ms
+     * 
      * @returns {number} The current UnixTimestamp in UTC
      */
-    function getUnixTimestamp() { 
-        var now = new Date();
-        return Math.floor(now.valueOf() / 1000); 
+    function getUnixTimestamp(ms) {
+        var ts = Math.round((new Date()).valueOf()); 
+        return (ms) ? ts : Math.floor(ts / 1000);
     }
 
     /**
