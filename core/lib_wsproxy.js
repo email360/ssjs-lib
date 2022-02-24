@@ -47,6 +47,66 @@
         this.settings = _updateSettings(setting);
         // https://developer.salesforce.com/docs/atlas.en-us.mc-apis.meta/mc-apis/base-asset-types.htm
         this.assetTypes = { ai: 16, psd: 17, pdd: 18, eps: 19, gif: 20, jpe: 21, jpeg: 22, jpg: 23, jp2: 24, jpx: 25, pict: 26, pct: 27, png: 28, tif: 29, tiff: 30, tga: 31, bmp: 32, wmf: 33, vsd: 34, pnm: 35, pgm: 36, pbm: 37, ppm: 38, svg: 39, "3fr": 40, ari: 41, arw: 42, bay: 43, cap: 44, crw: 45, cr2: 46, dcr: 47, dcs: 48, dng: 49, drf: 50, eip: 51, erf: 52, fff: 53, iiq: 54, k25: 55, kdc: 56, mef: 57, mos: 58, mrw: 59, nef: 60, nrw: 61, orf: 62, pef: 63, ptx: 64, pxn: 65, raf: 66, raw: 67, rw2: 68, rwl: 69, rwz: 70, srf: 71, sr2: 72, srw: 73, x3f: 74, "3gp": 75, "3gpp": 76, "3g2": 77, "3gp2": 78, asf: 79, avi: 80, m2ts: 81, mts: 82, dif: 83, dv: 84, mkv: 85, mpg: 86, f4v: 87, flv: 88, mjpg: 89, mjpeg: 90, mxf: 91, mpeg: 92, mp4: 93, m4v: 94, mp4v: 95, mov: 96, swf: 97, wmv: 98, rm: 99, ogv: 100, indd: 101, indt: 102, incx: 103, wwcx: 104, doc: 105, docx: 106, dot: 107, dotx: 108, mdb: 109, mpp: 110, ics: 111, xls: 112, xlsx: 113, xlk: 114, xlsm: 115, xlt: 116, xltm: 117, csv: 118, tsv: 119, tab: 120, pps: 121, ppsx: 122, ppt: 123, pptx: 124, pot: 125, thmx: 126, pdf: 127, ps: 128, qxd: 129, rtf: 130, sxc: 131, sxi: 132, sxw: 133, odt: 134, ods: 135, ots: 136, odp: 137, otp: 138, epub: 139, dvi: 140, key: 141, keynote: 142, pez: 143, aac: 144, m4a: 145, au: 146, aif: 147, aiff: 148, aifc: 149, mp3: 150, wav: 151, wma: 152, midi: 153, oga: 154, ogg: 155, ra: 156, vox: 157, voc: 158, "7z": 159, arj: 160, bz2: 161, cab: 162, gz: 163, gzip: 164, iso: 165, lha: 166, sit: 167, tgz: 168, jar: 169, rar: 170, tar: 171, zip: 172, gpg: 173, htm: 174, html: 175, xhtml: 176, xht: 177, css: 178, less: 179, sass: 180, js: 181, json: 182, atom: 183, rss: 184, xml: 185, xsl: 186, xslt: 187, md: 188, markdown: 189, as: 190, fla: 191, eml: 192, text: 193, txt: 194, freeformblock: 195, textblock: 196, htmlblock: 197, textplusimageblock: 198, imageblock: 199, abtestblock: 200, dynamicblock: 201, stylingblock: 202, einsteincontentblock: 203, webpage: 205, webtemplate: 206, templatebasedemail: 207, htmlemail: 208, textonlyemail: 209, socialshareblock: 210, socialfollowblock: 211, buttonblock: 212, layoutblock: 213, defaulttemplate: 214, smartcaptureblock: 215, smartcaptureformfieldblock: 216, smartcapturesubmitoptionsblock: 217, slotpropertiesblock: 218, externalcontentblock: 219, codesnippetblock: 220, rssfeedblock: 221, formstylingblock: 222, referenceblock: 223, imagecarouselblock: 224, customblock: 225, liveimageblock: 226, livesettingblock: 227, contentmap: 228, jsonmessage: 230 };
+        this.contentTypeObjectMap = {
+                dataextension: 'DataExtension',
+                triggered_send: 'TriggeredSendDefinition',
+                queryactivity: 'QueryDefinition',
+                asset: 'Asset',
+                automations: 'Automation',
+                email: 'Email',
+                ABTest: '',
+                automated_email: '',
+                BuildAudienceActivity: '',
+                campaign: '',
+                condensedlpview: '',
+                content: '',
+                contextual_suppression_list: '',
+                document: '',
+                ELTactivity: '',
+                email_hidden_messagemodel: '',
+                filteractivity: '',
+                filterdefinition: '',
+                global_email: '',
+                global_email_sub: '',
+                group: '',
+                Hidden: '',
+                image: '',
+                job: '',
+                list: '',
+                livecontent: '',
+                measure: '',
+                media: '',
+                message: '',
+                microsite: '',
+                micrositelayout: '',
+                mysubs: '',
+                organization: '',
+                playbooks: '',
+                programs2: '',
+                publication: '',
+                salesforcedataextension: '',
+                salesforcesends: '',
+                salesforcesendsv5: '',
+                shared_content: '',
+                shared_contextual_suppression_list: '',
+                shared_data: '',
+                shared_dataextension: '',
+                shared_email: '',
+                shared_item: '',
+                shared_portfolio: '',
+                shared_publication: '',
+                shared_salesforcedataextension: '',
+                shared_suppression_list: '',
+                shared_survey: '',
+                shared_template: '',
+                ssjsactivity: '',
+                suppression_list: '',
+                survey: '',
+                synchronizeddataextension: '',
+                template: '',
+                triggered_send_journeybuilder: '',
+                userinitiatedsends: '' 
+        };
         this.cols = {};
         this.colsDE = null;
         this.previousDebugMode = null;
@@ -1716,7 +1776,9 @@
          * To identify multiple folders use resp.Result.length > 1 and act accordantly.
          * This will not occur when passing the folder id as parameter.
          *
-         * @param {string|number}  id  The identifier for the folder. Name or Folder Id
+         * @param {string|number}   id              The identifier for the folder. Name or Folder Id
+         * @param {string}          [contentType]   Optional folder type such as DataExtension, TriggeredSendDefinition, 
+         *                                          QueryDefinition or Asset
          *
          * @returns {object} Result set of the request.
          *
@@ -1725,11 +1787,15 @@
          * var prox = new wsproxy();
          * var resp = prox.retrieveDataFolder('Data Extensions');
          */
-        this.retrieveDataFolder = function(id) {
+        this.retrieveDataFolder = function(id,contentType) {
             var cols = this.retrievableCols('DataFolder'),
                 property = ( Number.isInteger(id) ) ? "ID" : "Name",
-                req = this.api.retrieve("DataFolder", cols, { Property: property, SimpleOperator: "equals", Value: id }),
                 msg = '',
+                filterName = { Property: property, SimpleOperator: "equals", Value: id },
+                filterContentType = { Property: "ContentType", SimpleOperator: "equals", Value: contentType },
+                filter = (contentType && this.contentTypeObjectMap.hasOwnProperty(contentType)) ? { LeftOperand: filterName, LogicalOperator: "AND", RightOperand: filterContentType } : filterName;
+
+            var req = this.api.retrieve("DataFolder", cols, filter ),
                 res = req.Results;
 
             // more than 1 dataFolder?
@@ -1859,11 +1925,13 @@
          *
          * @param {string|number}   id          The identifier for the folder. Name or FolderId
          * @param {string}          property    The property to retrieve
+         * @param {string}          [contentType]   Optional folder type such as DataExtension, TriggeredSendDefinition, 
+         *                                          QueryDefinition or Asset
          *
          * @return {string|NULL}  The folder property or NULL
          */
-        this.retrieveDataFolderProperty = function(id,property) {
-            var req = this.retrieveDataFolder(id),
+        this.retrieveDataFolderProperty = function(id,property,contentType) {
+            var req = this.retrieveDataFolder(id,contentType),
                 propertyValue = req.Results[0][property];
 
             // result must be exact 1 otherwise multiple folders were found
@@ -1884,46 +1952,56 @@
          * Retrieves the folderId.
          *
          * @param {string}  name    Name of the folder.
+         * @param {string}          [contentType]   Optional folder type such as DataExtension, TriggeredSendDefinition, 
+         *                                          QueryDefinition or Asset
          *
          * @return {number|NULL}  The folderId or null
          */
-        this.retrieveDataFolderID = function(name) { return this.retrieveDataFolderProperty(name,'ID'); };
+        this.retrieveDataFolderID = function(name,contentType) { return this.retrieveDataFolderProperty(name,'ID',contentType); };
 
         /**
          * Retrieves the folder Name.
          *
          * @param {string|number}  id  The identifier for the folder. Name or folderId
+         * @param {string}          [contentType]   Optional folder type such as DataExtension, TriggeredSendDefinition, 
+         *                                          QueryDefinition or Asset
          *
          * @return {string|NULL}  The folder name or NULL
          */
-        this.retrieveDataFolderName = function(id) { return this.retrieveDataFolderProperty(id,'Name'); };
+        this.retrieveDataFolderName = function(id,contentType) { return this.retrieveDataFolderProperty(id,'Name',contentType); };
 
         /**
          * Retrieves the folder ObjectID.
          *
          * @param {string|number}  id  The identifier for the folder. Name or folderId
+         * @param {string}          [contentType]   Optional folder type such as DataExtension, TriggeredSendDefinition, 
+         *                                          QueryDefinition or Asset
          *
          * @return {string|NULL}  The ObjectID or NULL
          */
-        this.retrieveDataFolderObjectID = function(id) { return this.retrieveDataFolderProperty(id,'ObjectID'); };
+        this.retrieveDataFolderObjectID = function(id,contentType) { return this.retrieveDataFolderProperty(id,'ObjectID',contentType); };
 
         /**
          * Retrieves the folder ContentType.
          *
          * @param {string|number}  id  The identifier for the folder. Name or folderId
+         * @param {string}          [contentType]   Optional folder type such as DataExtension, TriggeredSendDefinition, 
+         *                                          QueryDefinition or Asset
          *
          * @return {string|NULL}  The ContentType or NULL
          */
-        this.retrieveDataFolderContentType = function(id) { return this.retrieveDataFolderProperty(id,'ContentType'); };
+        this.retrieveDataFolderContentType = function(id,contentType) { return this.retrieveDataFolderProperty(id,'ContentType',contentType); };
 
         /**
          * Retrieves the folder CustomerKey.
          *
          * @param {string|number}  id  The identifier for the folder. Name or folderId
+         * @param {string}          [contentType]   Optional folder type such as DataExtension, TriggeredSendDefinition, 
+         *                                          QueryDefinition or Asset
          *
          * @return {string|NULL}  The CustomerKey or NULL
          */
-        this.retrieveDataFolderCustomerKey = function(id) { return (isCustomerKey(id)) ? id : this.retrieveDataFolderProperty(id,'CustomerKey'); };
+        this.retrieveDataFolderCustomerKey = function(id,contentType) { return (isCustomerKey(id)) ? id : this.retrieveDataFolderProperty(id,'CustomerKey',contentType); };
 
         /**
          * Delete a folder.
@@ -1960,12 +2038,14 @@
         /**
          * Check if a folder exists
          *
-         * @param {string|number}  id  The identifier for the folder. Name or folderId
+         * @param {string|number}   id              The identifier for the folder. Name or folderId
+         * @param {string}          [contentType]   The folder type such as DataExtension, TriggeredSendDefinition, 
+         *                                          QueryDefinition or Asset
          *
          * @returns {boolean}
          */
-        this.isDataFolder = function(id){
-            var req = this.retrieveDataFolder(id);
+        this.isDataFolder = function(id,contentType){
+            var req = this.retrieveDataFolder(id,contentType);
             return (req.Status == 'OK' || ( req.Status == 'Error' && req.Results[0].length > 0 )) ? true : false;
         };
 
@@ -1987,67 +2067,6 @@
          * @see {@link https://developer.salesforce.com/docs/atlas.en-us.noversion.mc-apis.meta/mc-apis/datafolder.htm|DataFolders}
          */
         this.isDataFolderEmpty = function(id) {
-            var contentTypeObjectMap = {
-                dataextension: 'DataExtension',
-                triggered_send: 'TriggeredSendDefinition',
-                queryactivity: 'QueryDefinition',
-                asset: 'Asset',
-                automations: 'Automation',
-                email: 'Email',
-                ABTest: '',
-                automated_email: '',
-                BuildAudienceActivity: '',
-                campaign: '',
-                condensedlpview: '',
-                content: '',
-                contextual_suppression_list: '',
-                document: '',
-                ELTactivity: '',
-                email_hidden_messagemodel: '',
-                filteractivity: '',
-                filterdefinition: '',
-                global_email: '',
-                global_email_sub: '',
-                group: '',
-                Hidden: '',
-                image: '',
-                job: '',
-                list: '',
-                livecontent: '',
-                measure: '',
-                media: '',
-                message: '',
-                microsite: '',
-                micrositelayout: '',
-                mysubs: '',
-                organization: '',
-                playbooks: '',
-                programs2: '',
-                publication: '',
-                salesforcedataextension: '',
-                salesforcesends: '',
-                salesforcesendsv5: '',
-                shared_content: '',
-                shared_contextual_suppression_list: '',
-                shared_data: '',
-                shared_dataextension: '',
-                shared_email: '',
-                shared_item: '',
-                shared_portfolio: '',
-                shared_publication: '',
-                shared_salesforcedataextension: '',
-                shared_suppression_list: '',
-                shared_survey: '',
-                shared_template: '',
-                ssjsactivity: '',
-                suppression_list: '',
-                survey: '',
-                synchronizeddataextension: '',
-                template: '',
-                triggered_send_journeybuilder: '',
-                userinitiatedsends: '' 
-            };
-
             var req = this.retrieveDataFolder(id);
 
             // is there more than one folder with the same ID?
@@ -2059,7 +2078,7 @@
             var categoryID = req.Results[0].ID,
                 contentType = req.Results[0].ContentType,
                 name = (res.Results[0].Name) ? (res.Results[0].Name) : id,
-                retrieveObject = contentTypeObjectMap[contentType];
+                retrieveObject = this.contentTypeObjectMap[contentType];
 
             // if categoryID is not an integer, folder does not exits ergo it is empty
             if( !Number.isInteger(categoryID)) {
@@ -3027,6 +3046,60 @@
 
 
         /**
+         * Check if an Asset with the given id already exists.
+         * 
+         * @param {string}  id  The identifier for the Asset. Name or customerKey.
+         *
+         * @returns {boolean}
+         */
+        this.isAsset = function(id) {
+            this._toogleDebugMode();
+            var req = this.retrieveAsset(id);
+            this._toogleDebugMode();
+            return (req.Status == 'OK' && req.Results.length > 0) ? true : false;
+        };
+
+        /**
+         * Retrieves a property of an Asset.
+         *
+         * @param {string}  id          The identifier for the Asset. Name or customerKey.
+         * @param {string}  property    The property name to retrieve.
+         *
+         * @returns {string|NULL}  The Asset property or NULL
+         */
+        this.retrieveAssetProperty = function(id,property) {
+            var req = this.retrieveAsset(id),
+                prop = req.Results[0][property];
+
+            if( req.Status == 'OK' && req.Results.length == 1 && prop ) {
+                debug('(retrieveAsset'+property+')\n\tOK: '+property+' for Asset '+id+': '+prop );
+                return prop;
+            } else {
+                debug('(retrieveAsset'+property+')\n\tError: Cannot retrieve '+property+' for Asset: '+id);
+                return null;
+            }
+        };
+
+        /**
+         * Retrieve the CustomerKey of the given Asset.
+         * 
+         * @param {string}  id  The name of the Asset.
+         *
+         * @returns {string|NULL}  The CustomerKey of the Asset or NULL
+         */
+        this.retrieveAssetCustomerKey = function(id) { return (isCustomerKey(id)) ? id : this.retrieveAssetProperty(id,'CustomerKey'); };
+
+        /**
+         * Retrieve the ID of the given Asset.
+         * 
+         * @param {string}  id  The name of the Asset.
+         *
+         * @returns {string|NULL}  The ID of the Asset or NULL
+         */
+        this.retrieveAssetId = function(id) { return (isCustomerKey(id)) ? id : this.retrieveAssetProperty(id,'ID'); };
+
+
+        /**
          * Retrieve informations about an asset.
          *
          * This usage of this function is limited as the retrievebale cols are 
@@ -3234,9 +3307,200 @@
         /** future release */
         this.sendTestEmail = function() {};
 
+        
+        // ========================== SEND CLASSIFICATIONS ==========================
+
+
+        /**
+         * Check if an SendClassification with the given id already exists.
+         * 
+         * @param {string}  id  The identifier for the SendClassification. Name or customerKey.
+         *
+         * @returns {boolean}
+         */
+        this.isSendClassification = function(id) {
+            this._toogleDebugMode();
+            var req = this.retrieveSendClassification(id);
+            this._toogleDebugMode();
+            return (req.Status == 'OK' && req.Results.length > 0) ? true : false;
+        };
+
+        /**
+         * Retrieves a property of a SendClassification.
+         *
+         * @param {string}  id          The identifier for the SendClassification. Name or customerKey.
+         * @param {string}  property    The property name to retrieve.
+         *
+         * @returns {string|NULL}  The SendClassification property or NULL
+         */
+        this.retrieveSendClassificationProperty = function(id,property) {
+            var req = this.retrieveSendClassification(id),
+                prop = req.Results[0][property];
+
+            if( req.Status == 'OK' && req.Results.length == 1 && prop ) {
+                debug('(retrieveSendClassification'+property+')\n\tOK: '+property+' for SendClassification '+id+': '+prop );
+                return prop;
+            } else {
+                debug('(retrieveSendClassification'+property+')\n\tError: Cannot retrieve '+property+' for SendClassification: '+id);
+                return null;
+            }
+        };
+
+        /**
+         * Retrieve the CustomerKey of the given SendClassification.
+         * 
+         * @param {string}  id  The name of the SendClassification.
+         *
+         * @returns {string|NULL}  The CustomerKey of the SendClassification or NULL
+         */
+        this.retrieveSendClassificationCustomerKey = function(id) { return (isCustomerKey(id)) ? id : this.retrieveSendClassificationProperty(id,'CustomerKey'); };
+
+
+        /**
+         * Retrieve informations about a Send Classification.
+         * 
+         * @param {string}  id  The identifier for the Send Classification. Name or CustomerKey.
+         *
+         * @returns {object} Result set of the request.
+         *
+         * @example
+         * // Retrieve informations about a sepcific TriggeredSendDefinition
+         * var prox = new wsproxy();
+         * var resp = prox.retrieveSendClassification('Default Transactional');
+         *
+         */
+        this.retrieveSendClassification = function(id) {
+            var cols = this.retrievableCols('SendClassification'),
+                property = ['Name','CustomerKey'],
+                req = {};
+
+            for (var i = 0; i < 2; i++) {
+                req = this.api.retrieve("SendClassification", cols, { 
+                    Property: property[i], 
+                    SimpleOperator: "equals", 
+                    Value: id 
+                });
+
+                if( req.Status == 'OK' && req.Results.length > 0 ) {
+                    debug('(retrieveSendClassification)\n\tOK: Retrieve SendClassification with '+property[i]+': '+id);
+                    return req;
+                }
+            }
+            debug('(retrieveSendClassification)\n\t' + req.Status);
+            return req;
+        };
+
 
         // ========================== TRIGGERED SEND DEFINITION ==========================
 
+
+        /**
+         * Creates a triggered send definiton.
+         * 
+         * You can create a triggered send definition to be referenced by your external application or development 
+         * environment to send a predetermined message to subscribers that complete a certain action, such as signing 
+         * up on your email list or requesting more information. Reference the triggered send definition in your 
+         * triggered send request.
+         * 
+         * @param {string}          name                                            The name of the triggered send definiton
+         * @param {string}          tdsEmailId                                      The identifier for the email asset. Name or customerKey.
+         * @param {string}          [tdsDataExtensionId=All Subscribers]            The identifier for the send DataExtension. Name or customerKey.
+         * @param {string}          [sendClassificationId=Default Transactional]    The identifier for the send classification. Name or customerKey.
+         * @param {string|number}   [folderId=Triggered Sends]                      The identifier for the parent folder. Name or customerKey.
+         *
+         * @returns {object} Result set of the request or null.
+         *
+         * @example
+         * // Retrieve informations about a sepcific TriggeredSendDefinition
+         * var prox = new wsproxy();
+         * var resp = prox.createTriggeredSendDefinition('MyNewTDS','myHtmlEmail','MyDescription');
+         *
+         */
+        this.createTriggeredSendDefinition = function(name,tdsEmailId,description,tdsDataExtensionId,sendClassificationId,folderId) {
+            var categoryID = (Number.isInteger(folderId) && this.isTriggeredSendFolder(folderId)) ? folderId : this.settings.folderId['Triggered Sends'];
+
+            // check if tds already exists
+            if (this.isTriggeredSendDefinition(name)) {
+                debug('(createTriggeredSendDefinition)\n\tINFO: createTriggeredSendDefinition '+name+' already exists');
+                return this.retrieveTriggeredSendDefinition(name);
+            } else {
+                var deCustomerKey = (tdsDataExtensionId) ? this.retrieveDataExtensionCustomerKey(tdsDataExtensionId) : null,
+                    assetKey = this.retrieveAssetCustomerKey(tdsEmailId),
+                    sendClassificationKey = (sendClassificationId) ? this.retrieveSendClassificationCustomerKey(sendClassificationId) : this.retrieveSendClassificationCustomerKey("Default Transactional");
+
+                // check if de exists
+                if (!deCustomerKey && tdsDataExtensionId) {
+                    debug('(createTriggeredSendDefinition)\n\tERROR: createTriggeredSendDefinition '+name+' cannot be created as the DataExtension '+tdsDataExtensionId+' does not exists');
+                    return null
+                }
+
+                // check if email exists
+                if (!assetKey) {
+                    debug('(createTriggeredSendDefinition)\n\tERROR: createTriggeredSendDefinition '+name+' cannot be created as the Email '+tdsEmailId+' does not exists');
+                    return null
+                }
+
+                // check if send classification exists
+                if (!sendClassificationKey) {
+                    debug('(createTriggeredSendDefinition)\n\tERROR: createTriggeredSendDefinition '+name+' cannot be created as the SendClassification '+sendClassification+' does not exists');
+                    return null
+                }
+            }
+            
+            var payload = {
+                "CustomerKey": Platform.Function.GUID().toUpperCase(),
+                "Name": name,
+                "Description": description,
+                "SendClassification": {
+                    "CustomerKey": sendClassificationKey
+                },
+                "Email": {
+                    "CustomerKey": assetKey
+                },
+                "CategoryID": categoryID
+            }
+
+            if (deCustomerKey) {
+                payload.SendSourceDataExtension = {"CustomerKey": deCustomerKey};
+            } else {
+                payload.List = {"CustomerKey": "All Subscribers"}
+            }
+
+            req = this.api.createItem("TriggeredSendDefinition",payload);
+
+            if( req.Status == 'OK' && req.Results.length > 0 ) {
+                debug('(createTriggeredSendDefinition)\n\tOK: Create createTriggeredSendDefinition: '+name);
+                return req;
+            } else {
+                debug('(createTriggeredSendDefinition)\n\tERROR: ' + req.Results[0].StatusMessage);
+                return null;
+            }
+        };
+
+
+        /**
+         * Check if folder is a ContentType of TriggeredSend
+         *
+         * @param {string|number}   id  The identifier for the folder. Name or Folder Id
+         *
+         * @returns {boolean}
+         */
+        this.isTriggeredSendFolder = function(folderId) { return (this.retrieveDataFolderContentType(folderId) == 'triggered_send' ) ? true : false; };
+
+
+        /**
+         * Check if a TriggeredSendDefinition with the given id already exists.
+         * 
+         * @param {string}  id  The identifier for the TriggeredSendDefinition. Name or customerKey.
+         *
+         * @returns {boolean}
+         */
+        this.isTriggeredSendDefinition = function(id) {
+            this._toogleDebugMode();
+            var req = this.retrieveTriggeredSendDefinition(id);
+            this._toogleDebugMode();
+            return (req.Status == 'OK' && req.Results.length > 0) ? true : false;
+        };
 
         /**
          * Retrieve informations about a single TriggeredSendDefinition.
@@ -3273,6 +3537,93 @@
             debug('(retrieveTriggeredSendDefinition)\n\t' + req.Status);
             return req;
         };
+
+        /**
+         * Set the status of a TriggeredSendDefinition
+         *
+         * @param {string}  id      The identifier for the TriggeredSendDefinition. Name or CustomerKey.
+         * @param {string}  status  The status to set it to such as Active, Inactive.
+         *
+         * @returns {boolean}
+         */
+        this.updateTriggeredSendDefinitionStatus = function(id, status) {
+            var customerKey = this.retrieveTriggeredSendDefinitionCustomerKey(id);
+
+            if (customerKey) {
+                var properties = {
+                    "CustomerKey": customerKey,
+                    "TriggeredSendStatus": status
+                };
+                try {
+                    var req = this.api.updateItem("TriggeredSendDefinition", properties);
+                    if( req.Status == 'OK' ) { 
+                       debug('(updateTriggeredSendDefinitionStatus)\n\tOK: TriggeredSendDefinition status '+id+' has been updated');
+                       return true;
+                    } else {
+                       debug('(updateTriggeredSendDefinitionStatus)\n\tERROR: '+Platform.Function.Stringify(req));
+                       return false;
+                    }
+                } catch(e) {
+                    debug('(updateTriggeredSendDefinitionStatus)\n\tERROR: '+Platform.Function.Stringify(e));
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        /**
+         * Refresh a TriggeredSendDefinition in order to clear the cache or queued emails
+         *
+         * @param {string}  id      The identifier for the TriggeredSendDefinition. Name or CustomerKey.
+         *
+         * @returns {boolean}
+         */
+        this.refreshTriggeredSendDefinition = function(id) {
+            var customerKey = this.retrieveTriggeredSendDefinitionCustomerKey(id);
+
+            // get current status
+            var tdsStatus = this.retrieveTriggeredSendDefinitionStatus(customerKey),
+                toogleStatus = function(id,status) {
+                    return this.updateTriggeredSendDefinitionStatus(customerKey,status);
+                }
+
+            if (customerKey) {
+                var properties = {
+                    "CustomerKey": customerKey,
+                    "RefreshContent": true
+                };
+
+                // set status to inactive so we can edit
+                if (tdsStatus == 'Active') {
+                    var statusChanged = toogleStatus(id,'Inactive');
+                }
+                
+                try {
+                    var req = this.api.updateItem("TriggeredSendDefinition", properties);
+
+                    // reset status
+                    if (statusChanged) {
+                        toogleStatus(id,tdsStatus);
+                    }
+                    
+                    if( req.Status == 'OK' ) { 
+                       debug('(refreshTriggeredSendDefinition)\n\tOK: TriggeredSendDefinition '+id+' has been refreshed');
+                       return true;
+                    } else {
+                       debug('(refreshTriggeredSendDefinition)\n\tERROR: '+Platform.Function.Stringify(req));
+                       return false;
+                    }
+                } catch(e) {
+                    debug('(refreshTriggeredSendDefinition)\n\tERROR: '+Platform.Function.Stringify(e));
+                    // reset status
+                    if (statusChanged) {
+                        toogleStatus(id,tdsStatus);
+                    }
+                    return false;
+                }
+            }
+            return false;
+        }
 
         /**
          * Retrieve a list of all TriggeredSendDefinition(s) in the business unit.
