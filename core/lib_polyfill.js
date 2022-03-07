@@ -1,177 +1,336 @@
 <script runat="server" language="javascript">
 
-  //  NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
-  // 
-  //  USE YOUR OWN COPY. IT IS EXTREMELY UNWISE TO LOAD CODE FROM SERVERS YOU DO
-  //  NOT CONTROL.
-  // 
-  // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
-  // documentation files (the "Software"), to deal in the Software without restriction, including without limitation 
-  // the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, 
-  // and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-  // 
-  // The above copyright notice and this permission notice shall be included in all copies or substantial portions 
-  // of the Software.
-  // 
-  // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED 
-  // TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-  // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
-  // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
-  // DEALINGS IN THE SOFTWARE.
+    //  NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+    // 
+    //  USE YOUR OWN COPY. IT IS EXTREMELY UNWISE TO LOAD CODE FROM SERVERS YOU DO
+    //  NOT CONTROL.
+    // 
+    // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated 
+    // documentation files (the "Software"), to deal in the Software without restriction, including without limitation 
+    // the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, 
+    // and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+    // 
+    // The above copyright notice and this permission notice shall be included in all copies or substantial portions 
+    // of the Software.
+    // 
+    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED 
+    // TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
+    // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF 
+    // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+    // DEALINGS IN THE SOFTWARE.
 
 
-  /************************* NUMBER *************************/
+    /* ============================================================================
+                                        NUMBER
+    ============================================================================ */ 
 
 
-  // ECMAScript (ECMA-262)
-  Number.isInteger = Number.isInteger || function(value) {
-    return typeof value === 'number' && 
-      isFinite(value) && 
-      Math.floor(value) === value;
-  };
+    // ECMAScript (ECMA-262)
+    Number.isInteger = Number.isInteger || function(value) {
+        return typeof value === 'number' && 
+            isFinite(value) && 
+            Math.floor(value) === value;
+    };
 
 
-  if (Number.parseFloat === undefined) {
-      Number.parseFloat = parseFloat;
-  }
+    if (Number.parseFloat === undefined) {
+        Number.parseFloat = parseFloat;
+    }
 
 
-  /************************* STRING *************************/
+    /* ============================================================================
+                                        STRING
+    ============================================================================ */ 
 
+    if (!String.prototype.trim) {
+        String.prototype.trim = function() {
+            return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+        };
+    }
 
-  if (!String.prototype.trim) {
-      String.prototype.trim = function() {
-          return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
-      };
-  }
-
-  if (!String.prototype.substr) {
-      String.prototype.substr = function(a, b) {
-          var s = (!Number.isInteger(a)) ? 0 : a,
-              l = (typeof b == 'undefined') ? null : (s > 0 && b > 0) ? s + b : b;
-          if (s < 0) {
-              s = this.length + a;
-              l = (l < 0) ? 0 : s + l;
-          }
-          return (typeof b == 'undefined' && b != 0 && Number.isInteger(a)) ? this.substring(s) : (l <= 0 || !Number.isInteger(l)) ? "" : this.substring(s, l);
-      };
-  }
-
-  // ECMAScript 2015 specification
-  if (!String.prototype.startsWith) {
-      Object.defineProperty(String.prototype, 'startsWith', {
-          value: function(search, rawPos) {
-              var pos = rawPos > 0 ? rawPos|0 : 0;
-              return this.substring(pos, pos + search.length) === search;
-          }
-      });
-  }
-
-
-  // ECMAScript 2015 specification
-  if (!String.prototype.includes) {
-      String.prototype.includes = function(search, start) {
-          'use strict';
-
-          if (search instanceof RegExp) {
-              throw TypeError('first argument must not be a RegExp');
-          } 
-          if (start === undefined) { start = 0; }
-          return this.indexOf(search, start) !== -1;
-      };
-  }
-
-
-
-  /************************* Object *************************/
-
-
-  // From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
-  if (!Object.keys) {
-    Object.keys = (function() {
-      'use strict';
-      var hasOwnProperty = Object.prototype.hasOwnProperty,
-          hasDontEnumBug = !({ toString: null }).propertyIsEnumerable('toString'),
-          dontEnums = [
-            'toString',
-            'toLocaleString',
-            'valueOf',
-            'hasOwnProperty',
-            'isPrototypeOf',
-            'propertyIsEnumerable',
-            'constructor'
-          ],
-          dontEnumsLength = dontEnums.length;
-
-      return function(obj) {
-        if (typeof obj !== 'function' && (typeof obj !== 'object' || obj === null)) {
-          throw new TypeError('Object.keys called on non-object');
-        }
-
-        var result = [], prop, i;
-
-        for (prop in obj) {
-          if (hasOwnProperty.call(obj, prop)) {
-            result.push(prop);
-          }
-        }
-
-        if (hasDontEnumBug) {
-          for (i = 0; i < dontEnumsLength; i++) {
-            if (hasOwnProperty.call(obj, dontEnums[i])) {
-              result.push(dontEnums[i]);
+    if (!String.prototype.substr) {
+        String.prototype.substr = function(a, b) {
+            var s = (!Number.isInteger(a)) ? 0 : a,
+                l = (typeof b == 'undefined') ? null : (s > 0 && b > 0) ? s + b : b;
+            if (s < 0) {
+                s = this.length + a;
+                l = (l < 0) ? 0 : s + l;
             }
-          }
-        }
-        return result;
-      };
-    }());
-  }
+            return (typeof b == 'undefined' && b != 0 && Number.isInteger(a)) ? this.substring(s) : (l <= 0 || !Number.isInteger(l)) ? "" : this.substring(s, l);
+        };
+    }
+
+    // ECMAScript 2015 specification
+    if (!String.prototype.startsWith) {
+        Object.defineProperty(String.prototype, 'startsWith', {
+            value: function(search, rawPos) {
+                var pos = rawPos > 0 ? rawPos|0 : 0;
+                return this.substring(pos, pos + search.length) === search;
+            }
+        });
+    }
+
+
+    // ECMAScript 2015 specification
+    if (!String.prototype.includes) {
+        String.prototype.includes = function(search, start) {
+            'use strict';
+
+            if (search instanceof RegExp) {
+                throw TypeError('first argument must not be a RegExp');
+            } 
+            if (start === undefined) { start = 0; }
+                return this.indexOf(search, start) !== -1;
+        };
+    }
+
+    /**
+     * String.padStart()
+     * version 1.0.1
+     */
+    if (!String.prototype.padStart) {
+        Object.defineProperty(String.prototype, 'padStart', {
+            configurable: true,
+            writable: true,
+            value: function (targetLength,padString) {
+                debug(pad)
+                targetLength = targetLength >> 0; //floor if number or convert non-number to 0;
+                padString = (typeof padString !== 'undefined') ? padString : ' ';
+                if (this.length > targetLength) {
+                    return String(this);
+                } else {
+                    targetLength = targetLength - this.length;
+                    if (targetLength > padString.length) {
+                        padString += padString.repeat(targetLength / padString.length); //append to original to ensure we are longer than needed
+                    }
+                    return padString.slice(0, targetLength) + String(this);
+                }
+            }
+        });
+    }
+
+    /**
+     * String.padEnd()
+     * version 1.0.1
+     */
+    if (!String.prototype.padEnd) {
+        Object.defineProperty(String.prototype, 'padEnd', {
+            configurable: true,
+            writable: true,
+            value: function (targetLength, padString) {
+                targetLength = targetLength >> 0; //floor if number or convert non-number to 0;
+                padString = (typeof padString !== 'undefined') ? padString : ' ';
+                if (this.length > targetLength) {
+                    return String(this);
+                } else {
+                    targetLength = targetLength - this.length;
+                    if (targetLength > padString.length) {
+                        padString += padString.repeat(targetLength / padString.length); //append to original to ensure we are longer than needed
+                    }
+                    return String(this) + padString.slice(0, targetLength);
+                }
+            }
+        });
+    }
+
+    /**
+     * String.repeat()
+     * version 0.0.0
+     */
+    if (!String.prototype.repeat) {
+        Object.defineProperty(String.prototype, 'repeat', {
+            configurable: true,
+            writable: true,
+            value: function (count) {
+                if (this == null) {
+                    throw new TypeError("can't convert " + this + ' to object');
+                }
+                var str = '' + this;
+                count = +count;
+                if (count != count) {
+                    count = 0;
+                }
+                if (count < 0) {
+                    throw new RangeError('repeat count must be non-negative');
+                }
+                if (count == Infinity) {
+                    throw new RangeError('repeat count must be less than infinity');
+                }
+                count = Math.floor(count);
+                if (str.length == 0 || count == 0) {
+                    return '';
+                }
+                if (str.length * count >= 1 << 28) {
+                    throw new RangeError('repeat count must not overflow maximum string size');
+                }
+                var rpt = '';
+                for (; ;) {
+                    if ((count & 1) == 1) {
+                        rpt += str;
+                    }
+                    count >>>= 1;
+                    if (count == 0) {
+                        break;
+                    }
+                    str += str;
+                }
+                return rpt;
+            }
+        });
+    }
+
+    /**
+     * String.codePointAt()
+     */
+    if (!String.prototype.codePointAt) {
+        Object.defineProperty(String.prototype, 'codePointAt', {
+            configurable: true,
+            writable: true,
+            value: function (position) {
+                if (this == null) {
+                    throw TypeError();
+                }
+                var string = this,
+                    size = string.length,
+                    index = position ? Number(position) : 0;
+                
+                if (index != index) {
+                    index = 0;
+                }
+                if (index < 0 || index >= size) {
+                    return undefined;
+                }
+                var first = string.charCodeAt(index),
+                    second;
+                if (first >= 0xd800 && first <= 0xdbff && size > index + 1) {
+                    second = string.charCodeAt(index + 1);
+                    if (second >= 0xdc00 && second <= 0xdfff) {
+                        return (first - 0xd800) * 0x400 + second - 0xdc00 + 0x10000;
+                    }
+                }
+                return first;
+            }
+        });
+    }
 
 
 
-  /************************* ARRAY *************************/
+    /* ============================================================================
+                                        OBJECT
+    ============================================================================ */ 
 
-
-  if (!Array.prototype.filter) {
-      Array.prototype.filter = function(func, thisArg) {
+    // From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
+    if (!Object.keys) {
+        Object.keys = (function() {
           'use strict';
-          if (!((typeof func === 'Function' || typeof func === 'function') && this))
-              throw new TypeError();
+          var hasOwnProperty = Object.prototype.hasOwnProperty,
+              hasDontEnumBug = !({ toString: null }).propertyIsEnumerable('toString'),
+              dontEnums = [
+                'toString',
+                'toLocaleString',
+                'valueOf',
+                'hasOwnProperty',
+                'isPrototypeOf',
+                'propertyIsEnumerable',
+                'constructor'
+              ],
+              dontEnumsLength = dontEnums.length;
 
-          var len = this.length >>> 0,
-              res = new Array(len), // preallocate array
-              t = this,
-              c = 0,
-              i = -1;
+          return function(obj) {
+            if (typeof obj !== 'function' && (typeof obj !== 'object' || obj === null)) {
+              throw new TypeError('Object.keys called on non-object');
+            }
 
-          var kValue;
-          if (thisArg === undefined) {
-              while (++i !== len) {
-                  // checks to see if the key was set
-                  if (i in this) {
-                      kValue = t[i]; // in case t is changed in callback
-                      if (func(t[i], i, t)) {
-                          res[c++] = kValue;
-                      }
-                  }
+            var result = [], prop, i;
+
+            for (prop in obj) {
+              if (hasOwnProperty.call(obj, prop)) {
+                result.push(prop);
               }
-          } else {
-              while (++i !== len) {
-                  // checks to see if the key was set
-                  if (i in this) {
-                      kValue = t[i];
-                      if (func.call(thisArg, t[i], i, t)) {
-                          res[c++] = kValue;
-                      }
-                  }
-              }
-          }
+            }
 
-          res.length = c; // shrink down array to proper size
-          return res;
-      };
-  }
+            if (hasDontEnumBug) {
+              for (i = 0; i < dontEnumsLength; i++) {
+                if (hasOwnProperty.call(obj, dontEnums[i])) {
+                  result.push(dontEnums[i]);
+                }
+              }
+            }
+            return result;
+          };
+        }());
+    }
+
+    /*
+     * forEach Polyfill
+     *
+     * 2015-12-27
+     *
+     * By Feifei Hang, http://feifeihang.info
+     * Public Domain.
+     * NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+     */
+    (function () {
+        if (!Array.prototype.forEach) {
+          Array.prototype.forEach = function forEach (callback, thisArg) {
+            if (typeof callback !== 'function') {
+              throw callback + ' is not a function';
+            }
+            var array = this;
+            thisArg = thisArg || this;
+            for (var i = 0, l = array.length; i !== l; ++i) {
+              callback.call(thisArg, array[i], i, array);
+            }
+          };
+        }
+    })();
+
+
+
+    /* ============================================================================
+                                        ARRAY
+    ============================================================================ */ 
+
+
+    if (!Array.prototype.filter) {
+        Array.prototype.filter = function(func, thisArg) {
+            'use strict';
+            if (!((typeof func === 'Function' || typeof func === 'function') && this))
+                throw new TypeError();
+
+            var len = this.length >>> 0,
+                res = new Array(len), // preallocate array
+                t = this,
+                c = 0,
+                i = -1;
+
+            var kValue;
+            if (thisArg === undefined) {
+                while (++i !== len) {
+                    // checks to see if the key was set
+                    if (i in this) {
+                        kValue = t[i]; // in case t is changed in callback
+                        if (func(t[i], i, t)) {
+                            res[c++] = kValue;
+                        }
+                    }
+                }
+            } else {
+                while (++i !== len) {
+                    // checks to see if the key was set
+                    if (i in this) {
+                        kValue = t[i];
+                        if (func.call(thisArg, t[i], i, t)) {
+                            res[c++] = kValue;
+                        }
+                    }
+                }
+            }
+
+            res.length = c; // shrink down array to proper size
+            return res;
+        };
+    }
 
 
   // Production steps of ECMA-262, Edition 5, 15.4.4.21
@@ -382,9 +541,9 @@
   }
 
 
-  // Production steps of ECMA-262, Edition 6, 22.1.2.1
-  if (!Array.from) {
-      Array.from = (function() {
+    // Production steps of ECMA-262, Edition 6, 22.1.2.1
+    if (!Array.from) {
+        Array.from = (function() {
           var toStr = Object.prototype.toString;
           var isCallable = function(fn) {
               return typeof fn === 'function' || toStr.call(fn) === '[object Function]';
@@ -458,33 +617,35 @@
               // 20. Return A.
               return A;
           };
-      }());
-  }
+        }());
+    }
     
-  /************************* Date *************************/
+    /* ============================================================================
+                                        DATE
+    ============================================================================ */ 
 
-  if (!Date.prototype.toISOString) {
-    (function() {
+    if (!Date.prototype.toISOString) {
+        (function() {
 
-      function pad(number) {
-        if (number < 10) {
-          return '0' + number;
+        function pad(number) {
+            if (number < 10) {
+                return '0' + number;
+            }
+            return number;
         }
-        return number;
-      }
 
-      Date.prototype.toISOString = function() {
-        return this.getUTCFullYear() +
-          '-' + pad(this.getUTCMonth() + 1) +
-          '-' + pad(this.getUTCDate()) +
-          'T' + pad(this.getUTCHours()) +
-          ':' + pad(this.getUTCMinutes()) +
-          ':' + pad(this.getUTCSeconds()) +
-          '.' + (this.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) +
-          'Z';
-      };
+        Date.prototype.toISOString = function() {
+            return this.getUTCFullYear() +
+                '-' + pad(this.getUTCMonth() + 1) +
+                '-' + pad(this.getUTCDate()) +
+                'T' + pad(this.getUTCHours()) +
+                ':' + pad(this.getUTCMinutes()) +
+                ':' + pad(this.getUTCSeconds()) +
+                '.' + (this.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) +
+                'Z';
+            };
 
-    })();
-  }
+        })();
+    }
 
 </script>
