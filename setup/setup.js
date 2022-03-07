@@ -43,18 +43,20 @@
         
         // create DataExtensions
         settings.de = {};
-        settings.de.logWarning = createDataExtension('Log Warning', [
-                { "Name": "EventDate", "FieldType": "Date", "IsPrimaryKey": true, "IsRequired": true },
-                { "Name": "EventId", "FieldType": "Text", "MaxLength": 254, "IsPrimaryKey": true, "IsRequired": true },
-                { "Name": "Message", "FieldType": "Text", "MaxLength": 4000, "IsRequired": true },
-                { "Name": "Method", "FieldType": "Text", "MaxLength": 50, "IsRequired": true },
-                { "Name": "SubscriberKey", "FieldType": "Text", "MaxLength": 254 },
-                { "Name": "Source", "FieldType": "Text", "MaxLength": 4000 },
-                { "Name": "SourceType", "FieldType": "Text", "MaxLength": 255 },
-                { "Name": "JobId", "FieldType": "Number" },
-                { "Name": "ListId", "FieldType": "Number" },
-                { "Name": "BatchId", "FieldType": "Number" }
-            ]);
+        // depreciated
+        // settings.de.logWarning = createDataExtension('Log Warning', [
+        //         { "Name": "EventDate", "FieldType": "Date", "IsPrimaryKey": true, "IsRequired": true },
+        //         { "Name": "EventId", "FieldType": "Text", "MaxLength": 254, "IsPrimaryKey": true, "IsRequired": true },
+        //         { "Name": "Message", "FieldType": "Text", "MaxLength": 4000, "IsRequired": true },
+        //         { "Name": "Method", "FieldType": "Text", "MaxLength": 50, "IsRequired": true },
+        //         { "Name": "SubscriberKey", "FieldType": "Text", "MaxLength": 254 },
+        //         { "Name": "Source", "FieldType": "Text", "MaxLength": 4000 },
+        //         { "Name": "SourceType", "FieldType": "Text", "MaxLength": 255 },
+        //         { "Name": "JobId", "FieldType": "Number" },
+        //         { "Name": "ListId", "FieldType": "Number" },
+        //         { "Name": "BatchId", "FieldType": "Number" }
+        //     ]);
+        // soon to be depreciated
         settings.de.logError = createDataExtension('Log Error', [
                 { "Name": "EventDate", "FieldType": "Date", "IsPrimaryKey": true, "IsRequired": true },
                 { "Name": "EventId", "FieldType": "Text", "MaxLength": 255, "IsPrimaryKey": true, "IsRequired": true },
@@ -65,13 +67,22 @@
                 { "Name": "SourceType", "FieldType": "Text", "MaxLength": 255 },
                 { "Name": "JobId", "FieldType": "Number" },
                 { "Name": "ListId", "FieldType": "Number" },
-                { "Name": "BatchId", "FieldType": "Number" },
+                { "Name": "BatchId", "FieldType": "Number" }
             ]);
-        settings.de.authentication = createDataExtension('Authentication', [
-                { "Name": "key", "FieldType": "Text", "MaxLength": 255, "IsPrimaryKey": true, "IsRequired": true },
-                { "Name": "value", "FieldType": "Text", "MaxLength": 500, "IsRequired": true },
-                { "Name": "expire", "FieldType": "Date" }
+        settings.de.log = createDataExtension('Log', [
+                { "Name": "date", "FieldType": "Date", "IsRequired": true },
+                { "Name": "timestamp", "FieldType": "Text", "MaxLength": 25, "IsRequired": true },
+                { "Name": "id", "FieldType": "Text", "MaxLength": 255, "IsRequired": true },
+                { "Name": "message", "FieldType": "Text", "MaxLength": 4000, "IsRequired": true },
+                { "Name": "level", "FieldType": "Text", "MaxLength": 50, "IsRequired": true },
+                { "Name": "category", "FieldType": "Text", "MaxLength": 254, "IsPrimaryKey": true }
             ]);
+        // depreciated            
+        // settings.de.authentication = createDataExtension('Authentication', [
+        //         { "Name": "key", "FieldType": "Text", "MaxLength": 255, "IsPrimaryKey": true, "IsRequired": true },
+        //         { "Name": "value", "FieldType": "Text", "MaxLength": 500, "IsRequired": true },
+        //         { "Name": "expire", "FieldType": "Date" }
+        //     ]);
         settings.de.sfmcApiToken = createDataExtension('SFMC Api Token', [
                 { "Name": "clientId", "FieldType": "Text", "MaxLength": 50, "IsPrimaryKey": true, "IsRequired": true },
                 { "Name": "token", "FieldType": "Text", "MaxLength": 1000, "IsPrimaryKey": true, "IsRequired": true },
@@ -88,7 +99,7 @@
             ]);
 
         // add data to DE
-        upsertDataExtensionRecords(settings.de.authentication,[{key:'login',value:SHA256(Platform.Function.GUID())}]);
+        // upsertDataExtensionRecords(settings.de.authentication,[{key:'login',value:SHA256(Platform.Function.GUID())}]);
         upsertDataExtensionRecords(settings.de.authUsers,[{Username:'admin',Password:SHA256('email360')}]);
 
         // load library files from github
@@ -97,6 +108,7 @@
                 sfmcapi: 'https://raw.githubusercontent.com/email360/ssjs-lib/master/core/lib_sfmcapi.js',
                 polyfill: 'https://raw.githubusercontent.com/email360/ssjs-lib/master/core/lib_polyfill.js',
                 core: 'https://raw.githubusercontent.com/email360/ssjs-lib/master/core/lib_core.js',
+                logger: 'https://raw.githubusercontent.com/email360/ssjs-lib/master/core/lib_logger.js',
                 wsproxy: 'https://raw.githubusercontent.com/email360/ssjs-lib/master/core/lib_wsproxy.js',
                 amp: 'https://raw.githubusercontent.com/email360/ssjs-lib/master/core/lib_amp.js',
                 cloudpage: 'https://raw.githubusercontent.com/email360/ssjs-lib/master/core/lib_cloudpage.js',
@@ -128,8 +140,19 @@
             authBaseURI: "https://xxxxxxxxxxxxxxxxxxxxxxxxxxxx.auth.marketingcloudapis.com/",
             restBaseURI: "https://xxxxxxxxxxxxxxxxxxxxxxxxxxxx.rest.marketingcloudapis.com/",
             soapBaseURI: "https://xxxxxxxxxxxxxxxxxxxxxxxxxxxx.soap.marketingcloudapis.com/",
-            clientId: "xxxxxxxxxxxxxxxxxxxxxxxx",
-            clientSecret: "xxxxxxxxxxxxxxxxxxxxxxxx"
+            credentials: "xxxxxxxxxxxxxxxxxxxxxxxx"
+        };
+
+        // Settings: add KeyManagement strings
+        settings.keys = {
+            general: {
+                symmetric: prefix.toUpperCase()+'_INT_PWD',
+                vector: prefix.toUpperCase()+'_INT_IV',
+                salt: prefix.toUpperCase()+'_INT_SALT'
+            },
+            login: {
+                symmetric: prefix.toUpperCase()+'_LOGIN_PWD'
+            }
         };
 
         // Settings: add cloudpage ids
@@ -145,7 +168,7 @@
         };
 
         // create settings file
-        var content = '<script runat=server>\n    function settings() {\n\n'+ConvertObjectIndented(settings,'        ')+'\n    }\n</'+'script>';
+        var content = '<script runat=server>\n    function lib_settings() {\n\n'+ConvertObjectIndented(settings,'        ')+'\n    }\n</'+'script>';
         createScriptContentBlock(prefix+' SSJS-Lib: settings',prefix.toLowerCase()+'-ssjs-lib-settings',content,settings.folderId['Asset SSJS Lib Lib']);
     } catch(e) {
         Write(Stringify(e));
