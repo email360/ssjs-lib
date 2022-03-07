@@ -93,7 +93,6 @@
             configurable: true,
             writable: true,
             value: function (targetLength,padString) {
-                debug(pad)
                 targetLength = targetLength >> 0; //floor if number or convert non-number to 0;
                 padString = (typeof padString !== 'undefined') ? padString : ' ';
                 if (this.length > targetLength) {
