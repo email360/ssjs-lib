@@ -2,25 +2,24 @@
     Platform.Load("Core", "1.1.5");
     Platform.Function.ContentBlockByKey('%%prefix%%-ssjs-lib');
 
-    var dm = Request.GetQueryStringParameter('debugMode'),
-    	debugMode = (dm) ? dm : null;
+    var cp = new cloudpage(),
+        payload = cp.getParameter(['debugMode','errorDebug','errorCode','errorMessage']),
+        debugMode = (payload.debugMode) ? payload.debugMode.split(",") : null;
 
-	debug(Request.GetQueryStringParameter('errorDebug'));
+    debug(payload.errorDebug);
+
+    createAmpVariables(cp.getPayload('qs'));
 </script>
 
 %%[
-	IF Empty(QueryParameter('errorCode')) THEN 
-	    SET @errorCode = 500 
-	ELSE 
-	    SET @errorCode = QueryParameter('errorCode')
-	ENDIF
-	    
-	IF Empty(QueryParameter('errorMessage')) THEN 
-	    SET @errorMessage = 'Oops. Something went wrong.'
-	ELSE 
-	    SET @errorMessage = QueryParameter('errorMessage')
-	ENDIF
-    ]%%
+    IF Empty(@errorCode) THEN 
+        SET @errorCode = 500 
+    ENDIF
+        
+    IF Empty(@errorMessage) THEN 
+        SET @errorMessage = 'Oops. Something went wrong.'
+    ENDIF
+]%%
 
 <!DOCTYPE html>
 <html>
