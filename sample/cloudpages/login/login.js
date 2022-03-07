@@ -3,24 +3,26 @@
     Platform.Function.ContentBlockByKey('%%prefix%%-ssjs-lib');
 
     // initiate cloudpage with public access
-    var cp = new cloudpage();
+    var cp = new cloudpage(),
+        jwt = new jwt();
 
-    try{
+    try {
         var qs = cp.payload.qs,
             settings = cp.settings,
-            cookieName = settings.auth.cookieName;
+            cookieName = settings.auth.cookieName,
+            jwtSecret = settings.keys.login.symmetric;
 
         // load payload into the variable qs if given
         cp.isPayload(['username','origin','tokenExpired','login']);
 
         // decode origin URL due to CloudPageURL issue with equal (=) sign 
-        qs.origin = (qs.origin) ? Platform.Function.Base64Decode(qs.origin.replace(/@/gi,'=')) : getPageUrl(false);
+        qs.origin = (qs.origin) ? Platform.Function.Base64Decode(base64urlUnescape(qs.origin)) : getPageUrl(false);
       
         // for security reason we fetch password outside the runtime storage of payload
-        var password = Request.GetQueryStringParameter('password');
+        var password = decodeURIComponent(Request.GetQueryStringParameter('password'));
 
         // already signed in?
-        if( cp.isTokenValid(Platform.Request.GetCookieValue(cookieName)) ) {
+        if( cp.isTokenValid(Platform.Request.GetCookieValue(cookieName),jwtSecret) ) {
             qs.login = true;
 
         // if not did the user hit the login button?
@@ -34,7 +36,7 @@
                     };
 
                 // set cookie with a new token which is valid for 24h
-                cp.setCookie(cookieName,cp.newToken(settings.auth.tokenKey,60*60*24,payload));
+                cp.setCookie(cookieName,jwt.encode('HS256',jwtSecret,payload,60*60*24));
 
                 // redirect to origin page 
                 Platform.Response.Redirect(qs.origin, false);
@@ -48,7 +50,7 @@
         // create AMP script variables based on runtime storage qs
         createAmpVariables(qs);
 
-    } catch(e){
+    } catch(e) {
         // workaround for Thread Abort Exception from redirect
         var desc = e.description; //Pulls the description from error object
         if(desc && desc.includes("ExactTarget.OMM.AMPScriptRedirectException: Error in the application. - from")) {
@@ -62,7 +64,6 @@
         }
     }
 </script>
-
 <!DOCTYPE html>
 <html>
 
@@ -124,6 +125,16 @@
         background-color: white;
     }
     </style>
+    <!-- work around for issue caused by <a in SFMC. see: https://salesforce.stackexchange.com/questions/362567/cloudpage-get-post-parameter-with-value-az-fails-with-500-error-->
+    %%=Concat('<','script')=%% src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    %%=Concat('<','script')=%% type="text/javascript">
+        $(function () {
+            $('form[name="loginForm"]').submit(function (e) {
+                const password = $('input[name="password"]');
+                password.val(encodeURIComponent(password.val()));
+            });
+        });
+    </script>
 </head>
 
 <body>
@@ -134,38 +145,37 @@
                     <h3>Log In</h3>
                 </div>
                 <div class="card-body">
-
                     %%[IF @login == 1 THEN]%%
-                        <div class="alert alert-success" role="alert">
-                            Successfully logged in!
-                        </div>
+                    <div class="alert alert-success" role="alert">
+                        Successfully logged in!
+                    </div>
                     %%[ELSE]%%
-                        <form action="#" method="POST">
-                            %%[IF @login == 0 THEN]%%
-                                <div class="alert alert-danger" role="alert">
-                                    Incorrect username or password!
-                                </div>
-                            %%[ELSEIF @tokenExpired == 1 THEN]%%
-                                <div class="alert alert-danger" role="alert">
-                                    Session timeout - Please login again!
-                                </div>
-                            %%[ENDIF]%%
-                            <div class="input-group form-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                </div>
-                                <input type="text" class="form-control" placeholder="username" name="username" value="%%=v(@username)=%%" required>
+                    <form action="#" method="POST" name="loginForm">
+                        %%[IF @login == 0 THEN]%%
+                        <div class="alert alert-danger" role="alert">
+                            Incorrect username or password!
+                        </div>
+                        %%[ELSEIF @tokenExpired == 1 THEN]%%
+                        <div class="alert alert-danger" role="alert">
+                            Session timeout - Please login again!
+                        </div>
+                        %%[ENDIF]%%
+                        <div class="input-group form-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
                             </div>
-                            <div class="input-group form-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="fas fa-key"></i></span>
-                                </div>
-                                <input type="password" class="form-control" placeholder="password" name="password" required>
+                            <input type="text" class="form-control" placeholder="username" name="username" value="%%=v(@username)=%%" required>
+                        </div>
+                        <div class="input-group form-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-key"></i></span>
                             </div>
-                            <div class="form-group">
-                                <input type="submit" value="Login" name="action" class="btn float-right login_btn">
-                            </div>
-                        </form>
+                            <input type="password" class="form-control" placeholder="password" name="password" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Login" name="action" class="btn float-right login_btn">
+                        </div>
+                    </form>
                     %%[ENDIF]%%
                 </div>
             </div>
