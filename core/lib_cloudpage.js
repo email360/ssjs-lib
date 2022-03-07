@@ -23,7 +23,7 @@
      * Copyright:       {@link https://www.email360.io/|email360}
      * <br>Author:      {@link https://www.linkedin.com/in/sascha-huwald/|Sascha Huwald}
      * <br>Since:       2020
-     * <br>Version:     1.0.0
+     * <br>Version:     2.0.0
      * <br>License:     MIT
      *
      * Collection of wrapper functions for the usage of Cloudpages.
@@ -39,11 +39,15 @@
      * // initialise a new cloudpage instance with a login requirement
      * var cp = new cloudpage('login');
      *
-     * // initialise a new cloudpage instance with a jwt token requirement
-     * var cp = new cloudpage('jwt');
+     * // initialise a new cloudpage instance with a jwt token requirement and a custom key
+     * // This is used to limit the token access to only token with the given key 
+     * var cp = new cloudpage({jwt:'EMAIL360_INT_PWD'});
      */
-    function cloudpage(auth,setting) {
-        this.settings = _updateSettings(setting);
+    function cloudpage(auth,settings) {
+        this.settings = _updateSettings(settings);
+
+        /** JWT instance **/
+        this.jwt = new jwt();
 
         /** Holds the payload for each call */
         this.payload = { qs:{}, jwt:{} };
@@ -56,28 +60,19 @@
          * Requires a JWT token as a request parameter either as POST or GET.
          * If token is invalid or not given, a redirect to the error page
          * will occur. Required parameter name: 'jwt'
-         *
-         * NOTE: JWT token cannot be used in conjunction with CloudPagesURL as 
-         * the function cannot handle "=" characters which are used as padding
-         * in a base64 encoded string. Use a standard GET URL parameter instead.
          */
-        this.authToken = function() {
+        this.authJWT = function(key) {
             // validate and set the query string payload
-            this.isPayload(['jwt']);
+            var payload = this.getParameter(['jwt']),
+                token = payload.jwt;
 
-            var token = this.payload.qs.jwt,
-                access = false;
-
-            if( token ) {
-                if( this.isTokenValid(token) ) {
-                    access = true;
-                }
-            }
-            if( !access ) {
+            try { 
+                this.payload.jwt = this.jwt.decode(token,key);
+            } catch(e) {
                 this.redirectError({
-                    errorCode: 403,
-                    errorMessage: 'Authentication failed - Access denied',
-                    errorDebug: 'Token: '+ Platform.Function.Stringify(token)
+                    errorCode: e.code,
+                    errorMessage: e.message,
+                    errorDebug: 'Token is invalid: '+ Platform.Function.Stringify(token)
                 });
             }
         };
@@ -90,9 +85,9 @@
          *
          * The default login page can be set in thr config: cp.login.
          */
-        this.authLogin = function() {
+        this.authLogin = function(key) {
             var cookieName = this.settings.auth.cookieName,
-                payload = { origin: Platform.Function.Base64Encode(getPageUrl()).replace(/=/gi, '@') },
+                payload = { origin: base64urlEscape(Platform.Function.Base64Encode(getPageUrl())) },
                 url = this.settings.cp.login;
 
             debug('(authLogin)\n\tRetrieve cookie: '+cookieName);
@@ -102,15 +97,18 @@
             if( !token || token == "" ) {
                 url = (Number.isInteger(url)) ? CloudPagesURL(url,payload) : url +'?payload='+Platform.Function.Base64Encode(Platform.Function.Stringify(payload));
                 Platform.Response.Redirect(url,false);
+            }
 
             // cookie is not valid - destory
-            } else if( !this.isTokenValid(token) ) {
+            try { 
+                this.payload.jwt = this.jwt.decode(token,key);
+                debug('(authLogin)\n\tOK: Logged in successfully');
+            } catch(e) {
                 this.expireCookie(cookieName);
                 payload.tokenExpired = 1;
                 url = (Number.isInteger(url)) ? CloudPagesURL(url,payload) : url +'?payload='+Platform.Function.Base64Encode(Platform.Function.Stringify(payload));
                 Platform.Response.Redirect(url,false);
             }
-            debug('(authLogin)\n\tOK: Logged in successfully');
         };
 
         /**
@@ -127,7 +125,7 @@
          */
         this.logout = function(redirectUrl) {
             this.expireCookie(this.settings.auth.cookieName);
-            var payload = { origin: Platform.Function.Base64Encode(getPageUrl()).replace(/=/gi, '@') },
+            var payload = { origin: base64urlEscape(Platform.Function.Base64Encode(getPageUrl())) },
                 url = (redirectUrl) ? (Number.isInteger(redirectUrl)) ? CloudPagesURL(redirectUrl,payload) : redirectUrl : (Number.isInteger(this.settings.cp.login)) ? CloudPagesURL(this.settings.cp.login,payload) : this.settings.cp.login +'?payload='+Platform.Function.Base64Encode(Platform.Function.Stringify(payload));
 
             Platform.Response.Redirect(url,false);
@@ -150,6 +148,8 @@
         };
 
         /**
+         * NOTE: Depreciated
+         * 
          * Validate the payload against QueryStringParameter.
          *
          * If QueryStringParameter was found it is save at runtime 
@@ -180,7 +180,7 @@
 
 
         /**
-         * Wrapper / new name for isPayload
+         * Validate the payload against QueryStringParameter.
          *
          * If QueryStringParameter was found it is save at runtime 
          * to cp.payload. E.g.: cp.payload.qs.subscriberKey.
@@ -189,129 +189,53 @@
          * @param {boolean} [isRequired]    Check if any of the given payload exists, if not redirect to the error page / redirectURL.
          * 
          * @return {object} The given payload
-         * 
          */
-        this.getPayload = function(data,isRequired) {
-            this.isPayload(data,isRequired);
+        this.getParameter = function(data,isRequired) {
+            for(var i = 0; i < data.length; i++) {
+                var r = Request.GetQueryStringParameter(data[i]);
+                if (!r) {
+                    if( isRequired === true ) {
+                        this.redirectError({
+                            errorCode: 400,
+                            errorMessage: 'Invalid call - Access denied',
+                            errorDebug: "Missing payload: "+data[i]
+                        });
+                    }
+                } else {
+                    this.payload.qs[data[i]] = r;
+                }
+            }
             return this.payload.qs;
         }
 
         /**
-         * Generate a new JWT token.
+         * Get the payload from runtime
          * 
-         * @param   {string}    pid             Page ID (KEY) inside the Authentication DataExtension to fetch the salt.
-         * @param   {number}    [expire]        Expiration time in seconds.
-         * @param   {object}    [payload]       Additional payload added to the token.
-         * @param   {array}     [access]        Array of full website URI's to have access to. If not given, the new token will 
-         *                                      have access to all page protected by JWT.
-         * @returns  {string}    A new JWT token.
+         * @param {string} [type]   Suported types are 'qs' or 'jwt'
+         *                          If no type is provided, both objects will be returned
+         * 
+         * @return {object}         The payload
          */
-        this.newToken = function(pid,expire,payload,access) {
-            var payload = (payload && isObject(payload)) ? payload : {},
-                header = { alg: "HS256", typ: "JWT" };
-
-            payload.pid = pid;
-            payload.iat = getUnixTimestamp();
-
-            if( expire )  { 
-                payload.exp = (getUnixTimestamp() + expire);
-            }
-
-            if( access && Array.isArray(access) ) {
-                for (var i = 0; i < access.length; i++) {
-                    access[i] = Platform.Function.MD5(access[i].split('?')[0]);
-                }
-                payload.acs = access;
-            }
-
-            var secret = Platform.Function.Lookup(this.settings.de.authentication.Name, 'value', 'key', pid);
-            if( secret === null ) {
-                debug( '(newToken)\n\tError while generating new token');
-                throw 'Cannot find pid: '+pid+' inside '+this.settings.de.authentication.Name;
-            }
-
-            var signature = SHA256(
-                Platform.Function.Base64Encode(Platform.Function.Stringify(header)) +
-                Platform.Function.Base64Encode(Platform.Function.Stringify(payload)) +
-                secret
-            );
-
-            var token = Platform.Function.Base64Encode(Platform.Function.Stringify(header))+'.'+Platform.Function.Base64Encode(Platform.Function.Stringify(payload))+'.'+signature;
-            debug('(newToken)\n\tOK: Token created: '+token);
-            return token;
-        };
+        this.getPayload = function(type) {
+            return (type && this.payload.hasOwnProperty(type)) ? this.payload[type] : this.payload;
+        }
 
         /**
-         * Decode a JWT token from base64.
-         *
-         * @param {string} token The token itself to decode.
-         *
-         * @returns {object} JWT Header, payload and signature.
+         * Get the payload from runtime
+         * 
+         * @param   {string}    token   A valid JWT token
+         * @param   {string}    key     A symmetric key belonging to that MID Key Management
+         * 
+         * @return {boolean}
          */
-        this.readToken = function(token) {
-            if( !token || typeof token !== 'string' ) {
-                debug( '(readToken) No token given');
-                return null;
-            }
-            var parts = token.split('.');
-            if( parts.length != 3 ) {
-                debug( '(readToken) Wrong token format');
-                return null;
-            }
-            try{
-                return {
-                    header: Platform.Function.ParseJSON(Platform.Function.Base64Decode(parts[0])),
-                    payload: Platform.Function.ParseJSON(Platform.Function.Base64Decode(parts[1])),
-                    signature: parts[2]
-                };
+        this.isTokenValid = function(token,key) {
+            try {
+                this.jwt.verify(token,key);
+                return true;
             } catch(e) {
-                debug( '(readToken) Error while reading token');
-                return null;
-            }
-        };
-
-        /**
-         * Validate a JWT token signature
-         *
-         * @param {string} token The JWT token to validate.
-         *
-         * @returns  {boolean}
-         * 
-         */
-        this.isTokenValid = function(token) {
-            var t = this.readToken(token);
-
-            // already expired ?
-            if( (t.payload.exp && getUnixTimestamp() > t.payload.exp) || !t ) {
-                debug('(isTokenValid) Token expired');
                 return false;
             }
-
-            // access granted for given page?
-            if( t.payload.iss != CloudPagesURL(this.settings.cp.login) && t.payload.acs ) {
-                if(!((Array.isArray(t.payload.acs)) ? t.payload.acs.includes(Platform.Function.MD5(getPageUrl(false))) : t.payload.acs == Platform.Function.MD5(getPageUrl(false)))) {
-                    debug('(isTokenValid) Access to page not allowed');
-                    return false;
-                }
-            }
-
-            var s = SHA256(
-                    token.split('.')[0] + 
-                    token.split('.')[1] +
-                    Platform.Function.Lookup(this.settings.de.authentication.Name, 'value', 'key', t.payload.pid)
-                );
-
-            // save token data to runtime
-            this.payload.jwt = t.payload;
-            this.payload.role = t.payload.rol;
-
-            // token valid?
-            if(s != t.signature){
-                debug('(isTokenValid) Token signature invalid');
-                return false;
-            }
-            return true;
-        };
+        }
 
         /**
          * Redirect to the error page or the given redirectUrl
@@ -329,9 +253,12 @@
         };
 
         // function init
-        if( auth == 'jwt' ) { this.authToken(); }
-        if( auth == 'login' ) { this.authLogin(); }
+        if( auth && typeof auth == 'string' && auth == 'jwt') { this.authJWT(this.settings.keys.general.symmetric); } // backwards compatibility
+        if( auth && typeof auth == 'object' && auth.hasOwnProperty('jwt')) { this.authJWT(auth.jwt); }
 
+        if( auth && typeof auth == 'string' && auth == 'login') { this.authLogin(this.settings.keys.login.symmetric); } // backwards compatibility 
+        if( auth && typeof auth == 'object' && auth.hasOwnProperty('login')) { this.authLogin(auth.login); }
     }
+
     
 </script>
