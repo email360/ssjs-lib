@@ -361,6 +361,37 @@
     }
 
     /**
+     * This function allows users to create JSON web tokens (JWTs). 
+     * 
+     * It uses a key to create a hash of the JWT payload. The hash is included in the JWT content to allow validation. 
+     * The JWT payload isn’t encrypted.
+     * The difference between GetJWT() and its companion function GetJWTByKeyName() is the first parameter. 
+     * The GetJWT() first parameter is a key string that the caller supplies directly through their preferred method. 
+     * For example, the key string is encrypted and stored in a data extension.
+     *
+     *
+     * @param  {string}    string       A symmetric key belonging to that MID Key Management.
+     * @param  {string}    algorithm    Name of a JWT standard hash algorithm from among HS256, HS384, or HS512.
+     * @param  {object}    payload      The payload, a JSON object with name-value pairs. The payload isn't encrypted.
+     *
+     * @returns {string}    A jwt token
+     */
+    function GetJWTByKeyName(key,algorithm,payload) {
+        var varName = '@amp__GetJWT';
+
+        // AMP decleration
+        var amp = "\%\%[ ";
+        // function open        
+        amp += "set "+varName+" = GetJWTByKeyName('"+key+"','"+algorithm+"','"+payload+"') ";
+        // output
+        amp += "output(concat("+varName+")) ";
+        // end of AMP
+        amp += "]\%\%";
+
+        return Platform.Function.TreatAsContent(amp);
+    }
+
+    /**
      * Enables the AMP function DataExtensionRowCount in SSJS
      *
      * This function returns the number of rows in the specified Data Extension.
