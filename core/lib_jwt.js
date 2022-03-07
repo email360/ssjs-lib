@@ -31,9 +31,8 @@
      * @see {@link https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/EncryptSymmetric.html|EncryptSymmetric}
      * @see {@link https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/DecryptSymmetric.html|DecryptSymmetric}
      *
-     * NOTE: This method is using the AMPScript function GetJWT AND NOT GetJWTByKeyName
-     * This allow greater flexability in the usecase but adds responsability of good key management 
-     * to the developer.
+     * NOTE: This method is using the AMPScript function GetJWTByKeyName AND NOT GetJWT
+     * Pleae ensure to use SFMC Key Management with a symetric password
      * @see {@link https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/GetJWTByKeyName.html|GetJWTByKeyName} 
      * @see {@link https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/GetJWT.html|GetJWT} 
      * 
@@ -42,32 +41,23 @@
      * var jwt = new jwt();
      *
      * // create a new jwt token
-     * var key = DecryptSymmetric('myEncryptedKeyWithAES', 'AES', INT_PW, null, 'INT_SALT', null, 'INT_VECTOR')
-     * var token = jwt.encode({
+     * var token = jwt.encode('HS256','INT_PWD',{
      *      name: 'John',
      *      role: 'admin'
-     *  },key);
+     *  });
      *
      * // create a new jwt token expires in 60 second
-     * var key = DecryptSymmetric('myEncryptedKeyWithAES', 'AES', INT_PW, null, 'INT_SALT', null, 'INT_VECTOR')
-     * var token = jwt.encode({
+     * var token = jwt.encode('HS256','INT_PWD',{
      *      name: 'John',
      *      role: 'admin'
-     *  },key,60);
+     *  },60);
      *
      * // create a new jwt token expires in 24 hours but only is active in 5 hours
-     * var key = DecryptSymmetric('myEncryptedKeyWithAES', 'AES', INT_PW, null, 'INT_SALT', null, 'INT_VECTOR')
-     * var token = jwt.encode({
+     * var token = jwt.encode('HS256','INT_PWD',{
      *      name: 'John',
      *      role: 'admin'
-     *  },key,60*60*24,60*60*5);
+     *  },60*60*24,60*60*5);
      *
-     * // create a new jwt token expires in 24 hours but only is active in 5 hours and only works for the cloudpage https://***.sfmc-content.com/someCloudPage
-     * var key = DecryptSymmetric('myEncryptedKeyWithAES', 'AES', INT_PW, null, 'INT_SALT', null, 'INT_VECTOR')
-     * var token = jwt.encode({
-     *      name: 'John',
-     *      role: 'admin'
-     *  },key,60*60*24,60*60*5,['https://***.sfmc-content.com/someCloudPage']);
      */
     function jwt() {
 
@@ -75,10 +65,10 @@
          * Decode a jwt token
          *
          * @param   {string}    token       A valid JWT token
-         * @param   {string}    [key]       The private key to verify the token. If no key given
-         *                                  verification will not apply. Be sure to KNOW WHAT ARE YOU DOING 
-         *                                  because not verify the signature means you can't be sure that 
-         *                                  someone hasn't modified the token payload
+         * @param   {string}    [key]       A symmetric key belonging to that MID Key Management to verify 
+         *                                  the token. If no key given the verification will not apply. 
+         *                                  BE AWARE: With no verification the integrety of the payload
+         *                                  cannot be given.
          *
          * @returns  {object}   Returns the decoded payload
          */
@@ -99,17 +89,15 @@
          * Encode a jwt token
          *
          * @param   {string}    alg             Name of a JWT standard hash algorithm from among HS256, HS384, or HS512.
-         * @param   {string}    key             The private key to sign the token
+         * @param   {string}    key             A symmetric key belonging to that MID Key Management
          * @param   {object}    payload         The payload, typically a JSON object with name-value pairs. The payload isn't encrypted.
          * @param   {number}    [exp]           Expiration time in seconds.
          * @param   {number}    [nbf]           Defines when the token will be active in seconds.
          *                                      NBF must be smaller than EXP
-         * @param   {array}     [acs]           Array of full website URI's to have access to. If not given, the new token will 
-         *                                      have access to all page protected by any JWT.
          *
          * @returns  {string}    A new JWT token.
          */
-        this.encode = function(alg, key, payload, exp, nbf, acs) {
+        this.encode = function(alg, key, payload, exp, nbf) {
 
             // Check key
             if (!alg) {
@@ -144,23 +132,17 @@
                 payload.nbf = (getUnixTimestamp() + nbf);
             }
 
-            // add access
-            if( acs && Array.isArray(acs) && acs.length > 0) {
-                payload.acs = [];
-                for (var i = 0; i < acs.length; i++) {
-                    payload.acs.push(Platform.Function.MD5(acs[i].split('?')[0]));
-                }
-            }
-
             // create JWT
-            return GetJWT(key,alg,Stringify(payload));
+            var token = GetJWTByKeyName(key,alg,Stringify(payload));
+            debug('(jwt.encode)\n\tOK: JWT Token has been created: '+token);
+            return token;
         };
 
         /**
          * Verify a jwt token
          *
          * @param   {string}    token   A valid JWT token
-         * @param   {string}    key     The private key to sign the token
+         * @param   {string}    key     A symmetric key belonging to that MID Key Management
          *
          * @returns  {boolean}
          */
@@ -207,6 +189,7 @@
                 throw({message:'Access to page not allowed',code:401,method:'jwt_verify'});
             }
 
+            debug('(jwt.verify)\n\tOK: JWT Token has been verified');
             return true;
         };
 
@@ -214,7 +197,7 @@
          * verify the jwt signature against a private secret
          *
          * @param   {string}    token   A valid JWT token
-         * @param   {string}    key     The private key to sign the token
+         * @param   {string}    key     A symmetric key belonging to that MID Key Management
          *
          * @returns  {boolean}
          */
@@ -227,7 +210,7 @@
          *
          * @param   {string}    header      The JWT header base64 encoded
          * @param   {string}    payload     The JWT payload base64 encoded
-         * @param   {string}    key         The private secret to sign the token
+         * @param   {string}    key         A symmetric key belonging to that MID Key Management
          *
          * @returns  {string}   The signature
          */
@@ -235,7 +218,7 @@
             var p = Platform.Function.ParseJSON(Platform.Function.Base64Decode(base64pad(payload))),
                 h = Platform.Function.ParseJSON(Platform.Function.Base64Decode(base64pad(header))),
                 alg = h.alg,
-                jwt = GetJWT(key,alg,Stringify(p));
+                jwt = GetJWTByKeyName(key,alg,Stringify(p));
 
             // return signature
             return jwt.split('.')[2];
