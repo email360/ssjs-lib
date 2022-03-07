@@ -144,7 +144,7 @@
      */
     function isObject(value) {
         if (value === null) { return false; }
-        return ((typeof value === 'function') || (typeof value === 'object'));
+        return ((typeof value === 'function' || typeof value === 'object') && !Array.isArray(value) );
     }
 
     /**
@@ -372,7 +372,7 @@
     }
 
     /**
-     * Check if a string is in the object) recursively.
+     * Check if a string is in the object recursively.
      *
      * @param   {string}    needle      The string to find in the object.
      * @param   {object}    haystack    The object to search.
@@ -406,6 +406,25 @@
             }
         }
         return exists;
+    }
+
+    /**
+     * Recursively merge properties of two objects
+     * 
+     * @parm {object} obj1
+     * @parm {object} obj2
+     * 
+     * @return {object}
+     */
+    function mergeObject(obj1, obj2) {
+        for (var p in obj2) {
+            if ( typeof obj2[p] == 'object' ) {
+                obj1[p] = mergeObject(obj1[p], obj2[p]);
+            } else {
+                obj1[p] = obj2[p];
+            }
+        }
+        return obj1;
     }
 
     /**
@@ -750,7 +769,7 @@
      * %%=TreatAsContent(@githubContent)=%%
      */
     function getGitHubRepoContent(obj){
-        var resource = 'https://api.github.com/repos/'+ obj.username + '/' + obj.repoName + '/contents/' + obj.filePath;
+        var resource = 'https://api.github.com/repos/'+ obj.username + '/' + obj.repoName + '/contents/' + obj.fileName;
         debug('(getGitHubRepoContent)\n\tOK: Call Github for the following resource: '+resource);
         var req = new Script.Util.HttpRequest(resource);
             req.emptyContentHandling = 0;
@@ -822,13 +841,8 @@
 
 
     // undocumented on purpose. Used to update the settings object with a custom setting object
-    function _updateSettings(setting) {
-        orgSetting = new settings();
-
-        for(var k in setting) {
-            orgSetting[k] = setting[k];
-        }
-        return orgSetting;
+    function _updateSettings(settings) {
+        return mergeObject(new lib_settings(),settings);
     }
 
 
