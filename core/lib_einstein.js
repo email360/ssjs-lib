@@ -34,11 +34,9 @@
      * // initialise a new igo instance
      * var einstein = new einstein();
      */
-    function einstein(setting) {
-        this.settings = _updateSettings(setting);
+    function einstein(settings) {
+        this.settings = _updateSettings(settings);
         this.mid = getMemberID();
-
-
 
         /**
          * Upsert Einstein User Attributes
