@@ -220,6 +220,7 @@
                 logCategory = this.category;
 
             var log = {
+                    date: Platform.Function.SystemDateToLocalDate(Now()),
                     timestamp: logTime,
                     id: logId,
                     level: level,
