@@ -75,7 +75,7 @@
                 { "Name": "id", "FieldType": "Text", "MaxLength": 255, "IsRequired": true },
                 { "Name": "message", "FieldType": "Text", "MaxLength": 4000, "IsRequired": true },
                 { "Name": "level", "FieldType": "Text", "MaxLength": 50, "IsRequired": true },
-                { "Name": "category", "FieldType": "Text", "MaxLength": 254, "IsPrimaryKey": true }
+                { "Name": "category", "FieldType": "Text", "MaxLength": 254, "IsRequired": true, "IsPrimaryKey": true }
             ]);
         // depreciated            
         // settings.de.authentication = createDataExtension('Authentication', [
