@@ -111,17 +111,17 @@
         this.allowedAppenders = ['DataExtension','Console','HTTP'];
         this.logId = null;
 
-        this.trace = function(message) { this._appenders(message,'trace'); }
-        this.debug = function(message) { this._appenders(message,'debug'); }
-        this.info = function(message) { this._appenders(message,'info'); }
-        this.warn = function(message) { this._appenders(message,'warn'); }
-        this.error = function(message) { this._appenders(message,'error'); }
-        this.fatal = function(message) { this._appenders(message,'fatal'); }
+        this.trace = function() { this._appenders(arguments,'trace'); }
+        this.debug = function() { this._appenders(arguments,'debug'); }
+        this.info = function() { this._appenders(arguments,'info'); }
+        this.warn = function() { this._appenders(arguments,'warn'); }
+        this.error = function() { this._appenders(arguments,'error'); }
+        this.fatal = function() { this._appenders(arguments,'fatal'); }
 
         /**
          * Wrapper to decide if the message should be handled by the appender
          * 
-         * @param {string} message - The message itself
+         * @param {array} message - The message itself
          * @param {string} messageLevel - The message level such as WARN,INFO,ERROR
          */
         this._appenders = function(message,messageLevel) {
@@ -160,7 +160,7 @@
                 messageLevel = messageLevel.toUpperCase();
                 messageLevelNumber = this.levels[messageLevel];
 
-            // message level must be greater or equal than log level but smaller than off
+            // messagelevel must be greater or equal than log level but smaller than off
             if (messageLevelNumber >= logLevelNumber && messageLevelNumber < this.levels['OFF']) {
 
                 this.logId = Platform.Function.GUID();
@@ -251,20 +251,25 @@
          *                                    Allowed values are 'console', 'text' and / or 'html'
          */  
         this._appenderConsole = function(level,message,appender) {
-            var message = (typeof message === 'string') ? message.replace(/<script[\s\S]*?>/gi, '').replace(/<\/script>/gi, '') : message,
-                target = (Array.isArray(appender.target)) ? appender.target : ['console'];
-
-            var log = '['+this._getLogTime(true)+'] ['+level+'] [' + this.category + '] ' + message;
+            var target = (Array.isArray(appender.target)) ? appender.target : ['console'],
+                log = '['+this._getLogTime(true)+'] ['+level+'] [' + this.category + '] -',
+                m = [];
             
+            message = Platform.Function.ParseJSON(Stringify(Array.from(message)).replace(/<script[\s\S]*?>/gi, '').replace(/<\/script>/gi, ''));
+            message.unshift(log);
+            message.forEach(function (e) {(typeof e == 'object') ? m.push(Stringify(e)) : m.push(e);});
+            m = m.join(' ');
+
             if(target.includes('console')) {
-                console_log(log);
+                Platform.Response.Write('<scr' + 'ipt>');
+                Platform.Response.Write('console.log.apply(console,' + Platform.Function.Stringify(message) + ')');
+                Platform.Response.Write('</scr' + 'ipt>'); 
             }
             if(target.includes('html')) {
-                log = (typeof log == 'string') ? log.replace('\n', '<br/>').replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp') : Platform.Function.Stringify(log);
-                Platform.Response.Write('<pre style="margin:0.85em 0px;"><span style="font-size: 11px;">'+log+'</span></pre>');
+                Platform.Response.Write('<pre style="margin:0.85em 0px;"><span style="font-size: 11px;">'+m.replace('\n', '<br/>').replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp')+'</span></pre>');
             }
             if(target.includes('text')) {
-                Platform.Response.Write('{'+Platform.Function.Stringify(log)+'}\n');
+                Platform.Response.Write('{'+m+'}\n');
             }
         }
 
