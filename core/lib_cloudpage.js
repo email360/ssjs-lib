@@ -63,8 +63,15 @@
          */
         this.authJWT = function(key) {
             // validate and set the query string payload
-            var payload = this.getParameter(['jwt']),
+            var authHeader = HTTPRequestHeader('Authorization'),
+                token = null;
+
+            if (authHeader.startsWith("Bearer ")){
+                 token = authHeader.substring(7, authHeader.length);
+            } else {
+                var payload = this.getParameter(['jwt']);
                 token = payload.jwt;
+            }            
 
             try { 
                 this.payload.jwt = this.jwt.decode(token,key);
