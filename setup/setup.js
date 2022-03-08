@@ -71,10 +71,10 @@
             ]);
         settings.de.log = createDataExtension('Log', [
                 { "Name": "date", "FieldType": "Date", "IsRequired": true },
-                { "Name": "timestamp", "FieldType": "Text", "MaxLength": 25, "IsRequired": true },
-                { "Name": "id", "FieldType": "Text", "MaxLength": 255, "IsRequired": true },
-                { "Name": "message", "FieldType": "Text", "MaxLength": 4000, "IsRequired": true },
-                { "Name": "level", "FieldType": "Text", "MaxLength": 50, "IsRequired": true },
+                { "Name": "timestamp", "FieldType": "Text", "MaxLength": 25, "IsRequired": true, "IsPrimaryKey": true },
+                { "Name": "id", "FieldType": "Text", "MaxLength": 255, "IsRequired": true, "IsPrimaryKey": true },
+                { "Name": "message", "FieldType": "Text", "MaxLength": 4000, "IsRequired": true, "IsPrimaryKey": true },
+                { "Name": "level", "FieldType": "Text", "MaxLength": 50, "IsRequired": true, "IsPrimaryKey": true },
                 { "Name": "category", "FieldType": "Text", "MaxLength": 254, "IsRequired": true, "IsPrimaryKey": true }
             ]);
         // depreciated            

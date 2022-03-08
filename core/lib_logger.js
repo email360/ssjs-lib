@@ -210,7 +210,7 @@
          * @param {array} [appender.name] - The name of the DataExtension to log
          */
         this._appenderDataExtension = function(level,message,appender) {
-            var settings = new settings(),
+            var settings = new lib_settings(),
                 de = appender.name || settings.de.log.Name,
                 name = [],
                 value = [];
