@@ -289,44 +289,55 @@
     })();
 
     if (!Array.prototype.filter) {
-        Array.prototype.filter = function(func, thisArg) {
-            'use strict';
-            if (!((typeof func === 'Function' || typeof func === 'function') && this))
-                throw new TypeError();
-
-            var len = this.length >>> 0,
-                res = new Array(len), // preallocate array
-                t = this,
-                c = 0,
-                i = -1;
-
-            var kValue;
-            if (thisArg === undefined) {
-                while (++i !== len) {
-                    // checks to see if the key was set
-                    if (i in this) {
-                        kValue = t[i]; // in case t is changed in callback
-                        if (func(t[i], i, t)) {
-                            res[c++] = kValue;
-                        }
-                    }
-                }
-            } else {
-                while (++i !== len) {
-                    // checks to see if the key was set
-                    if (i in this) {
-                        kValue = t[i];
-                        if (func.call(thisArg, t[i], i, t)) {
-                            res[c++] = kValue;
-                        }
-                    }
+        Array.prototype.filter = function(callback) {
+            //Store the new array
+            var result = [];
+            for (var i = 0; i < this.length; i++) {
+                //call the callback with the current element, index, and context.
+                //if it passes the text then add the element in the new array.
+                if (callback(this[i], i, this)) {
+                    result.push(this[i]);
                 }
             }
-
-            res.length = c; // shrink down array to proper size
-            return res;
-        };
+            //return the array
+            return result
+        }
     }
+
+    // if (!Array.prototype.splice) {
+        Array.prototype.splice = function(startIndex, numItems) {
+            var array = this;
+            var endIndex = startIndex + numItems;
+
+            var itemsBeforeSplice = []; // array till startIndex
+            var splicedItems = []; // removed items array
+            var itemsAfterSplice = []; // array from endIndex
+
+            for (var i = 0; i < array.length; i++) {
+                if (i < startIndex) { itemsBeforeSplice.push(array[i]); }
+                if (i >= startIndex && i < endIndex) { splicedItems.push(array[i]); }
+                if (i >= endIndex) { itemsAfterSplice.push(array[i]); }
+            }
+
+            // Insert all arguments/parameters after numItems
+            for (var i = 2; i < arguments.length; i++) {
+                itemsBeforeSplice.push(arguments[i]);
+            }
+
+            // Combine before/after arrays
+            var remainingItems = itemsBeforeSplice.concat(itemsAfterSplice);
+
+            // Rewrite array
+            for (var i = 0, len = Math.max(array.length, remainingItems.length); i < len; i++) {
+                if (remainingItems.length > i) {
+                    array[i] = remainingItems[i];
+                } else {
+                    array.pop();
+                }
+            }
+            return splicedItems;
+        }
+    // }
 
 
   // Production steps of ECMA-262, Edition 5, 15.4.4.21
