@@ -79,12 +79,17 @@
      *              }
      *          }, { 
      *              type: "Console", 
-     *              level: "TRACE",
-     *              call: {
-     *                  target: ['console','text']
+     *              level: "TRACE"
+     *          },
+     *          {
+     *              type:"Browser",
+     *              level:"INFO",
+     *              call:{
+     *                  format:"HTML"
+     *              }
      *          }
-     *      }
-     * ]};
+     *      ]};
+     * }
      * 
      * @param {string} name - The name of the script / category used to identify the log
      * 
@@ -95,137 +100,167 @@
         }
 
         this.category = name;
+        this.wsproxy = null;
         this.configure = {};
+        this.message = {};
         this.level = 'OFF';
+
         // Log4j hirachy 
         this.levels = {
-            ALL: 0,
-            TRACE: 10,
-            DEBUG: 20,
-            INFO: 30,
-            WARN: 40,
-            ERROR: 50,
-            FATAL: 60,
-            OFF: 100
+            ALL: {value: 0, color: 'grey'},
+            TRACE: {value: 10, color: 'blue'},
+            DEBUG: {value: 20, color: 'cyan'},
+            INFO: {value: 30, color: 'green'},
+            WARN: {value: 40, color: 'yellow'},
+            ERROR: {value: 50, color: 'red'},
+            FATAL: {value: 60, color: 'magenta'},
+            OFF: {value: 100, color: 'grey'}
         };
-        this.allowedAppenders = ['DataExtension','Console','HTTP'];
-        this.logId = null;
+        
+        /**
+         * @param  {object} message - A message argument object to strip
+         * @return {array}
+         */
+        var strip = function(message) {
+            return Platform.Function.ParseJSON(Stringify(Array.from(message)).replace(/<script[\s\S]*?>/gi, '').replace(/<\/script>/gi, ''));
+        };
 
-        this.trace = function() { this._appenders(arguments,'trace'); }
-        this.debug = function() { this._appenders(arguments,'debug'); }
-        this.info = function() { this._appenders(arguments,'info'); }
-        this.warn = function() { this._appenders(arguments,'warn'); }
-        this.error = function() { this._appenders(arguments,'error'); }
-        this.fatal = function() { this._appenders(arguments,'fatal'); }
+        /**
+         * @param  {array} message - A message array to convert to a string
+         * @return {string}
+         */
+        var convert = function(message) {
+            arr = [];
+            message.forEach(function (s) {(typeof s == 'object') ? arr.push(Stringify(s)) : arr.push(s);});
+            return arr.join(' ');
+        }
+
+        this.trace = function() { this.message = { level:'TRACE',args:arguments }; this.appenders(); }
+        this.debug = function() { this.message = { level:'DEBUG',args:arguments }; this.appenders(); }
+        this.info  = function() { this.message = { level:'INFO',args:arguments }; this.appenders(); }
+        this.warn  = function() { this.message = { level:'WARN',args:arguments }; this.appenders(); }
+        this.error = function() { this.message = { level:'ERROR',args:arguments }; this.appenders(); }
+        this.fatal = function() { this.message = { level:'FATAL',args:arguments }; this.appenders(); }
 
         /**
          * Wrapper to decide if the message should be handled by the appender
          * 
-         * @param {array} message - The message itself
-         * @param {string} messageLevel - The message level such as WARN,INFO,ERROR
+         * @param {array} message - Message arguments
          */
-        this._appenders = function(message,messageLevel) {
-            if (isObject(this.configure) && this.configure.hasOwnProperty('appenders')) {
-                var appenders = (!Array.isArray(this.configure.appenders)) ? [this.configure.appenders] : this.configure.appenders;
+        this.appenders = function() {
+            var config = this.configure,
+                id = this.levels[this.message.level].value,
+                appenders = (Array.isArray(config.appenders)) ? config.appenders : [{type:'console'}];
 
-                for (var i = 0; i < appenders.length; i++) {
-                    var appender = appenders[i];
+            for (var i = 0; i < appenders.length; i++) {
+                var appender = appenders[i];
 
-                    // check if user given level exists otherwise keep original level
-                    if (appender.hasOwnProperty('level') && this.levels.hasOwnProperty(appender.level.toUpperCase())) {
-                        this.level = appender.level.toUpperCase();
+                // check if user given level exists otherwise keep original level
+                if (appender.hasOwnProperty('level') && this.levels.hasOwnProperty(appender.level.toUpperCase())) {
+                    this.level = appender.level.toUpperCase();
+                }
+
+                // messagelevel must be greater or equal than log level but smaller than off
+                if (id >= this.levels[this.level].value && id < this.levels['OFF'].value) {
+                    this.message.id = Platform.Function.GUID();
+
+                    switch (appender.type) {
+                        case 'dataExtension':
+                            this.dataExtensionAppender(appender.name);
+                        break;
+                        case 'http':
+                            this.httpAppender(appender.url, appender.method, appender.header, appender.contentType, appender.payload);
+                        break;
+                        case 'console':
+                            this.consoleAppender();
+                        break;
+                        case 'json':
+                            this.jsonAppender();
+                        break;
+                        case 'html':
+                            this.htmlAppender();
+                        break;
+                        case 'tds':
+                            this.tdsAppender(appender.customerKey, appender.recipients);
+                        break;
+                        default:
+                            throw "[logger] [appenders] given appender ["+appender.type+"] is not defined";
                     }
-                    this._log(message,messageLevel,appender);
-                }
-
-            } else {
-                this._log(message,messageLevel);
-            }
-        }
-
-        /**
-         * The actual log function to log the message based on the given
-         * appender.
-         * 
-         * @param {string} message - The message to be log
-         * @param {string} messageLevel - The message level such as WARN, INFO, ERROR
-         * @param {object} appender - Appender object
-         * 
-         * @param {string} appender.type - The appender type name
-         * @param {object} [appender.call] - Call information for each appender
-         */
-        this._log = function(message,messageLevel,appender) {
-            var appender = (this.allowedAppenders.includes(appender.type)) ? appender : {type: 'Console'},
-                logLevelNumber = this.levels[this.level],
-                messageLevel = messageLevel.toUpperCase();
-                messageLevelNumber = this.levels[messageLevel];
-
-            // messagelevel must be greater or equal than log level but smaller than off
-            if (messageLevelNumber >= logLevelNumber && messageLevelNumber < this.levels['OFF']) {
-
-                this.logId = Platform.Function.GUID();
-
-                switch (appender.type) {
-                    case 'DataExtension':
-                        this._appenderDataExtension(messageLevel,message,appender.call);
-                    break;
-                    case 'HTTP':
-                        this._appenderHTTP(messageLevel,message,appender.call);
-                    break;
-                    case 'Console':
-                        this._appenderConsole(messageLevel,message,appender.call);
-                    break;
                 }
             }
         }
 
         /**
-         * Get the log time in a readable format
+         * Set the log time in a readable format
          * 
          * @param {boolean} inMilliseconds - The given time will include milliseconds
          * @returns {string}
          */
-        this._getLogTime = function(inMilliseconds) {
+        this.setLogTime = function(inMilliseconds) {
             var dd = Platform.Function.SystemDateToLocalDate(new Date(getUnixTimestamp(inMilliseconds))),
                 pad = function(number,dec) { var dec = dec || 2; return String(number).padStart(dec,'0') };
 
             return dd.getFullYear() +
               '-' + pad(dd.getMonth() + 1) +
               '-' + pad(dd.getDate()) +
-              ' ' + pad(dd.getHours()) +
+              'T' + pad(dd.getHours()) +
               ':' + pad(dd.getMinutes()) +
               ':' + pad(dd.getSeconds()) +
               '.' + pad(dd.getMilliseconds(),3);
         }
 
+
+        /* ============================================================================
+                                            CATEGORIES
+        ============================================================================ */ 
+        /**
+         * @todo
+         */
+
+
+        /* ============================================================================
+                                              LAYOUT
+        ============================================================================ */ 
+        /**
+         * @todo
+         */
+
+        /**
+         * @param  {array} message - A message array to format
+         * @return {array}
+         */
+        var format = function(message) {
+            var log = '['+this.setLogTime(true)+'] ['+this.message.level+'] ' + this.category + ' -';
+            message.unshift(log);
+            return message;
+        };
+
+
+        /* ============================================================================
+                                             APPENDERS
+        ============================================================================ */
+        
         /**
          * DataExtension appender
          * 
-         * This appender will store the message in the system DataExtension
+         * This appender will store the message in a DataExtension
          * 
-         * @param {string} level - The message level such as WARN, INFO, ERROR
-         * @param {string} message - The message to log
-         * @param {object} appender - Appender object
-         * 
-         * @param {array} [appender.name] - The name of the DataExtension to log
+         * @param {string} dataExtensionName - The name of the DataExtension to log
          */
-        this._appenderDataExtension = function(level,message,appender) {
+        this.dataExtensionAppender = function(dataExtensionName) {
             var settings = new lib_settings(),
-                de = appender.name || settings.de.log.Name,
+                de = dataExtensionName || settings.de.log.Name,
                 name = [],
-                value = [];
-
-            var logTime = this._getLogTime(true),
-                logId = this.logId,
-                logCategory = this.category;
+                value = [],
+                fn = this;
 
             var log = {
                     date: Platform.Function.SystemDateToLocalDate(Now()),
-                    timestamp: logTime,
-                    id: logId,
-                    level: level,
-                    message: message,
-                    category: logCategory
+                    timestamp: fn.setLogTime(true),
+                    id: fn.message.id,
+                    level: fn.message.level,
+                    message: convert(strip(fn.message.args)),
+                    category: fn.category
                 };
         
             // prep the data for insert
@@ -239,82 +274,101 @@
         }
 
         /**
-         * Console appender
+         * TDS appender
+         *
+         * Send the log message via email to the given recipient
+         * Only logger level ERROR will trigger the email send to reduce overhead
          * 
-         * This appender will display the message in the browser console
-         * 
-         * @param {string} level - The message level such as WARN, INFO, ERROR
-         * @param {string} message - The message to log
-         * @param {object} appender - Appender object
-         * 
-         * @param {array} [appender.target] - An array to define the output of the console
-         *                                    Allowed values are 'console', 'text' and / or 'html'
-         */  
-        this._appenderConsole = function(level,message,appender) {
-            var target = (Array.isArray(appender.target)) ? appender.target : ['console'],
-                log = '['+this._getLogTime(true)+'] ['+level+'] [' + this.category + '] -',
-                m = [];
-            
-            message = Platform.Function.ParseJSON(Stringify(Array.from(message)).replace(/<script[\s\S]*?>/gi, '').replace(/<\/script>/gi, ''));
-            message.unshift(log);
-            message.forEach(function (e) {(typeof e == 'object') ? m.push(Stringify(e)) : m.push(e);});
-            m = m.join(' ');
+         * @param {string} customerKey - The customerKey for the TriggeredSendDefinition.
+         * @param {array}  recipients  - Array of objects with email addresses, subscriberkey and attributes to send the email to.
+         */
+        this.tdsAppender = function(customerKey,recipients) {
+            if (!customerKey || !Array.isArray(recipients)) {
+                throw "[logger] [tdsAppender] Missing arguments. Require {string} customerKey and {array} recipients but got: "+Stringify(arguments);
+            }
 
-            if(target.includes('console')) {
-                Platform.Response.Write('<scr' + 'ipt>');
-                Platform.Response.Write('console.log.apply(console,' + Platform.Function.Stringify(message) + ')');
-                Platform.Response.Write('</scr' + 'ipt>'); 
-            }
-            if(target.includes('html')) {
-                Platform.Response.Write('<pre style="margin:0.85em 0px;"><span style="font-size: 11px;">'+m.replace('\n', '<br/>').replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp')+'</span></pre>');
-            }
-            if(target.includes('text')) {
-                Platform.Response.Write('{'+m+'}\n');
+            if (this.levels[this.message.level].value >= this.levels['ERROR'].value) {
+                var wsproxy = (typeof this.wsproxy == 'function') ? this.wsproxy : new wsproxy();
+                
+                // trigger send
+                if (!wsproxy.sendTriggeredSend(customerKey,recipients)) {
+                    throw "[logger] [tdsAppender] Triggered send failed";
+                }
             }
         }
 
         /**
-         * Console HTTP
+         * Console appender
          * 
-         * This appender will send the message via a httprequest to the appender.url
-         * 
-         * @param {string} level - The message level such as WARN, INFO, ERROR
-         * @param {string} message - The message to log
-         * @param {object} appender - Appender object
-         * 
-         * @param {string} appender.url - The target URL for the HTTPRequest
-         * @param {string} [appender.methdod=POST] - The HTTP method
-         * @param {string} [appender.header] - The HTTP header
-         * @param {string} [appender.contentType=application/json] - The HTTP contentType. 
-         * @param {object} [appender.paylaod] - Additional payload for the HTTP request
+         * This appender will display the message in the browser console
          */  
-        this._appenderHTTP = function(level,message,appender) {
-            if (!appender.url) {
-                throw "[logger] No Appender URL found for appender HTTP";
+        this.consoleAppender = function() {
+            var message = format(strip(this.message.args)),
+                colorMessage = '%c'+message[0];
+
+            message.splice(0, 1, colorMessage);
+            message.splice(1, 0, 'color:' + this.levels[this.message.level].color);
+
+            Platform.Response.Write('<scr' + 'ipt>');
+            Platform.Response.Write('console.log.apply(console,' + Platform.Function.Stringify(message) + ')');
+            Platform.Response.Write('</scr' + 'ipt>');
+        }
+
+        /**
+         * JSON appender
+         * 
+         * This appender will display the message in the browser window as JSON
+         * 
+         */  
+        this.jsonAppender = function() {
+            var message = Stringify(format(strip(this.message.args)));
+            Platform.Response.Write(message+'\n');
+        }
+
+        /**
+         * HTML appender
+         * 
+         * This appender will display the message in the browser window as HTML
+         * 
+         */  
+        this.htmlAppender = function() {
+            var message = convert(format(strip(this.message.args)));
+            Platform.Response.Write('<pre style="margin:0.85em 0px;"><span style="font-size: 11px;">'+message.replace('\n', '<br/>').replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp')+'</span></pre>');    
+        }
+
+        /**
+         * HTTP Appender
+         * 
+         * This appender will send the message via a httprequest to the given url
+         *
+         * @param {string} url - The target URL for the HTTPRequest
+         * @param {string} [methdod=POST] - The HTTP method
+         * @param {string} [header] - The HTTP header
+         * @param {string} [contentType=application/json] - The HTTP contentType. 
+         * @param {object} [paylaod] - Additional payload for the HTTP request
+         */  
+        this.httpAppender = function(url,method,header,contentType,payload) {
+            if (!url) {
+                throw "[logger] [httpAppender] No Appender URL found";
             }
 
-            // log details
-            var logTime = this._getLogTime(true),
-                logId = this.logId,
-                logCategory = this.category;
-
             // HTTP parameter
-            var header = appender.header || null,
-                contentType = appender.contentType || "application/json",
-                method = appender.method || 'POST',
-                payload = {
-                    Timestamp: logTime,
-                    Id: logId,
-                    Level: level,
-                    Message: message,
-                    Category: logCategory
+            var contentType = contentType || 'application/json',
+                method = method || 'POST',
+                fn = this,
+                data = {
+                    timestamp: fn.setLogTime(true),
+                    id: fn.message.id,
+                    level: fn.message.level,
+                    message: convert(strip(fn.message.args)),
+                    category: fn.category
                 };
 
-            payload = mergeObject(payload,appender.payload || {});
+            payload = mergeObject(data,payload || {});
 
-            var resp = httpRequest(method,appender.url,contentType,payload,header);
+            var resp = httpRequest(method,url,contentType,payload,header);
             if (resp.status != '200') {
-                throw "[logger] Failed to log to [HTTP] on [" + appender.url + "]: "+ Stringify(resp.content);
+                throw "[logger] [httpAppender] Failed to log to [HTTP] on [" + url + "] with payload ["+Stringify(payload)+"]: "+ Stringify(resp.content);
             }
         }
     }
