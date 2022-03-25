@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Install SSJS LIB</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <style type="text/css">
+    @import url('https://fonts.googleapis.com/css?family=Numans');
+
+    html,
+    body {
+        background-image: url('https://www.email360.io/img/hero-bg.7075aa29.jpg');
+        background-size: cover;
+        background-repeat: no-repeat;
+        height: 100%;
+        font-family: 'Numans', sans-serif;
+    }
+
+    .container {
+        height: 90%;
+        align-content: center;
+    }
+
+    .input-group-prepend span {
+        width: 50px;
+        background-color: #ffc451;
+        color: black;
+        border: 0 !important;
+    }
+
+    .inner {
+        padding-top: 100px;
+    }
+
+    input:focus {
+        outline: 0 0 0 0 !important;
+        box-shadow: 0 0 0 0 !important;
+
+    }
+
+    /*form styles*/
+    #ssjs_lib {
+        text-align: center;
+        position: relative;
+        margin-top: 30px;
+    }
+
+    /*form styles*/
+    #ssjs_lib div {
+        text-align: left;
+        font-size: 12px;
+    }
+
+    #ssjs_lib div ul:before {
+        content:attr(aria-label);
+        font-size:120%;
+        font-weight:bold;
+        margin-left:-15px;
+    }
+
+    #ssjs_lib div ul {
+      list-style: none; /* Remove default bullets */
+    }
+
+    #ssjs_lib div ul pre {
+      margin-bottom: 1px;
+      font-size: 12px;
+    }
+
+    #ssjs_lib fieldset {
+        background: white;
+        border: 0 none;
+        border-radius: 0px;
+        box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
+        padding: 20px 30px;
+        box-sizing: border-box;
+        width: 80%;
+        margin: 0 10%;
+
+        /*stacking fieldsets above each other*/
+        position: relative;
+    }
+
+    /*Hide all except first fieldset*/
+    #ssjs_lib fieldset:not(:first-of-type) {
+        display: none;
+    }
+
+    #ssjs_lib div.settings {
+        display:grid;
+        grid-template-columns: max-content max-content;
+        grid-gap:5px;
+    }
+    #ssjs_lib div.settings label { 
+        text-align:right; 
+    }
+    #ssjs_lib div.settings label:after { 
+        content: ":"; 
+    }
+
+    /*inputs*/
+    #ssjs_lib input,
+    #ssjs_lib textarea {
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 0px;
+        margin-bottom: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        font-family: Numans;
+        color: #2C3E50;
+        font-size: 13px;
+    }
+
+    #ssjs_lib input:focus,
+    #ssjs_lib textarea:focus {
+        -moz-box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+        border: 1px solid #ffc451;
+        outline-width: 0;
+        transition: All 0.5s ease-in;
+        -webkit-transition: All 0.5s ease-in;
+        -moz-transition: All 0.5s ease-in;
+        -o-transition: All 0.5s ease-in;
+    }
+
+    /*buttons*/
+    #ssjs_lib .action-button {
+        width: 125px;
+        background: #ffc451;
+        color: #151515;
+        border: 0 none;
+        border-radius: 4px;
+        cursor: pointer;
+        padding: 10px 24px;
+        font-weight: bold;
+    }
+
+
+    #ssjs_lib .action-button:hover,
+    #ssjs_lib .action-button:focus {
+        box-shadow: 0 0 0 2px white, 0 0 0 3px #ffc451;
+    }
+
+    #ssjs_lib .action-button-previous {
+        width: 100px;
+        color: #151515;
+        border: 0 none;
+        border-radius: 4px;
+        cursor: pointer;
+        padding: 10px 24px;
+        font-weight: bold;
+
+    }
+
+    #ssjs_lib .action-button-previous:hover,
+    #ssjs_lib .action-button-previous:focus {
+        box-shadow: 0 0 0 2px white, 0 0 0 3px #ffc451;
+    }
+
+    /*headings*/
+    .fs-title {
+        font-size: 18px;
+        text-transform: uppercase;
+        color: #2C3E50;
+        margin-bottom: 10px;
+        letter-spacing: 2px;
+        font-weight: bold;
+    }
+
+    .fs-subtitle {
+        font-weight: normal;
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    .fs-subtitle-output {
+        font-weight: bold;
+        text-decoration: underline;
+        font-size: 14px;
+        color: #666;
+    }
+
+
+    </style>
+</head>
+
+<body>
+    <header class="fixed-top" style="background: rgba(0, 0, 0, 0.5);">
+        <div class="container">
+            <nav class="navbar navbar-dark navbar-expand-lg">
+                <a href="https://www.email360.io" target="_blank">
+                    <img src="https://www.email360.io/img/logo.c977298e.png" alt="Email 360" width="150" class="" />
+                </a>
+            </nav>
+        </div>
+    </header>
+    <div class="container">
+        <div class="row">
+            <div class="col"></div>
+            <div class="inner col-md-10">
+                %%[ IF @install == 1 THEN ]%%
+                <row id="ssjs_lib">
+                    <fieldset>
+                        <center><h2 class="fs-title">Installation Results %%[ IF @dev == 1 THEN ]%%(Dev Mode)%%[ ENDIF ]%%</h2></center>
+                        %%=v(@output)=%%
+                        %%[ IF @error != 1 THEN ]%%
+                            <input type="button" name="next" class="next action-button" value="Next Steps" />
+                        %%[ ENDIF ]%%
+                    </fieldset>
+                    %%[ IF @error != 1 THEN ]%%
+                    <fieldset>
+                        <center><h2 class="fs-title">Next Steps</h2></center>
+                        %%=v(@nextSteps)=%%
+                    </fieldset>
+                    %%[ ENDIF ]%%
+                </form>
+                %%[ ELSE ]%%
+                <form id="ssjs_lib" action="#" method="POST">
+                    <fieldset>
+                        <h2 class="fs-title">email360 SSJS Lib - Install Wizzard %%[ IF @dev == 1 THEN ]%%(Dev Mode)%%[ ENDIF ]%%</h2>
+                        <h3 class="fs-subtitle">General settings for the Library</h3>
+                        Welcome to install the SSJS ....
+                        <input type="button" name="next" class="next action-button" value="Start" />
+                    </fieldset>
+                    <fieldset>
+                        <h2 class="fs-title">Brand Setup (Optional)</h2>
+                        <h3 class="fs-subtitle">General settings for the Library</h3>
+                        <input type="text" name="brand" placeholder="Company name (No special charachters including ./()[]:| default: email360)" />
+                        <input type="text" name="prefix" placeholder="Prefix (default: email360)" maxlength=10 />
+                        <input type="button" name="previous" class="previous action-button-previous" value="Previous" />                                                
+                        <input type="button" name="next" class="next action-button" value="Next" />
+                    </fieldset>
+                    <fieldset>
+                        <h2 class="fs-title">API Setup (Optional)</h2>
+                        <h3 class="fs-subtitle">Pleae use a server-2-server package and enable all permissions.<br /> This will enable the full functionality of the SSJS Library.</h3>
+                        <input type="text" name="authUrl" placeholder="Auth Base URI" />
+                        <input type="text" name="restUrl" placeholder="Rest Base URI" />
+                        <input type="text" name="clientId" placeholder="Client Id" />
+                        <input type="password" name="clientSecret" placeholder="Client Secret" />
+                        %%[ IF @dev == 1 THEN ]%%
+                            <h3 class="fs-subtitle"><br>Dev mode enabled - load from private git</h3>
+                            <input type="text" name="dev.username" placeholder="GIT name"/>
+                            <input type="text" name="dev.token" placeholder="token"/>
+                            <input type="text" name="dev.repoName" placeholder="Repo Name" />
+                        %%[ ENDIF ]%%
+                        <input type="button" name="previous" class="previous action-button-previous" value="Previous" />                                                
+                        <input type="button" name="next" class="next action-button" value="Next" />
+                    </fieldset>
+                    <fieldset>
+                        <h2 class="fs-title">Create a Login (Optional)</h2>
+                        <h3 class="fs-subtitle">Fill in your credentials</h3>
+                        <input type="text" name="user" placeholder="Username" />
+                        <input name="password" type="password" placeholder="Enter Password">
+                        <input type="button" name="previous" class="previous action-button-previous" value="Previous" />
+                        <input type="submit" id="submit" name="submit" class="submit action-button" value="Install" />
+                    </fieldset>
+                </form>
+                %%[ ENDIF ]%%
+            </div>
+            <div class="col"></div>
+        </div>
+    </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js'></script>
+    <script type="text/javascript">
+    $(function() {
+        $('form[name="loginForm"]').submit(function(e) {
+            const password = $('input[name="password"]');
+            password.val(encodeURIComponent(password.val()));
+        });
+    });
+    </script>
+    <script type="text/javascript">
+    var current_fs, next_fs, previous_fs; //fieldsets
+    var left, opacity, scale; //fieldset properties which we will animate
+    var animating; //flag to prevent quick multi-click glitches
+
+    $(".next").click(function() {
+        if (animating) return false;
+        animating = true;
+
+        current_fs = $(this).parent();
+        next_fs = $(this).parent().next();
+
+        //activate next step on progressbar using the index of next_fs
+        $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+
+        //show the next fieldset
+        next_fs.show();
+        //hide the current fieldset with style
+        current_fs.animate({ opacity: 0 }, {
+            step: function(now, mx) {
+                //as the opacity of current_fs reduces to 0 - stored in "now"
+                //1. scale current_fs down to 80%
+                scale = 1 - (1 - now) * 0.2;
+                //2. bring next_fs from the right(50%)
+                left = (now * 50) + "%";
+                //3. increase opacity of next_fs to 1 as it moves in
+                opacity = 1 - now;
+                current_fs.css({
+                    'transform': 'scale(' + scale + ')',
+                    'position': 'absolute'
+                });
+                next_fs.css({ 'left': left, 'opacity': opacity });
+            },
+            duration: 800,
+            complete: function() {
+                current_fs.hide();
+                animating = false;
+            },
+            //this comes from the custom easing plugin
+            easing: 'easeInOutBack'
+        });
+    });
+
+    $(".previous").click(function() {
+        if (animating) return false;
+        animating = true;
+
+        current_fs = $(this).parent();
+        previous_fs = $(this).parent().prev();
+
+        //de-activate current step on progressbar
+        $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+
+        //show the previous fieldset
+        previous_fs.show();
+        //hide the current fieldset with style
+        current_fs.animate({ opacity: 0 }, {
+            step: function(now, mx) {
+                //as the opacity of current_fs reduces to 0 - stored in "now"
+                //1. scale previous_fs from 80% to 100%
+                scale = 0.8 + (1 - now) * 0.2;
+                //2. take current_fs to the right(50%) - from 0%
+                left = ((1 - now) * 50) + "%";
+                //3. increase opacity of previous_fs to 1 as it moves in
+                opacity = 1 - now;
+                current_fs.css({ 'left': left });
+                previous_fs.css({ 'transform': 'scale(' + scale + ')', 'opacity': opacity });
+            },
+            duration: 800,
+            complete: function() {
+                current_fs.hide();
+                animating = false;
+            },
+            //this comes from the custom easing plugin
+            easing: 'easeInOutBack'
+        });
+    });
+    </script>
+</body>
+
+</html>
