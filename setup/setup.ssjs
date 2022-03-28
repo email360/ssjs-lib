@@ -170,9 +170,9 @@
                 && postData.restUrl.length > 0 ) {
 
                 var credentials = {
-                        "grant_type": "client_credentials",
-                        "client_id": postData.clientId,
-                        "client_secret": postData.clientSecret
+                        "grant_type":"client_credentials",
+                        "client_id":postData.clientId,
+                        "client_secret":postData.clientSecret
                     },
                     credentialsBase64 = Platform.Function.Base64Encode(Stringify(credentials));
                     
@@ -188,7 +188,7 @@
 
                     // create credentials code
                     setup.credentials = 
-                        '<code style="margin-left:20px;%%=</code><br/>'
+                        '<code style="margin-left:20px;">%%=</code><br/>'
                         + '<code style="margin-left:40px;">EncryptSymmetric(</code><br/>'
                         + '<code style="margin-left:60px;">Base64Decode("'+credentialsBase64+'"),</code><br/>'
                         + '<code style="margin-left:60px;">"AES","'+libKeys.symmetric+'",@null,"'+libKeys.salt+'",@null,"'+libKeys.vector+'",@null</code><br/>'
@@ -206,7 +206,7 @@
             // set username and password
             setup.login.username = decodeURIComponent(decodeURIComponent(postData.username)) || setup.login.username;
             setup.login.password = decodeURIComponent(decodeURIComponent(postData.password)) || setup.login.password
-            setup.login.fromUser = (postData.password != null && postData.username != null);
+            setup.login.fromUser = (postData.password != "" && postData.username != "");
 
             // start output
             output += '<hr><div><ul aria-label="Retrieve Folders:">';
@@ -341,9 +341,9 @@
                 + '<code style="margin-left:40px;">SET @client_id = "==ADD YOUR CLIENT ID=="</code><br/>'
                 + '<code style="margin-left:40px;">SET @client_secret = "==ADD YOUR CLIENT SECRET=="</code><br/>'
                 + '<code style="margin-left:40px;">Output(EncryptSymmetric(\'{</code><br/>'
-                + '<code style="margin-left:60px;">"grant_type": "client_credentials",</code><br/>'
-                + '<code style="margin-left:60px;">"client_id": @client_id,</code><br/>'
-                + '<code style="margin-left:60px;">"client_secret": @client_secret}\',</code><br/>'
+                + '<code style="margin-left:60px;">"grant_type":"client_credentials",</code><br/>'
+                + '<code style="margin-left:60px;">"client_id":@client_id,</code><br/>'
+                + '<code style="margin-left:60px;">"client_secret":@client_secret}\',</code><br/>'
                 + '<code style="margin-left:60px;">"AES","'+libKeys.symmetric+'",@null,"'+libKeys.salt+'",@null,"'+libKeys.vector+'",@null</code><br/>'
                 + '<code style="margin-left:40px;">))</code><br/>'
                 + '<code style="margin-left:20px;">]%%</code>'
