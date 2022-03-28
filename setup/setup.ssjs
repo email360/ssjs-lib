@@ -188,7 +188,7 @@
 
                     // create credentials code
                     setup.credentials = 
-                        '<code style="margin-left:20px;%%==</code><br/>'
+                        '<code style="margin-left:20px;%%=</code><br/>'
                         + '<code style="margin-left:40px;">EncryptSymmetric(</code><br/>'
                         + '<code style="margin-left:60px;">Base64Decode("'+credentialsBase64+'"),</code><br/>'
                         + '<code style="margin-left:60px;">"AES","'+libKeys.symmetric+'",@null,"'+libKeys.salt+'",@null,"'+libKeys.vector+'",@null</code><br/>'
