@@ -226,7 +226,7 @@ function logger(category) {
     this.dataExtensionAppender = function(dataExtensionName,subscriberKey) {
         var settings = new lib_settings(),
             subscriberKey = subscriberKey || "N/A",
-            dataExtensionName = dataExtensionName || settings.de.log.Name,
+            dataExtensionName = dataExtensionName || settings.de.logger.Name,
             name = [],
             value = [],
             fn = this;

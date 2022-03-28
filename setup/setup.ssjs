@@ -248,7 +248,7 @@
                 { "Name": "ListId", "FieldType": "Number" },
                 { "Name": "BatchId", "FieldType": "Number" }
             ],settings.folderId['DataExtension Verion '+version]);
-            settings.de["log"] = createDataExtension('Log', [
+            settings.de["logger"] = createDataExtension('Logger', [
                 { "Name": "date", "FieldType": "Date", "IsRequired": true },
                 { "Name": "timestamp", "FieldType": "Text", "MaxLength": 25, "IsRequired": true, "IsPrimaryKey": true },
                 { "Name": "id", "FieldType": "Text", "MaxLength": 255, "IsRequired": true, "IsPrimaryKey": true },
