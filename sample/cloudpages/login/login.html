@@ -1,6 +1,6 @@
 <script runat="server" language="javascript">
     Platform.Load("Core", "1.1.5");
-    Platform.Function.ContentBlockByKey('%%prefix%%-ssjs-lib');
+    Platform.Function.ContentBlockByKey('%%prefix%%-ssjs-lib-%%version%%');
 
     // initiate cloudpage with public access
     var cp = new cloudpage(),
@@ -29,7 +29,7 @@
         } else if( qs.username && password ) {
 
             // verify login against the Data Extension
-            if( SHA256(password) == Platform.Function.Lookup(settings.de.authUsers.Name,'password','username',qs.username) ) {
+            if( SHA256(password).toLowerCase() == Platform.Function.Lookup(settings.de.authUsers.Name,'password','username',qs.username).toLowerCase() ) {
                 var payload = {
                         iss: getPageUrl(false), // issuer of the token
                         usr: qs.username

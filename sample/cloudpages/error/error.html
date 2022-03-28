@@ -1,6 +1,6 @@
 <script runat="server" language="javascript">
     Platform.Load("Core", "1.1.5");
-    Platform.Function.ContentBlockByKey('%%prefix%%-ssjs-lib');
+    Platform.Function.ContentBlockByKey('%%prefix%%-ssjs-lib-%%version%%');
 
     var cp = new cloudpage(),
         payload = cp.getParameter(['debugMode','errorDebug','errorCode','errorMessage']),
