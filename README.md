@@ -48,7 +48,7 @@ To install the Email360 ssjs-lib into your project create a Cloudpage and insert
 %%=TreatAsContent(HTTPGet('https://raw.githubusercontent.com/email360/ssjs-lib/master/setup/setup.ssjs'))=%%
 ```
 <br/>
-Open the URL of your new Cloudpage and you will see the following setup wizard.<br/>
+Please watch the following video for a full guide on the installation of the SSJS Library.<br/>
 
 [![Instal the SSJS LIB](https://img.youtube.com/vi/0ErmyPvmVVM/0.jpg)](https://www.youtube.com/watch?v=0ErmyPvmVVM)
 
