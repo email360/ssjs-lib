@@ -49,7 +49,9 @@ To install the Email360 ssjs-lib into your project create a Cloudpage and insert
 ```
 <br/>
 Open the URL of your new Cloudpage and you will see the following setup wizard.<br/>
-<img height='500' style='border:0px;height:500px;' src='https://raw.githubusercontent.com/email360/ssjs-lib/master/setup/setup.png' border='0'/>
+
+[![Instal the SSJS LIB](https://img.youtube.com/vi/0ErmyPvmVVM/0.jpg)](https://www.youtube.com/watch?v=0ErmyPvmVVM)
+
 
 All steps are optional and if you experience a timeout refresh the page.
 
