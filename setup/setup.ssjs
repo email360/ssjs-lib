@@ -282,12 +282,12 @@
             // load library files from github
             var wrapper = '',
                 files = {
-                    sfmcapi:    libBaseUrl + 'core/lib_sfmcapi.ssjs',
                     polyfill:   libBaseUrl + 'core/lib_polyfill.ssjs',
-                    core:       libBaseUrl + 'core/lib_core.ssjs',
-                    logger:     libBaseUrl + 'core/lib_logger.ssjs',
-                    wsproxy:    libBaseUrl + 'core/lib_wsproxy.ssjs',
                     amp:        libBaseUrl + 'core/lib_amp.ssjs',
+                    logger:     libBaseUrl + 'core/lib_logger.ssjs',
+                    core:       libBaseUrl + 'core/lib_core.ssjs',
+                    sfmcapi:    libBaseUrl + 'core/lib_sfmcapi.ssjs',
+                    wsproxy:    libBaseUrl + 'core/lib_wsproxy.ssjs',
                     cloudpage:  libBaseUrl + 'core/lib_cloudpage.ssjs',
                     einstein:   libBaseUrl + 'core/lib_einstein.ssjs',
                     jwt:        libBaseUrl + 'core/lib_jwt.ssjs'

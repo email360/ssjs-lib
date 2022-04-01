@@ -24,7 +24,7 @@
  *
  * @returns  {string}                           The eventId for the error.
  */
-function logError(o) {
+ function logError(o) {
     var settings = new settings(),
         de = settings.de.logError.Name,
         name = [],
@@ -587,7 +587,8 @@ function isCustomerKey(str) { return RegExp('^[A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Z
  * @returns {object} Result of the request
  */
 function httpRequest(method,url,contentType,payload,header) {
-    var req = new Script.Util.HttpRequest(url);
+    var log = log || new logger("httpRequest"),
+        req = new Script.Util.HttpRequest(url);
     req.emptyContentHandling = 0;
     req.retries = 2;
     req.continueOnError = true;
@@ -599,7 +600,7 @@ function httpRequest(method,url,contentType,payload,header) {
     if(typeof payload !== 'undefined' && payload !== null) { req.postData = Platform.Function.Stringify(payload); }
 
     try {
-        log.debug('[httpRequest] - Request with method ['+method+'] on URL ['+url+']'); 
+        log.trace('[httpRequest] - Request with method ['+method+'] on URL ['+url+']'); 
         var res = req.send();
 
         return {
@@ -608,7 +609,7 @@ function httpRequest(method,url,contentType,payload,header) {
         };
 
     } catch(e) {
-        log.warn('[httpRequest] - Failed to do HTTP request on ['+url+']')
+        log.trace('[httpRequest] - Failed to do HTTP request on ['+url+']')
         return {
             status: '500',
             content: e
@@ -767,7 +768,8 @@ function createAmpVariablesFromObject(ssjsObject,prefix,delimiter) {
  * %%=TreatAsContent(@githubContent)=%%
  */
 function getGitHubRepoContent(obj) {
-    var url = 'https://api.github.com/repos/'+ obj.username + '/' + obj.repoName + '/contents/' + obj.filePath,
+    var log = log || new logger("getGitHubRepoContent"),
+        url = 'https://api.github.com/repos/'+ obj.username + '/' + obj.repoName + '/contents/' + obj.filePath,
         header = {
             "Authorization": "Bearer " + obj.token,
             "User-Agent": obj.username + '/' + obj.repoName,
