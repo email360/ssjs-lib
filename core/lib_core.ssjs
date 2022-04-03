@@ -856,13 +856,19 @@ function base64pad(str) {
  * 
  * @return {object} the converted JSON
  */
-function convertXMLToJSON(xml) {
-    var amp = "\%\%[ SET @amp__xml2json_xslt = '"
-        amp += "<\?xml version=\"1.0\" encoding=\"UTF-8\" ?><x";
-        amp += "sl:stylesheet version=\"1.0\" xm";
-        amp += "lns:xsl=\"http://www.w3.org/1999/XSL/Transform\"><x";
+ function convertXMLToJSON(xml) {
+    if (!xml) { 
+        throw "[convertXMLToJSON] - Missing or wrong parameter: " + Stringify(Array.from(arguments));
+    }
+    xml = xml.replace(/"/g, "'").replace(/'/g, "\''").replace(/&gt;/g, ">").replace(/&lt;/g, "<");
+    var amp = "\%\%[ ";
+        amp += "SET @amp__xml2json_xml = '"+xml+"' ";
+        amp += "SET @amp__xml2json_xslt = '";
+        amp += "<x";
+        amp += "sl:stylesheet x";
+        amp += "mlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\"><x";
         amp += "sl:output method=\"text\" encoding=\"utf-8\" /><x";
-        amp += "sl:template match=\"/\"><x";
+        amp += "sl:template match=\"/node()\"><x";
         amp += "sl:text>{</x";
         amp += "sl:text><x";
         amp += "sl:apply-templates select=\".\" mode=\"detect\" /><x";
@@ -893,7 +899,7 @@ function convertXMLToJSON(xml) {
         amp += "sl:text>, </x";
         amp += "sl:text></x";
         amp += "sl:when><x";
-        amp += "sl:when test=\"count(./child::*) > 0 or count(@*) > 0\"><x";
+        amp += "sl:when test=\"count(./child::*) &gt; 0 or count(@*) &gt; 0\"><x";
         amp += "sl:text>\"</x";
         amp += "sl:text><x";
         amp += "sl:value-of select=\"name()\" />\" :<x";
@@ -953,20 +959,19 @@ function convertXMLToJSON(xml) {
         amp += "sl:template match=\"node/@TEXT | text()\" name=\"removeBreaks\"><x";
         amp += "sl:param name=\"pText\" select=\"normalize-space(.)\" /><x";
         amp += "sl:choose><x";
-        amp += "sl:when test=\"not(contains($pText, ''&#xA;''))\"><x";
+        amp += "sl:when test=\"not(contains($pText, '' ''))\"><x";
         amp += "sl:copy-of select=\"$pText\" /></x";
         amp += "sl:when><x";
         amp += "sl:otherwise><x";
-        amp += "sl:value-of select=\"concat(substring-before($pText, ''&#xD;&#xA;''), '' '')\" /><x";
+        amp += "sl:value-of select=\"concat(substring-before($pText, '' ''), '' '')\" /><x";
         amp += "sl:call-template name=\"removeBreaks\"><x";
-        amp += "sl:with-param name=\"pText\" select=\"substring-after($pText, ''&#xD;&#xA;'')\" /></x";
+        amp += "sl:with-param name=\"pText\" select=\"substring-after($pText, '' '')\" /></x";
         amp += "sl:call-template></x";
         amp += "sl:otherwise></x";
         amp += "sl:choose></x";
         amp += "sl:template></x";
-        amp += "sl:stylesheet>'"
-        amp += "Output(TransformXML('"+xml+"',@amp__xml2json_xslt))]\%\%";
-    
+        amp += "sl:stylesheet>'";
+        amp += "Output(TransformXML(@amp__xml2json_xml,@amp__xml2json_xslt))]\%\%";
     return Platform.Function.ParseJSON(Platform.Function.TreatAsContent(amp));
 }
 
