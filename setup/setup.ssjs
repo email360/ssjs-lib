@@ -90,12 +90,13 @@
     }
 
     var console = new console(),
-        nextStep = [];
+        nextStep = [],
+        setup = {};
 
     try {
         
         // get post data
-        var postData = getPostData();
+        var postData = getPostData() || {};
 
         // get optional get DATA
         var devMode = Request.GetQueryStringParameter("devMode");
