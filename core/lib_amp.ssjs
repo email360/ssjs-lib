@@ -228,7 +228,7 @@ function SHA1(string,encoding) {
     // parameters
     amp += "'" + string + "'";
     if(encoding) {
-        amp += "'" + encoding + "'";
+        amp += ",'" + encoding + "'";
     }
     // function close
     amp += ") ";
@@ -262,7 +262,7 @@ function SHA256(string,encoding) {
     // parameters
     amp += "'" + string + "'";
     if(encoding) {
-        amp += "'" + encoding + "'";
+        amp += ",'" + encoding + "'";
     }
     // function close
     amp += ") ";
@@ -296,7 +296,7 @@ function SHA512(string,encoding) {
     // parameters
     amp += "'" + string + "'";
     if(encoding) {
-        amp += "'" + encoding + "'";
+        amp += ",'" + encoding + "'";
     }
     // function close
     amp += ") ";
