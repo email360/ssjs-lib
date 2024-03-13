@@ -2,7 +2,7 @@
  * @copyright   {@link https://www.email360.io/|email360}
  * @author      {@link https://www.linkedin.com/in/sascha-huwald/|Sascha Huwald}
  * @since       2020
- * @version     1.0.0
+ * @version     1.0.1
  * @license     {@link https://github.com/email360/ssjs-lib/blob/master/LICENSE|MIT}
  * 
  * This is a mini log4ssjs version based on log4j
@@ -109,6 +109,29 @@ function logger(category) {
         return arr.join(" ");
     }
 
+    /**
+     * @private
+     * @param  {string} message A message to cut.
+     * @param {number} maximumLength The maximum length of the message
+     * @return {string} The shortened message
+     */
+    function shortenText(message, maximumLength) {
+        if (typeof message !== 'string') {
+            message = Stringify(message);
+        }
+        if (typeof maximumLength !== 'number') {
+            maximumLength = 3;
+        }
+        if (Math.ceil(maximumLength) !== maximumLength) {
+            maximumLength = Math.ceil(maximumLength);
+        }
+    
+        maximumLength = maximumLength > 3 ? maximumLength : 3;
+    
+        return message.length <= maximumLength ? message : message.substring(0, maximumLength - 3) + '...';
+    }
+
+
     // init console as errors from here can not be thrown
     var console = new console();
 
@@ -148,6 +171,9 @@ function logger(category) {
                     break;
                     case "console":
                         this.consoleAppender();
+                    break;
+                    case "text":
+                        this.textAppender();
                     break;
                     case "json":
                         this.jsonAppender();
@@ -227,20 +253,22 @@ function logger(category) {
         var settings = new lib_settings(),
             subscriberKey = subscriberKey || "N/A",
             dataExtensionName = dataExtensionName || settings.de.logger.Name,
+            maxMessageLength = settings.de.messageLength || 500,
             name = [],
             value = [],
             fn = this;
 
         // only add INFO or above messages to the DE for processing reason
         if (this.levels[this.message.level].value >= this.levels["INFO"].value) {
-
+            var msg = convert(strip(fn.message.args));
+            msg = shortenText(msg, maxMessageLength);
             // @todo - split message in 4k and iterate with 1/2 2/2 append to front of message
             var data = {
                     date: Platform.Function.SystemDateToLocalDate(Now()),
                     timestamp: fn.setLogTime(true),
                     id: fn.logId,
                     level: fn.message.level,
-                    message: convert(strip(fn.message.args)),
+                    message: msg,
                     category: fn.category,
                     subscriberKey: subscriberKey             
                 };
@@ -301,6 +329,16 @@ function logger(category) {
         message.splice(1, 0, "color:" + this.levels[this.message.level].color);
 
         Platform.Response.Write("<script>console."+logMethod+".apply(console," + Platform.Function.Stringify(message) + ")<\/script>");
+    }
+
+    /**
+     * TEXT appender
+     * 
+     * This appender will display the message in the browser window as plain text (for Cloud Page Text Resources).
+     */  
+    this.textAppender = function() {
+        var message = '\n' + convert(format(strip(this.message.args)));
+        Platform.Response.Write(message);
     }
 
     /**
