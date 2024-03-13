@@ -104,7 +104,8 @@
 
         // set prefix
         var prefix = postData.prefix || 'email360';
-        var brand = decodeURI(postData.brand) || 'email360'
+        var brand = decodeURI(postData.brand) || 'email360';
+        var messageLength = Number(postData.msgLen) || 1000;
 
         // git base URL
         libBaseUrl = (devMode=="1") ? '' : 'https://raw.githubusercontent.com/email360/ssjs-lib/master/';
@@ -123,8 +124,8 @@
                 password: createPassword(24)
             },
             cloudpages: {
-                login: '%%=ContentBlockByKey("'+prefix+'-login-page")=%%',
-                error: '%%=ContentBlockByKey("'+prefix+'-error-page")=%%'
+                login: '%%=ContentBlockByKey("' + prefix + '-login-page-' + version + '")=%%',
+                error: '%%=ContentBlockByKey("' + prefix + '-error-page-' + version + '")=%%'
             },
             hasErrors: false
         };
@@ -237,10 +238,11 @@
             output += '</ul><ul aria-label="Create DataExtensions:">';
 
             // create DataExtensions
+            settings.de.messageLength = messageLength;
             settings.de["logError"] = createDataExtension('Log Error', [
                 { "Name": "EventDate", "FieldType": "Date", "IsPrimaryKey": true, "IsRequired": true },
                 { "Name": "EventId", "FieldType": "Text", "MaxLength": 255, "IsPrimaryKey": true, "IsRequired": true },
-                { "Name": "Message", "FieldType": "Text", "MaxLength": 4000, "IsRequired": true },
+                { "Name": "Message", "FieldType": "Text", "MaxLength": messageLength, "IsRequired": true },
                 { "Name": "Method", "FieldType": "Text", "MaxLength": 50, "IsRequired": true },
                 { "Name": "SubscriberKey", "FieldType": "Text", "MaxLength": 254 },
                 { "Name": "Source", "FieldType": "Text", "MaxLength": 4000 },
@@ -253,7 +255,7 @@
                 { "Name": "date", "FieldType": "Date", "IsRequired": true },
                 { "Name": "timestamp", "FieldType": "Text", "MaxLength": 25, "IsRequired": true, "IsPrimaryKey": true },
                 { "Name": "id", "FieldType": "Text", "MaxLength": 255, "IsRequired": true, "IsPrimaryKey": true },
-                { "Name": "message", "FieldType": "Text", "MaxLength": 4000, "IsRequired": true },
+                { "Name": "message", "FieldType": "Text", "MaxLength": messageLength, "IsRequired": true },
                 { "Name": "level", "FieldType": "Text", "MaxLength": 50, "IsRequired": true, "IsPrimaryKey": true },
                 { "Name": "category", "FieldType": "Text", "MaxLength": 254, "IsRequired": true, "IsPrimaryKey": true },
                 { "Name": "subscriberKey", "FieldType": "Text", "MaxLength": 254, "IsRequired": true, "IsPrimaryKey": true }
@@ -1151,13 +1153,16 @@
                         <br/><br/><br/>
                         <p class="fs-subtitle" align="left">The prefix which will be used for naming and reference in code. By default it will be email360</p>
                         <input type="text" name="prefix" placeholder="Prefix (default: email360)" maxlength=10 />
+                        <br/><br/><br/>
+                        <p class="fs-subtitle" align="left">Length of Logger Message field (500-4000 characters). Bigger length can have an effect on SFMC performance - recommended: 1000.</p>
+                        <input type="number" name="msgLen" value="1000" min="500" max="4000" step="100" onchange="this.value = this.value >= 500 && this.value <= 4000 ? Math.round(this.value) : 1000" />
                         <br/>
                         <input type="button" name="previous" class="previous action-button-previous" value="Previous" />                                                
                         <input type="button" name="next" class="next action-button" value="Next" />
                     </fieldset>
                     <fieldset>
                         <h2 class="fs-title">API Setup (Optional)</h2>
-                        <h3 class="fs-subtitle">Please use a server-2-server package and enable all permissions.<br /> This will enable the full functionality of the SSJS Library.</h3>
+                        <h3 class="fs-subtitle">Please use a server-2-server package and enable all permissions.<br /> This will enable the full functionality of the SSJS Library. Minimum requirements are: Data Extensions, Documents and Images and Saved Content (Read & Write).</h3>
                         <input type="text" name="authUrl" placeholder="Auth Base URI" />
                         <input type="text" name="restUrl" placeholder="Rest Base URI" />
                         <input type="text" name="clientId" placeholder="Client Id" />

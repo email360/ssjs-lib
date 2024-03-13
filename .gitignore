@@ -36,6 +36,12 @@
 ehthumbs.db
 Thumbs.db
 
+# Custom #
+######################
 *.conf
 *lib_le.js
 *lib_luxapi.js
+
+.vscode/
+tests.ssjs
+*ssjs-vsc.json
