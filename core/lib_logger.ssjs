@@ -2,7 +2,7 @@
  * @copyright   {@link https://www.email360.io/|email360}
  * @author      {@link https://www.linkedin.com/in/sascha-huwald/|Sascha Huwald}
  * @since       2020
- * @version     1.0.0
+ * @version     1.0.1
  * @license     {@link https://github.com/email360/ssjs-lib/blob/master/LICENSE|MIT}
  * 
  * This is a mini log4ssjs version based on log4j
@@ -67,7 +67,13 @@
  * 
  * @param {string} category - The name of the script / category used to identify the log
  */
-function logger(category) {
+function logger(category, muteErrors) {
+    // init console as errors from here can not be thrown
+    var console = new console();
+    if (muteErrors) {
+        console.mute();
+    }
+    
     if (!category) {
         console.error("[logger] - No Logger category provided.");
     }
@@ -105,12 +111,31 @@ function logger(category) {
      */
     var convert = function(message) {
         arr = [];
-        message.forEach(function (s) {(typeof s == "object") ? arr.push(Stringify(s)) : arr.push(s);});
+        forEach(message, function (s) {(typeof s == "object") ? arr.push(Stringify(s)) : arr.push(s);});
         return arr.join(" ");
     }
 
-    // init console as errors from here can not be thrown
-    var console = new console();
+    /**
+     * @private
+     * @param  {string} message A message to cut.
+     * @param {number} maximumLength The maximum length of the message
+     * @return {string} The shortened message
+     */
+    function shortenText(message, maximumLength) {
+        if (typeof message !== 'string') {
+            message = Stringify(message);
+        }
+        if (typeof maximumLength !== 'number') {
+            maximumLength = 3;
+        }
+        if (Math.ceil(maximumLength) !== maximumLength) {
+            maximumLength = Math.ceil(maximumLength);
+        }
+    
+        maximumLength = maximumLength > 3 ? maximumLength : 3;
+    
+        return message.length <= maximumLength ? message : message.substring(0, maximumLength - 3) + '...';
+    }
 
     this.trace = function() { this.message = { level:"TRACE",args:arguments }; this.appenders(); }
     this.debug = function() { this.message = { level:"DEBUG",args:arguments }; this.appenders(); }
@@ -148,6 +173,9 @@ function logger(category) {
                     break;
                     case "console":
                         this.consoleAppender();
+                    break;
+                    case "text":
+                        this.textAppender();
                     break;
                     case "json":
                         this.jsonAppender();
@@ -227,20 +255,22 @@ function logger(category) {
         var settings = new lib_settings(),
             subscriberKey = subscriberKey || "N/A",
             dataExtensionName = dataExtensionName || settings.de.logger.Name,
+            maxMessageLength = settings.de.messageLength || 500,
             name = [],
             value = [],
             fn = this;
 
         // only add INFO or above messages to the DE for processing reason
         if (this.levels[this.message.level].value >= this.levels["INFO"].value) {
-
+            var msg = convert(strip(fn.message.args));
+            msg = shortenText(msg, maxMessageLength);
             // @todo - split message in 4k and iterate with 1/2 2/2 append to front of message
             var data = {
                     date: Platform.Function.SystemDateToLocalDate(Now()),
                     timestamp: fn.setLogTime(true),
                     id: fn.logId,
                     level: fn.message.level,
-                    message: convert(strip(fn.message.args)),
+                    message: msg,
                     category: fn.category,
                     subscriberKey: subscriberKey             
                 };
@@ -295,12 +325,22 @@ function logger(category) {
     this.consoleAppender = function() {
         var message = format(strip(this.message.args)),
             colorMessage = "%c"+message[0],
-            logMethod = (["TRACE","INFO","WARN","ERROR"].includes(this.message.level)) ? this.message.level.toLowerCase() : "log";
+            logMethod = (includes(["TRACE","INFO","WARN","ERROR"], this.message.level)) ? this.message.level.toLowerCase() : "log";
 
-        message.splice(0, 1, colorMessage);
-        message.splice(1, 0, "color:" + this.levels[this.message.level].color);
+        splice(message, 0, 1, colorMessage);
+        splice(message, 1, 0, "color:" + this.levels[this.message.level].color);
 
         Platform.Response.Write("<script>console."+logMethod+".apply(console," + Platform.Function.Stringify(message) + ")<\/script>");
+    }
+
+    /**
+     * TEXT appender
+     * 
+     * This appender will display the message in the browser window as plain text (for Cloud Page Text Resources).
+     */  
+    this.textAppender = function() {
+        var message = '\n' + convert(format(strip(this.message.args)));
+        Platform.Response.Write(message);
     }
 
     /**

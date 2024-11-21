@@ -140,7 +140,7 @@ function dateAdd(dt, number, unit) {
         validUnits = ['Seconds','Minutes','Hours','Days','Months','Years'],
         date = new Date(dt);
 
-    if(!validUnits.includes(u)) {
+    if(!includes(validUnits, u)) {
         debug('(dateAdd)\n\tUnit not allowed: '+u+'. Use Hours instead' );
     }
 
@@ -183,7 +183,7 @@ function dateSubtract(dt, number, unit) {
         validUnits = ['Seconds','Minutes','Hours','Days','Months','Years'],
         date = new Date(dt);
 
-    if(!validUnits.includes(u)) {
+    if(!includes(validUnits, u)) {
         debug('(dateSubtract)\n\tUnit not allowed: '+u+'. Use Hours instead' );
     }
 
@@ -321,7 +321,7 @@ function timeConvert(m) {
 function groupBy(data, key) { // `data` is an array of objects, `key` is the key (or property accessor) to group by
     // reduce runs this anonymous function on each element of `data` (the `item` parameter,
     // returning the `storage` parameter at the end
-    return data.reduce(function(storage, item) {
+    return reduce(data, function(storage, item) {
     // get the first instance of the key by which we're grouping
     var group = item[key];
 
@@ -345,7 +345,7 @@ function groupBy(data, key) { // `data` is an array of objects, `key` is the key
  * @returns  {boolean}
  */
 function inObject(needle,haystack) {
-    return Object.keys(haystack).some(function(k) {
+    return some(Object.keys(haystack), function(k) {
         return obj[k] === needle; 
     });
 }
@@ -435,7 +435,7 @@ function shuffle(a) {
 function deleteArrayItem(array, item) {
     for (var k = 0; k < array.length; k++) {
         if( array[k] == item ) {
-            array.splice(k, 1);
+            splice(array, k, 1);
         }
     }
     return array;
@@ -479,20 +479,32 @@ function getMemberID() {
  * console.debug('My Test Debug');
  */
 function console() {
+    this.mute = function() {
+        this.muted = true;
+    };
+
+    this.unmute = function() {
+        this.muted = false;
+    };
 
     this.log = function() {
+        if (this.muted) { return; }
         Write('<script>console.log.apply(console,' + Platform.Function.Stringify(Array.from(arguments)) + ')<\/script>');
     };
     this.error = function() {
+        if (this.muted) { return; }
         Write('<script>console.error.apply(console,' + Platform.Function.Stringify(Array.from(arguments)) + ')<\/script>');
     }
     this.info = function() {
+        if (this.muted) { return; }
         Write('<script>console.info.apply(console,' + Platform.Function.Stringify(Array.from(arguments)) + ')<\/script>');
     }
     this.debug = function() {
+        if (this.muted) { return; }
         Write('<script>console.debug.apply(console,' + Platform.Function.Stringify(Array.from(arguments)) + ')<\/script>');
     }
     this.warn = function() {
+        if (this.muted) { return; }
         Write('<script>console.warn.apply(console,' + Platform.Function.Stringify(Array.from(arguments)) + ')<\/script>');
     }
 }
@@ -507,15 +519,15 @@ function debug(message) {
     var message = (typeof message === 'string') ? message.replace(/<script[\s\S]*?>/gi, '').replace(/<\/script>/gi, '') : message;
 
     if( Array.isArray(debugMode) ) {
-        if(debugMode.includes('console')) {
+        if(includes(debugMode, 'console')) {
             var console = new console();
             console.log(message);
         }
-        if(debugMode.includes('html')) {
+        if(includes(debugMode, 'html')) {
             var m = (typeof message == 'string') ? message.replace('\n', '<br/>').replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp') : Platform.Function.Stringify(message);
             Platform.Response.Write('<pre style="margin:0.85em 0px;"><span style="font-size: 11px;">'+m+'</span></pre>');
         }
-        if(debugMode.includes('text')) {
+        if(includes(debugMode, 'text')) {
             Platform.Response.Write('{'+Platform.Function.Stringify(message)+'}\n');
         }
     }

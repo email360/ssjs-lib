@@ -2,13 +2,38 @@
     /**
      * @version 1.0.1
      */
-    var version = "1.0.1"
-
-
+    var version = "1.0.1";
 
     /* ================================================================================= */
     Platform.Load("Core", "1.1");
 
+    var LIB_BASE_URL = "https://raw.githubusercontent.com/FiB3/ssjs-lib/master";
+
+    /* var librariesImports = {
+        core: {
+            // loaded together with all the other libraries:
+            standard: libBaseUrl + 'core/lib_standard.ssjs',
+            amp:        libBaseUrl + 'core/lib_amp.ssjs',
+            logger:     libBaseUrl + 'core/lib_logger.ssjs',
+            core:       libBaseUrl + 'core/lib_core.ssjs'
+        },
+        sfmcapi: {
+            sfmcapi:    libBaseUrl + 'core/lib_sfmcapi.ssjs'
+        },
+        wsproxy: {
+            wsproxy:    libBaseUrl + 'core/lib_wsproxy.ssjs'
+        },
+        einstein: {
+            einstein:   libBaseUrl + 'core/lib_einstein.ssjs'
+        },
+        cloudpage: {
+            cloudpage:  libBaseUrl + 'core/lib_cloudpage.ssjs',
+            jwt:        libBaseUrl + 'core/lib_jwt.ssjs'
+        },
+        polyfill: {
+            polyfill:   libBaseUrl + 'core/lib_polyfill.ssjs'
+        }
+    }; */
 
     // POLYFILL
     if (!Array.from) {
@@ -104,10 +129,11 @@
 
         // set prefix
         var prefix = postData.prefix || 'email360';
-        var brand = decodeURI(postData.brand) || 'email360'
+        var brand = decodeURI(postData.brand) || 'email360';
+        var messageLength = Number(postData.msgLen) || 1000;
 
         // git base URL
-        libBaseUrl = (devMode=="1") ? '' : 'https://raw.githubusercontent.com/email360/ssjs-lib/master/';
+        /* libBaseUrl = (devMode=="1") ? '' : LIB_BASE_URL; */
 
         // init wsproxy
         api = new Script.Util.WSProxy();
@@ -123,8 +149,8 @@
                 password: createPassword(24)
             },
             cloudpages: {
-                login: '%%=ContentBlockByKey("'+prefix+'-login-page")=%%',
-                error: '%%=ContentBlockByKey("'+prefix+'-error-page")=%%'
+                login: '%%=ContentBlockByKey("' + prefix + '-login-page-' + version + '")=%%',
+                error: '%%=ContentBlockByKey("' + prefix + '-error-page-' + version + '")=%%'
             },
             hasErrors: false
         };
@@ -222,25 +248,28 @@
             output += '</ul><ul aria-label="Create Folders:">';
 
             // create folder to hold all lib data
-            settings.folderId['DataExtension '+brand] = createFolder(brand, 'dataextension', settings.folderId['Data Extensions']);
-            settings.folderId['DataExtension SSJS Lib'] = createFolder('SSJS Lib', 'dataextension', settings.folderId['DataExtension '+brand]);
-            settings.folderId['DataExtension Verion '+version] = createFolder("v"+version.replace(/\./g, ''), 'dataextension', settings.folderId['DataExtension SSJS Lib']);
-            settings.folderId['Asset '+brand] = createFolder(brand,'asset', settings.folderId['Content Builder']);
-            settings.folderId['Asset SSJS Lib'] = createFolder('SSJS Lib','asset', settings.folderId['Asset '+brand]);
-            settings.folderId['Asset SSJS Lib Version '+version] = createFolder(version,'asset', settings.folderId['Asset SSJS Lib']);
-            settings.folderId['Asset SSJS Lib Lib'] = createFolder('Lib','asset', settings.folderId['Asset SSJS Lib Version '+version]);
-            settings.folderId['Asset SSJS Lib CloudPages'] = createFolder('CloudPages','asset', settings.folderId['Asset SSJS Lib Version '+version]);
-            settings.folderId['Asset SSJS Lib CloudPages Login'] = createFolder('Login','asset', settings.folderId['Asset SSJS Lib CloudPages']);
-            settings.folderId['Asset SSJS Lib CloudPages Error'] = createFolder('Error','asset', settings.folderId['Asset SSJS Lib CloudPages']);
+            var DATA_EXTENSION_FOLDER_KEY = settings.folderId['DataExtension ' + brand + ' Lib'];
+            settings.folderId[DATA_EXTENSION_FOLDER_KEY] = createFolder(brand + ' Lib', 'dataextension', settings.folderId['Data Extensions']);
+
+            var ASSET_FOLDER_KEY = 'Asset ' + brand + ' Lib';
+            var ASSET_LIB_FOLDER_KEY = 'Asset SSJS Lib Lib';
+            var ASSET_CLOUDPAGES_FOLDER_KEY = 'Asset SSJS Lib CloudPages';
+            var ASSET_TESTS_FOLDER_KEY = 'Asset SSJS Lib Tests';
+
+            settings.folderId[ASSET_FOLDER_KEY] = createFolder(brand + ' Lib', 'asset', settings.folderId['Content Builder']);
+            settings.folderId[ASSET_LIB_FOLDER_KEY] = createFolder('Lib','asset', settings.folderId[ASSET_FOLDER_KEY]);
+            settings.folderId[ASSET_CLOUDPAGES_FOLDER_KEY] = createFolder('CloudPages','asset', settings.folderId[ASSET_FOLDER_KEY]);
+            settings.folderId[ASSET_TESTS_FOLDER_KEY] = createFolder('Tests','asset', settings.folderId[ASSET_FOLDER_KEY]);
 
 
             output += '</ul><ul aria-label="Create DataExtensions:">';
 
             // create DataExtensions
+            settings.de.messageLength = messageLength;
             settings.de["logError"] = createDataExtension('Log Error', [
                 { "Name": "EventDate", "FieldType": "Date", "IsPrimaryKey": true, "IsRequired": true },
                 { "Name": "EventId", "FieldType": "Text", "MaxLength": 255, "IsPrimaryKey": true, "IsRequired": true },
-                { "Name": "Message", "FieldType": "Text", "MaxLength": 4000, "IsRequired": true },
+                { "Name": "Message", "FieldType": "Text", "MaxLength": messageLength, "IsRequired": true },
                 { "Name": "Method", "FieldType": "Text", "MaxLength": 50, "IsRequired": true },
                 { "Name": "SubscriberKey", "FieldType": "Text", "MaxLength": 254 },
                 { "Name": "Source", "FieldType": "Text", "MaxLength": 4000 },
@@ -248,30 +277,30 @@
                 { "Name": "JobId", "FieldType": "Number" },
                 { "Name": "ListId", "FieldType": "Number" },
                 { "Name": "BatchId", "FieldType": "Number" }
-            ],settings.folderId['DataExtension Verion '+version]);
+            ],settings.folderId[DATA_EXTENSION_FOLDER_KEY]);
             settings.de["logger"] = createDataExtension('Logger', [
                 { "Name": "date", "FieldType": "Date", "IsRequired": true },
                 { "Name": "timestamp", "FieldType": "Text", "MaxLength": 25, "IsRequired": true, "IsPrimaryKey": true },
                 { "Name": "id", "FieldType": "Text", "MaxLength": 255, "IsRequired": true, "IsPrimaryKey": true },
-                { "Name": "message", "FieldType": "Text", "MaxLength": 4000, "IsRequired": true },
+                { "Name": "message", "FieldType": "Text", "MaxLength": messageLength, "IsRequired": true },
                 { "Name": "level", "FieldType": "Text", "MaxLength": 50, "IsRequired": true, "IsPrimaryKey": true },
                 { "Name": "category", "FieldType": "Text", "MaxLength": 254, "IsRequired": true, "IsPrimaryKey": true },
                 { "Name": "subscriberKey", "FieldType": "Text", "MaxLength": 254, "IsRequired": true, "IsPrimaryKey": true }
-            ],settings.folderId['DataExtension Verion '+version]);
+            ],settings.folderId[DATA_EXTENSION_FOLDER_KEY]);
             settings.de["sfmcApiToken"] = createDataExtension('SFMC Api Token', [
                 { "Name": "clientId", "FieldType": "Text", "MaxLength": 50, "IsPrimaryKey": true, "IsRequired": true },
                 { "Name": "token", "FieldType": "Text", "MaxLength": 1000, "IsPrimaryKey": true, "IsRequired": true },
                 { "Name": "expire", "FieldType": "Date" }
-            ],settings.folderId['DataExtension Verion '+version]);
+            ],settings.folderId[DATA_EXTENSION_FOLDER_KEY]);
             settings.de["wsproxyCols"] = createDataExtension('WSProxy Cols', [
                 { "Name": "ObjectType", "FieldType": "Text", "MaxLength": 50, "IsPrimaryKey": true, "IsRequired": true },
                 { "Name": "Cols", "FieldType": "Text", "MaxLength": 4000, "IsRequired": true },
                 { "Name": "Last Update", "FieldType": "Date", "IsRequired": true }
-            ],settings.folderId['DataExtension Verion '+version]);
+            ],settings.folderId[DATA_EXTENSION_FOLDER_KEY]);
             settings.de["authUsers"] = createDataExtension('Auth Users', [
                 { "Name": "Username", "FieldType": "Text", "MaxLength": 254, "IsPrimaryKey": true, "IsRequired": true },
                 { "Name": "Password", "FieldType": "Text", "MaxLength": 500, "IsRequired": true },
-            ],settings.folderId['DataExtension Verion '+version]);
+            ],settings.folderId[DATA_EXTENSION_FOLDER_KEY]);
 
             output += '</ul><ul aria-label="Add DataExtension Records:">';
 
@@ -282,41 +311,76 @@
 
             // load library files from github
             var wrapper = '',
-                files = {
-                    polyfill:   libBaseUrl + 'core/lib_polyfill.ssjs',
-                    amp:        libBaseUrl + 'core/lib_amp.ssjs',
-                    logger:     libBaseUrl + 'core/lib_logger.ssjs',
-                    core:       libBaseUrl + 'core/lib_core.ssjs',
-                    sfmcapi:    libBaseUrl + 'core/lib_sfmcapi.ssjs',
-                    wsproxy:    libBaseUrl + 'core/lib_wsproxy.ssjs',
-                    cloudpage:  libBaseUrl + 'core/lib_cloudpage.ssjs',
-                    einstein:   libBaseUrl + 'core/lib_einstein.ssjs',
-                    jwt:        libBaseUrl + 'core/lib_jwt.ssjs'
-                };
+                allLibKeys = [],
+                coreLibKey;
+            
+            var libSettingsBlockLoader = getLibBlockCode(prefix.toLowerCase() + "-ssjs-lib-settings-" + version);
+            allLibKeys.push(libSettingsBlockLoader);
             
             // build main lib file wrapper
-            for( var key in files ) {
-                var customerKey = prefix.toLowerCase()+'-ssjs-lib-'+key+'-'+version,
-                    url = files[key],
-                    folder = settings.folderId['Asset SSJS Lib Lib'];
+            for (var blockNames in librariesImports) {
+                var keys = [];
 
-                createScriptContentBlock('SSJS Lib - '+key, customerKey, folder, files[key]);
-                wrapper += "\tTreatAsContent(Concat('<script runat=\"server\" language=\"javascript\">',ContentBlockByKey('"+customerKey+"'),'<\/script>'));\n";
+                for (var libName in librariesImports[blockNames]) {
+                    var libCustomerKey = prefix.toLowerCase() +' -ssjs-lib-' + libName + '-' + version,
+                        url = librariesImports[blockNames][libName],
+                        folder = settings.folderId[ASSET_LIB_FOLDER_KEY];
+                    if (libCustomerKey === 'core') {
+                        coreLibKey = libCustomerKey;
+                    }
+                    createScriptContentBlock('SSJS Lib - ' + libName, libCustomerKey, folder, url);
+                    keys.push(getLibBlockCode(libCustomerKey));
+                    allLibKeys.push(getLibBlockCode(libCustomerKey));
+                }
+
+                var standardLibLoader = "";
+                if (blockNames !== 'core') {
+                    // add standard lib loader:
+                    standardLibLoader += '<script runat="server" language="javascript">';
+                    standardLibLoader += 'if (typeof(startsWith) === "function" && typeof(logger) === "function") {';
+                    standardLibLoader += '    Platform.Variable.SetValue(@ssjsCoreLibLoaded101, 1);';
+                    standardLibLoader += '}';
+                    standardLibLoader += '<\/script>';
+
+                    standardLibLoader += '\%\%[\n';
+
+                    // `IF` in AMPScript breaks the script - even when commented out!
+                    // so we have to split it into two parts
+                    standardLibLoader += '  IF ' + '@ssjsCoreLibLoaded101 != 1 ';
+                    standardLibLoader += 'THEN\n';
+                    standardLibLoader += '    ' + getLibBlockCode(coreLibKey);
+                    standardLibLoader +=  '  ENDIF';
+                    standardLibLoader += '\n]\%\%';
+                }
+
+                libLoaderCode = "%%[\n" + libSettingsBlockLoader + '\n' + standardLibLoader + '\n' + keys.join("\n") + "\n]%%";
+
+                createScriptContentBlock(
+                    'SSJS Lib',
+                    prefix.toLowerCase()+'-ssjs-lib-' + blockNames,
+                    settings.folderId[ASSET_FOLDER_KEY],
+                    null,
+                    libLoaderCode
+                );
             }
-
-            // create main lib file
-            var content = "%%[\n\tTreatAsContent(Concat('<script runat=\"server\" language=\"javascript\">',ContentBlockByKey('"+prefix.toLowerCase()+"-ssjs-lib-settings-"+version+"'),'<\/script>'))\n"+wrapper+"]%%";
-            createScriptContentBlock('SSJS Lib', prefix.toLowerCase()+'-ssjs-lib-'+version, settings.folderId['Asset SSJS Lib Version '+version], null, content);
+            // create the complete loader:
+            createScriptContentBlock(
+                'SSJS Lib',
+                prefix.toLowerCase()+'-ssjs-lib' + version,
+                settings.folderId[ASSET_FOLDER_KEY],
+                null,
+                "%%[\n" + allLibKeys.join("\n") + "\n]%%"
+            )
 
             // create demo login page code
-            createScriptContentBlock('Login Page', prefix.toLowerCase()+'-login-page-'+version, settings.folderId['Asset SSJS Lib CloudPages Login'], libBaseUrl+'sample/cloudpages/login/login.html');
+            createScriptContentBlock('Login Page', prefix.toLowerCase()+'-login-page-' + version, settings.folderId[ASSET_CLOUDPAGES_FOLDER_KEY], libBaseUrl + 'sample/cloudpages/login/login.html');
 
             // create demo error page code
-            createScriptContentBlock('Error Page', prefix.toLowerCase()+'-error-page-'+version, settings.folderId['Asset SSJS Lib CloudPages Error'], libBaseUrl+'sample/cloudpages/error/error.html');
+            createScriptContentBlock('Error Page', prefix.toLowerCase()+'-error-page-' + version, settings.folderId[ASSET_CLOUDPAGES_FOLDER_KEY], libBaseUrl + 'sample/cloudpages/error/error.html');
 
             // create settings file
-            var content = '\nfunction lib_settings() {\n\n'+ConvertObjectIndented(settings,'        ')+'\n}\n';
-            createScriptContentBlock('SSJS Lib - settings', prefix.toLowerCase()+'-ssjs-lib-settings-'+version, settings.folderId['Asset SSJS Lib Lib'], null, content);
+            var settingsContent = '\nfunction lib_settings() {\n\n'+ConvertObjectIndented(settings,'        ')+'\n}\n';
+            createScriptContentBlock('SSJS Lib - settings', prefix.toLowerCase()+'-ssjs-lib-settings-'+version, settings.folderId[ASSET_LIB_FOLDER_KEY], null, settingsContent);
 
             // build main lib test file wrapper
             if (devMode == 1 && loadTests == 1) {
@@ -374,7 +438,6 @@
         Variable.SetValue("@hasErrors", 1);
         console.error(e);
     }
-
 
     function setupDev() {
         var folderName = 'Asset SSJS Lib Test';
@@ -448,6 +511,22 @@
         createScriptContentBlock(prefix+' SSJS Lib Test', prefix.toLowerCase()+'-ssjs-lib-test', folder, null, "%%[\n"+wrapper+"]%%");
     }
 
+    /**
+     * Get Block Code for lib generation (treatAsContent and BlockByKey).
+     * @param {string} libCustomerKey - customer key of the content block
+     * @returns {string} Block code for lib generation
+     */
+    function getLibBlockCode(libCustomerKey) {
+        return "TreatAsContent(Concat('<script runat=\"server\" language=\"javascript\">', ContentBlockByKey('"+libCustomerKey+"'), '<\/script>'))";
+    }
+
+    /**
+     * Get Git content from the given URL.
+     * In Production mode, the content is pulled from the given URL.
+     * If devMode is enabled, the content is pulled from the given GitHub repository (based on postData).
+     * @param {string} url - URL to the content
+     * @returns {string} content of the file
+     */
     function getGitContent(url) {
         if (devMode == "1") {
             var payload = {
@@ -464,7 +543,7 @@
                 return null;
             }
         } else {
-            var res = httpRequest('GET',url);
+            var res = httpRequest('GET', url);
             if (res.status == 200 && res.content != null) {
                 return res.content.replace(/%%prefix%%/gi, prefix).replace(/%%version%%/gi, version);
             } else {
@@ -488,7 +567,15 @@
         return false;
     }    
 
-    function createScriptContentBlock(name,key,parentFolder,url,content) {
+    /**
+     * Create a content block with the given name and key from the given URL.
+     * @param {string} name - name of the content block
+     * @param {string} key - customer key of the content block
+     * @param {string} parentFolder - parent folder ID
+     * @param {string} url - URL to the content block
+     * @param {string} content - content of the content block
+     */
+    function createScriptContentBlock(name, key, parentFolder, url, content) {
         var isExits = isScriptContentBlock(key),
             message = 'Create content block ['+ name +']';
 
@@ -764,6 +851,7 @@
     }
 
     function createRandomBytes(len,format) {
+        // TODO: generate internally:
         var format = format || "h",
             req = httpRequest('GET',"https://www.random.org/cgi-bin/randbyte?nbytes="+len+"&format="+format);
         return req.content.replace(" \n","").replace(/^\s+|\s+$/g,'');
@@ -819,273 +907,273 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     <style type="text/css">
-    @import url('https://fonts.googleapis.com/css?family=Numans');
+        @import url('https://fonts.googleapis.com/css?family=Numans');
 
-    html,
-    body {
-        background-image: url('https://www.email360.io/img/hero-bg.7075aa29.jpg');
-        background-size: cover;
-        background-repeat: no-repeat;
-        height: 100%;
-        font-family: 'Numans', sans-serif;
-    }
+        html,
+        body {
+            background-image: url('https://www.email360.io/img/hero-bg.7075aa29.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            height: 100%;
+            font-family: 'Numans', sans-serif;
+        }
 
-    .container {
-        height: 90%;
-        align-content: center;
-    }
+        .container {
+            height: 90%;
+            align-content: center;
+        }
 
-    .input-group-prepend span {
-        width: 50px;
-        background-color: #ffc451;
-        color: black;
-        border: 0 !important;
-    }
+        .input-group-prepend span {
+            width: 50px;
+            background-color: #ffc451;
+            color: black;
+            border: 0 !important;
+        }
 
-    .inner {
-        padding-top: 100px;
-    }
+        .inner {
+            padding-top: 100px;
+        }
 
-    input:focus {
-        outline: 0 0 0 0 !important;
-        box-shadow: 0 0 0 0 !important;
+        input:focus {
+            outline: 0 0 0 0 !important;
+            box-shadow: 0 0 0 0 !important;
 
-    }
+        }
 
-    /*form styles*/
-    #ssjs_lib {
-        text-align: center;
-        position: relative;
-        margin-top: 30px;
-    }
+        /*form styles*/
+        #ssjs_lib {
+            text-align: center;
+            position: relative;
+            margin-top: 30px;
+        }
 
-    /*form styles*/
-    #ssjs_lib div {
-        text-align: left;
+        /*form styles*/
+        #ssjs_lib div {
+            text-align: left;
+            font-size: 12px;
+        }
+
+        #ssjs_lib div ul:before {
+            content:attr(aria-label);
+            font-size:120%;
+            font-weight:bold;
+            margin-left:-15px;
+        }
+
+        #ssjs_lib div ul {
+        list-style: none; /* Remove default bullets */
+        }
+
+        #ssjs_lib div ul pre {
+        margin-bottom: 1px;
         font-size: 12px;
-    }
+        }
 
-    #ssjs_lib div ul:before {
-        content:attr(aria-label);
-        font-size:120%;
-        font-weight:bold;
-        margin-left:-15px;
-    }
+        #ssjs_lib fieldset {
+            background: white;
+            border: 0 none;
+            border-radius: 0px;
+            box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
+            padding: 20px 30px;
+            box-sizing: border-box;
+            width: 80%;
+            margin: 0 10%;
 
-    #ssjs_lib div ul {
-      list-style: none; /* Remove default bullets */
-    }
+            /*stacking fieldsets above each other*/
+            position: relative;
+        }
 
-    #ssjs_lib div ul pre {
-      margin-bottom: 1px;
-      font-size: 12px;
-    }
+        /*Hide all except first fieldset*/
+        #ssjs_lib fieldset:not(:first-of-type) {
+            display: none;
+        }
 
-    #ssjs_lib fieldset {
-        background: white;
-        border: 0 none;
-        border-radius: 0px;
-        box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
-        padding: 20px 30px;
-        box-sizing: border-box;
-        width: 80%;
-        margin: 0 10%;
+        #ssjs_lib div.settings {
+            display:grid;
+            grid-template-columns: max-content max-content;
+            grid-gap:5px;
+        }
+        #ssjs_lib div.settings label { 
+            text-align:right; 
+        }
+        #ssjs_lib div.settings label:after { 
+            content: ":"; 
+        }
 
-        /*stacking fieldsets above each other*/
-        position: relative;
-    }
+        /*inputs*/
+        #ssjs_lib input,
+        #ssjs_lib textarea {
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 0px;
+            margin-bottom: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: Numans;
+            color: #2C3E50;
+            font-size: 13px;
+        }
 
-    /*Hide all except first fieldset*/
-    #ssjs_lib fieldset:not(:first-of-type) {
-        display: none;
-    }
+        #ssjs_lib input:focus,
+        #ssjs_lib textarea:focus {
+            -moz-box-shadow: none !important;
+            -webkit-box-shadow: none !important;
+            box-shadow: none !important;
+            border: 1px solid #ffc451;
+            outline-width: 0;
+            transition: All 0.5s ease-in;
+            -webkit-transition: All 0.5s ease-in;
+            -moz-transition: All 0.5s ease-in;
+            -o-transition: All 0.5s ease-in;
+        }
 
-    #ssjs_lib div.settings {
-        display:grid;
-        grid-template-columns: max-content max-content;
-        grid-gap:5px;
-    }
-    #ssjs_lib div.settings label { 
-        text-align:right; 
-    }
-    #ssjs_lib div.settings label:after { 
-        content: ":"; 
-    }
-
-    /*inputs*/
-    #ssjs_lib input,
-    #ssjs_lib textarea {
-        padding: 15px;
-        border: 1px solid #ccc;
-        border-radius: 0px;
-        margin-bottom: 10px;
-        width: 100%;
-        box-sizing: border-box;
-        font-family: Numans;
-        color: #2C3E50;
-        font-size: 13px;
-    }
-
-    #ssjs_lib input:focus,
-    #ssjs_lib textarea:focus {
-        -moz-box-shadow: none !important;
-        -webkit-box-shadow: none !important;
-        box-shadow: none !important;
-        border: 1px solid #ffc451;
-        outline-width: 0;
-        transition: All 0.5s ease-in;
-        -webkit-transition: All 0.5s ease-in;
-        -moz-transition: All 0.5s ease-in;
-        -o-transition: All 0.5s ease-in;
-    }
-
-    /*buttons*/
-    #ssjs_lib .action-button {
-        width: 125px;
-        background: #ffc451;
-        color: #151515;
-        border: 0 none;
-        border-radius: 4px;
-        cursor: pointer;
-        padding: 10px 24px;
-        font-weight: bold;
-    }
+        /*buttons*/
+        #ssjs_lib .action-button {
+            width: 125px;
+            background: #ffc451;
+            color: #151515;
+            border: 0 none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 10px 24px;
+            font-weight: bold;
+        }
 
 
-    #ssjs_lib .action-button:hover,
-    #ssjs_lib .action-button:focus {
-        box-shadow: 0 0 0 2px white, 0 0 0 3px #ffc451;
-    }
+        #ssjs_lib .action-button:hover,
+        #ssjs_lib .action-button:focus {
+            box-shadow: 0 0 0 2px white, 0 0 0 3px #ffc451;
+        }
 
-    #ssjs_lib .action-button-previous {
-        width: 100px;
-        color: #151515;
-        border: 0 none;
-        border-radius: 4px;
-        cursor: pointer;
-        padding: 10px 24px;
-        font-weight: bold;
+        #ssjs_lib .action-button-previous {
+            width: 100px;
+            color: #151515;
+            border: 0 none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 10px 24px;
+            font-weight: bold;
 
-    }
+        }
 
-    #ssjs_lib .action-button-previous:hover,
-    #ssjs_lib .action-button-previous:focus {
-        box-shadow: 0 0 0 2px white, 0 0 0 3px #ffc451;
-    }
+        #ssjs_lib .action-button-previous:hover,
+        #ssjs_lib .action-button-previous:focus {
+            box-shadow: 0 0 0 2px white, 0 0 0 3px #ffc451;
+        }
 
-    /*headings*/
-    .fs-title {
-        font-size: 18px;
-        text-transform: uppercase;
-        color: #2C3E50;
-        margin-bottom: 10px;
-        letter-spacing: 2px;
-        font-weight: bold;
-    }
+        /*headings*/
+        .fs-title {
+            font-size: 18px;
+            text-transform: uppercase;
+            color: #2C3E50;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
 
-    .fs-subtitle {
-        font-weight: normal;
-        font-size: 13px;
-        color: #666;
-        margin-bottom: 20px;
-    }
+        .fs-subtitle {
+            font-weight: normal;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 20px;
+        }
 
-    .fs-subtitle-output {
-        font-weight: bold;
-        text-decoration: underline;
-        font-size: 14px;
-        color: #666;
-    }
+        .fs-subtitle-output {
+            font-weight: bold;
+            text-decoration: underline;
+            font-size: 14px;
+            color: #666;
+        }
 
-    .overlay {
-        height: 100%;
-        width: 100%;
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        display: none;
-        background-color: rgb(0,0,0); /* Black fallback color */
-        background-color: rgba(0,0,0, 0.6); /* Black w/opacity */
-        overflow-x: hidden; /* Disable horizontal scroll */
-      }
-  
-      .overlay-content {
-        position: absolute;
-        margin: auto;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        width: 142px;
-        height: 100px;
-      }
-  
-      .loader {
-          width: 45px;
-          height: 45px;
-          border: 5px solid #FFF;
-          border-bottom-color: transparent;
-          border-radius: 50%;
-          display: inline-block;
-          position: relative;
-          box-sizing: border-box;
-          animation: rotation 1s linear infinite;
-          top: 8px;
-          left: 1px;
-  
-      }
-  
-      .loader::after {
-          content: '';
-          position: absolute;
-          box-sizing: border-box;
-          top: 30px;
-          left: 1px;
-          border: 7px solid transparent;
-          border-right-color: #FFF;
-          transform: rotate(225deg);
-      }
-  
-      .loader:before {
-          content: "";
-          position: absolute;
-          left: 50%;
-          top: 45%;
-          transform: translate(-50%, -50%);
-          width: 20px;
-          height: 20px;
-  
-      }
-  
-      @keyframes rotation {
-          100% {
-              transform: rotate(0deg);
-          }
-  
-          0% {
-              transform: rotate(360deg);
-          }
-  
-      }
-  
-      .logo {
-          color: #FFF;
-          display: inline-block;
-          position: relative;
-          font-family: Arial, Helvetica, sans-serif;
-          font-size: 40px;
-          background-repeat: no-repeat;
-          background-image: url("https://raw.githubusercontent.com/email360/ssjs-lib/master/setup/envelope.png");
-          background-size: 22px 22px;
-          background-position-x: 138px;
-          background-position-y: 18px;
-      }
-  
-      .logo-o {
-          color: rgb(255, 197, 80);
-          font-family: 'Dosis', sans-serif;
-      }
+        .overlay {
+            height: 100%;
+            width: 100%;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            display: none;
+            background-color: rgb(0,0,0); /* Black fallback color */
+            background-color: rgba(0,0,0, 0.6); /* Black w/opacity */
+            overflow-x: hidden; /* Disable horizontal scroll */
+        }
+    
+        .overlay-content {
+            position: absolute;
+            margin: auto;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            width: 142px;
+            height: 100px;
+        }
+    
+        .loader {
+            width: 45px;
+            height: 45px;
+            border: 5px solid #FFF;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+            top: 8px;
+            left: 1px;
+    
+        }
+    
+        .loader::after {
+            content: '';
+            position: absolute;
+            box-sizing: border-box;
+            top: 30px;
+            left: 1px;
+            border: 7px solid transparent;
+            border-right-color: #FFF;
+            transform: rotate(225deg);
+        }
+    
+        .loader:before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 45%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+    
+        }
+    
+        @keyframes rotation {
+            100% {
+                transform: rotate(0deg);
+            }
+    
+            0% {
+                transform: rotate(360deg);
+            }
+    
+        }
+    
+        .logo {
+            color: #FFF;
+            display: inline-block;
+            position: relative;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 40px;
+            background-repeat: no-repeat;
+            background-image: url("https://raw.githubusercontent.com/email360/ssjs-lib/master/setup/envelope.png");
+            background-size: 22px 22px;
+            background-position-x: 138px;
+            background-position-y: 18px;
+        }
+    
+        .logo-o {
+            color: rgb(255, 197, 80);
+            font-family: 'Dosis', sans-serif;
+        }
 
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@200;300&display=swap" rel="stylesheet" />
@@ -1151,13 +1239,16 @@
                         <br/><br/><br/>
                         <p class="fs-subtitle" align="left">The prefix which will be used for naming and reference in code. By default it will be email360</p>
                         <input type="text" name="prefix" placeholder="Prefix (default: email360)" maxlength=10 />
+                        <br/><br/><br/>
+                        <p class="fs-subtitle" align="left">Length of Logger Message field (500-4000 characters). Bigger length can have an effect on SFMC performance - recommended: 1000.</p>
+                        <input type="number" name="msgLen" value="1000" min="500" max="4000" step="100" onchange="this.value = this.value >= 500 && this.value <= 4000 ? Math.round(this.value) : 1000" />
                         <br/>
                         <input type="button" name="previous" class="previous action-button-previous" value="Previous" />                                                
                         <input type="button" name="next" class="next action-button" value="Next" />
                     </fieldset>
                     <fieldset>
                         <h2 class="fs-title">API Setup (Optional)</h2>
-                        <h3 class="fs-subtitle">Please use a server-2-server package and enable all permissions.<br /> This will enable the full functionality of the SSJS Library.</h3>
+                        <h3 class="fs-subtitle">Please use a server-2-server package and enable all permissions.<br /> This will enable the full functionality of the SSJS Library. Minimum requirements are: Data Extensions, Documents and Images and Saved Content (Read & Write).</h3>
                         <input type="text" name="authUrl" placeholder="Auth Base URI" />
                         <input type="text" name="restUrl" placeholder="Rest Base URI" />
                         <input type="text" name="clientId" placeholder="Client Id" />

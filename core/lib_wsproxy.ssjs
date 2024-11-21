@@ -213,7 +213,7 @@ function wsproxy(mid,settings) {
         var obj = {};
 
         var getVal = function(props) {
-            return props.reduce(function(a, b) { return a[b]; }, req);
+            return reduce(props, function(a, b) { return a[b]; }, req);
         };
         
         for (var n = 0; n < cols.length; n++) {    
