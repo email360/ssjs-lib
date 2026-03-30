@@ -128,7 +128,6 @@ Marketing Cloud/
 
 ## Documentation
 
-Email360's SSJS Lib documentation can be found at <https://docs.email360.io><br/>
 For any tips and tricks please head over to the [email360 youtube channel](https://www.youtube.com/channel/UCCo1dWV3E3WipnqhOKynfGg)
 
 <br/>
