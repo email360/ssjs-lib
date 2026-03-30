@@ -7,12 +7,6 @@
   A sleek and powerful library for faster and easier development in Salesforce Marketing Cloud ©.
   <br>
   <br>
-  <a href="https://docs.email360.io/">Explore the Docs</a>
-  ·
-  <a href="https://email360.io/#contact">Get in touch</a>
-  ·
-  <a href="https://blog.email360.io/">email360 Blog</a>
-  .
   <a href="https://www.youtube.com/channel/UCCo1dWV3E3WipnqhOKynfGg">email360 Youtube</a>
 </p>
 
